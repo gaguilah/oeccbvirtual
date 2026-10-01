@@ -19,7 +19,7 @@ All colors come from the default Tailwind CSS palette: **`slate`** for surfaces,
 | Token | Role | Example class | Light | Dark |
 |---|---|---|---|---|
 | `surface` | Page canvas (base layer) | `bg-surface` | `slate-50` | `slate-950` |
-| `surface-container-low` | Secondary content areas, sections | `bg-surface-container-low` | `slate-100` | `slate-900` |
+| `surface-container-low` | Secondary content areas, sections | `bg-surface-container-low` | `slate-100` | `slate-950`/`slate-900` 50 % mix |
 | `surface-container` | Background for stacked cards | `bg-surface-container` | `slate-200` | `slate-800` |
 | `surface-container-lowest` | Cards and elevated containers | `bg-surface-container-lowest` | `white` | `slate-900` |
 | `surface-variant` | Subtle input container background | `bg-surface-variant` | `slate-100` | `slate-800` |
