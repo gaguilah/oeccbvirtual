@@ -12,7 +12,7 @@ export default function MainNav({ links = mainLinks, className }: MainNavProps) 
   return (
     <nav aria-label="Principal" className={cn('hidden items-center gap-1 xl:flex', className)}>
       {links.map((link) => (
-        <NavLink key={link.to} to={link.to} end className={desktopLinkClass}>
+        <NavLink key={link.to} to={link.to} end={link.to === '/'} className={desktopLinkClass}>
           {link.label}
         </NavLink>
       ))}

@@ -9,8 +9,10 @@ import Remates from './pages/Remates'
 import Pqrs from './pages/Pqrs'
 import Encuesta from './pages/Encuesta'
 import Tutoriales from './pages/Tutoriales'
+import Tutorial from './pages/Tutorial'
 import Contacto from './pages/Contacto'
 import Dashboard from './pages/Dashboard'
+import { ScrollToTop } from './components/navigation'
 import { Spinner } from './components/ui'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -40,6 +42,7 @@ function AppRoutes() {
         <Route path="/pqrs" element={<Pqrs />} />
         <Route path="/encuesta" element={<Encuesta />} />
         <Route path="/tutoriales" element={<Tutoriales />} />
+        <Route path="/tutoriales/:slug" element={<Tutorial />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/login" element={<Login />} />
       </Route>
@@ -59,6 +62,7 @@ function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>

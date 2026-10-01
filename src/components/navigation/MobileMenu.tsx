@@ -18,7 +18,7 @@ export default function MobileMenu({ id, open, onClose, links = mainLinks, foote
   return (
     <nav id={id} aria-label="Principal" className="space-y-1 bg-surface-container-low px-4 py-3 xl:hidden">
       {links.map((link) => (
-        <NavLink key={link.to} to={link.to} end onClick={onClose} className={mobileLinkClass}>
+        <NavLink key={link.to} to={link.to} end={link.to === '/'} onClick={onClose} className={mobileLinkClass}>
           {link.label}
         </NavLink>
       ))}
