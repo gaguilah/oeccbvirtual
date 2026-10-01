@@ -40,7 +40,7 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
 
 `/pqrs` has a 3-step form, `components/pqrs/PqrsForm.tsx`: type → name and email → summary + Cloudflare Turnstile.
 - `schema.ts` holds the zod schema and `stepFields`. Each step validates only its own fields with `validateFields`. The final submit revalidates everything.
-- `api.ts` (`submitRequest`) calls the Supabase Edge Function `submit-request` via `supabase.functions.invoke`, with `{ type, name, email, summary, captchaToken }`. The function must verify the token with Cloudflare, using the secret key on the server, before inserting. The browser never writes to the table directly.
+- `api.ts` (`submitRequest`) calls the Supabase Edge Function `submit-request` via `supabase.functions.invoke`, with `{ type, name, email, summary, captchaToken }`. Its source is in `supabase/functions/submit-request/index.ts` (Deno): it validates the fields, verifies Turnstile (`TURNSTILE_SECRET_KEY` secret), then inserts into `customer_requests` with the service role key. The browser never writes to the table directly.
 - Turnstile tokens are single-use. After a failed submit, the widget is reset (`captchaRef.current.reset()`).
 - Env vars are typed in `src/vite-env.d.ts`.
 
@@ -52,8 +52,7 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
   1. Verifies Turnstile (`TURNSTILE_SECRET_KEY` secret).
   2. Calls the SQL function `public.submit_survey_response(p_survey_id, p_answers)` (`supabase/migrations/20260930120000_submit_survey_response.sql`), which runs as a single transaction. All business rules live there: the survey is active, each question belongs to it, type and range, no duplicates, required questions answered. It raises `survey_not_available`, `invalid_answers` or `missing_required_answers`, which the Edge Function maps to Spanish messages. `survey_answers.value` is a `smallint` from 0 to 10, so `yes_no` is stored as 1 (yes) / 0 (no).
   3. Security: EXECUTE on the function is revoked from `public`/`anon`/`authenticated` and granted only to `service_role`. It is `security invoker` with an empty `search_path`. Don't change it to `security definer`, and don't grant it to `anon`: that would bypass the captcha via `/rest/v1/rpc`.
-  Deploy with `supabase functions deploy submit-survey --no-verify-jwt`. JWT verification is off because the client calls it with the publishable key. `submit-request` (PQRS) is deployed but its source is not in this repo.
-- Schema: `surveys` and `survey_questions` are publicly readable only when the survey is active. `survey_responses` and `survey_answers` have RLS enabled with no policies, so they are unreadable and unwritable from the client.
+  Deploy with `supabase functions deploy submit-survey --no-verify-jwt`. JWT verification is off because the client calls it with the publishable key.- Schema: `surveys` and `survey_questions` are publicly readable only when the survey is active. `survey_responses` and `survey_answers` have RLS enabled with no policies, so they are unreadable and unwritable from the client.
 - `CaptchaField` (Turnstile) and `CheckIcon` live in `components/ui` and are shared by PQRS and the survey.
 
 The office's contact details (email, address) are in `src/lib/contact.ts`. Don't repeat them as literals.
