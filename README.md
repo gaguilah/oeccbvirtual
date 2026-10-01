@@ -57,7 +57,7 @@ VITE_TURNSTILE_SITE_KEY=<site key de Turnstile>
 
 El sitio no tiene servidor propio. El navegador lee los datos públicos con el cliente de Supabase, y los formularios se envían a Edge Functions que verifican el captcha antes de guardar.
 
-- **Migraciones** (`supabase/migrations/`): tablas de la encuesta y la función SQL `submit_survey_response`.
+- **Migraciones** (`supabase/migrations/`): tabla `customer_requests` (PQRS), tablas de la encuesta y la función SQL `submit_survey_response`.
 - **Edge Functions** (`supabase/functions/`):
   - `submit-request`: recibe las PQRS y las guarda en `customer_requests`.
   - `submit-survey`: recibe las respuestas de la encuesta.
