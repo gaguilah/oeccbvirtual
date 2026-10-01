@@ -1,31 +1,69 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './lib/supabase'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
+import { useAuth } from './context/auth'
+import PublicLayout from './layouts/PublicLayout'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Remates from './pages/Remates'
+import Pqrs from './pages/Pqrs'
+import Encuesta from './pages/Encuesta'
+import Tutoriales from './pages/Tutoriales'
+import Contacto from './pages/Contacto'
+import Dashboard from './pages/Dashboard'
+import { Spinner } from './components/ui'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="flex min-h-svh items-center justify-center text-primary">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
+
+  if (!session) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/remates" element={<Remates />} />
+        <Route path="/pqrs" element={<Pqrs />} />
+        <Route path="/encuesta" element={<Encuesta />} />
+        <Route path="/tutoriales" element={<Tutoriales />} />
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/login" element={<Login />} />
+      </Route>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  )
+}
 
 function App() {
-  const [status, setStatus] = useState('Probando conexión...')
-
-  useEffect(() => {
-    async function testConnection() {
-      const { data, error } = await supabase.auth.getSession()
-
-      if (error) {
-        console.error('Error de conexión:', error)
-        setStatus('Error: revisa la consola')
-        return
-      }
-
-      console.log('Conexión exitosa. Sesión actual:', data.session)
-      setStatus('Conexión exitosa con Supabase (revisa la consola)')
-    }
-
-    testConnection()
-  }, [])
-
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Prueba de conexión</h1>
-      <p>{status}</p>
-    </div>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 
