@@ -55,6 +55,15 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
   Deploy with `supabase functions deploy submit-survey --no-verify-jwt`. JWT verification is off because the client calls it with the publishable key.- Schema: `surveys` and `survey_questions` are publicly readable only when the survey is active. `survey_responses` and `survey_answers` have RLS enabled with no policies, so they are unreadable and unwritable from the client.
 - `CaptchaField` (Turnstile) and `CheckIcon` live in `components/ui` and are shared by PQRS and the survey.
 
+## Tutorials
+
+`/tutoriales` (`pages/Tutoriales.tsx`) lists the tutorials as cards, and `/tutoriales/:slug` (`pages/Tutorial.tsx`) shows one, with breadcrumb `Inicio › Tutoriales › <title>`, its numbered steps and Anterior / Siguiente links. An unknown slug shows a "not found" EmptyState.
+- All content lives in `components/tutorials/data.ts` (`tutorials`: `slug`, `title`, `description`, `draft?`, `steps: { title?, text, link?, image? }[]`). `draft: true` shows a "contenido de prueba" notice. Screenshots go in `public/img/tutoriales/<slug>/` and are referenced with `tutorialImage(slug, file)`. `TutorialImage` opens them enlarged in a `Modal`.
+- Optional per-tutorial fields: `prerequisites` (slugs → "Antes de empezar" warning with links), `prerequisitesNote`, `intro`, and `next` (slug → "Siguiente paso recomendado" inside the closing "¡Felicidades!" box built from `summary`). Cross-references use slugs, never hardcoded titles or numbers, so titles come from the data.
+- These boxes use `Alert` with `live={false}` (static page content must not be a live region) and an SVG `icon`, not emojis. The array order is the display and prev/next order. To add or edit a tutorial, change only the data. Build URLs with `tutorialPath(slug)`, not by hand.
+- Nav links use `end` only for `/`, so a section stays highlighted on its subroutes.
+- `ScrollToTop` (`components/navigation`), mounted once inside `BrowserRouter` in `App.tsx`, scrolls to the top on every pathname change, so pages don't need their own scroll reset.
+
 The office's contact details (email, address) are in `src/lib/contact.ts`. Don't repeat them as literals.
 
 Components take a `className` prop that is merged via `cn()` from `src/lib/cn.ts` (clsx + tailwind-merge), so callers can override Tailwind classes. Build new UI from these components before writing raw Tailwind in pages. Because of the `react-refresh/only-export-components` lint rule, keep non-component exports (constants, helpers) in separate `.ts` files, not in `.tsx` component files.
