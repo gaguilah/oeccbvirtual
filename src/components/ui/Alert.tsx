@@ -24,10 +24,21 @@ type AlertProps = {
   className?: string
 }
 
-export default function Alert({ variant = 'info', title, children, icon, live = true, onClose, className }: AlertProps) {
+export default function Alert({
+  variant = 'info',
+  title,
+  children,
+  icon,
+  live = true,
+  onClose,
+  className,
+}: AlertProps) {
   const role = variant === 'error' || variant === 'warning' ? 'alert' : 'status'
   return (
-    <div role={live ? role : undefined} className={cn('flex gap-3 rounded-md p-4 text-sm', variants[variant], className)}>
+    <div
+      role={live ? role : undefined}
+      className={cn('flex gap-3 rounded-md p-4 text-sm', variants[variant], className)}
+    >
       {icon && (
         <span aria-hidden="true" className="shrink-0 [&>svg]:size-5">
           {icon}
@@ -44,7 +55,14 @@ export default function Alert({ variant = 'info', title, children, icon, live = 
           aria-label="Cerrar"
           className="-m-1 self-start rounded p-1 opacity-70 hover:opacity-100"
         >
-          <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+          <svg
+            className="size-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            aria-hidden="true"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
         </button>

@@ -46,7 +46,14 @@ export default function Modal({ open, onClose, title, children, footer, classNam
           aria-label="Cerrar"
           className="rounded p-1 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
         >
-          <svg className="size-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+          <svg
+            className="size-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden="true"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
         </button>

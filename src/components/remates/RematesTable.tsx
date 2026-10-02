@@ -19,7 +19,14 @@ type RematesTableProps = {
 function DetailButton({ notice, onSelect }: { notice: AuctionNotice; onSelect: (id: string) => void }) {
   return (
     <Button variant="secondary" size="sm" onClick={() => onSelect(notice.id)} aria-haspopup="dialog">
-      <svg className="size-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+      <svg
+        className="size-4 shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -44,10 +51,18 @@ export default function RematesTable({ rows, now, caption, onSelect, className }
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-surface-container-low">
           <tr>
-            <th scope="col" className={headerCell}>Fecha y hora</th>
-            <th scope="col" className={headerCell}>Radicado</th>
-            <th scope="col" className={headerCell}>Juzgado</th>
-            <th scope="col" className={headerCell}>Estado</th>
+            <th scope="col" className={headerCell}>
+              Fecha y hora
+            </th>
+            <th scope="col" className={headerCell}>
+              Radicado
+            </th>
+            <th scope="col" className={headerCell}>
+              Juzgado
+            </th>
+            <th scope="col" className={headerCell}>
+              Estado
+            </th>
             <th scope="col" className={cn(headerCell, 'text-right')}>
               <span className="sr-only">Aviso</span>
             </th>
@@ -55,7 +70,10 @@ export default function RematesTable({ rows, now, caption, onSelect, className }
         </thead>
         <tbody>
           {rows.map((notice) => (
-            <tr key={notice.id} className="transition-colors even:bg-surface-container-low/50 hover:bg-primary-container/30">
+            <tr
+              key={notice.id}
+              className="transition-colors even:bg-surface-container-low/50 hover:bg-primary-container/30"
+            >
               <td className={bodyCell}>
                 <span className="block text-sm font-semibold text-on-surface">{formatDate(notice.scheduled_at)}</span>
                 <span className="block text-xs text-on-surface-variant">{formatTime(notice.scheduled_at)}</span>

@@ -1,41 +1,41 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { supabase } from "../lib/supabase";
-import { Container } from "../components/layout";
-import { Alert, Button, Card, CardBody, Input } from "../components/ui";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { z } from 'zod'
+import { supabase } from '../lib/supabase'
+import { Container } from '../components/layout'
+import { Alert, Button, Card, CardBody, Input } from '../components/ui'
 
 // Solo inicio de sesión: las cuentas no se crean desde la vista pública.
 const credentialsSchema = z.object({
-  email: z.string().trim().email("Correo inválido"),
-  password: z.string().min(1, "Ingrese su contraseña"),
-});
+  email: z.string().trim().email('Correo inválido'),
+  password: z.string().min(1, 'Ingrese su contraseña'),
+})
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
-    const result = credentialsSchema.safeParse({ email, password });
+    const result = credentialsSchema.safeParse({ email, password })
     if (!result.success) {
-      setError(result.error.issues[0].message);
-      return;
+      setError(result.error.issues[0].message)
+      return
     }
 
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword(result.data);
-    setLoading(false);
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword(result.data)
+    setLoading(false)
 
     if (error) {
-      setError(error.message);
+      setError(error.message)
     } else {
-      navigate("/dashboard");
+      navigate('/dashboard')
     }
   }
 
@@ -61,7 +61,7 @@ export default function Login() {
               autoComplete="current-password"
             />
             <Button type="submit" loading={loading} fullWidth>
-              {loading ? "Procesando..." : "Entrar"}
+              {loading ? 'Procesando...' : 'Entrar'}
             </Button>
           </form>
 
@@ -69,5 +69,5 @@ export default function Login() {
         </CardBody>
       </Card>
     </Container>
-  );
+  )
 }

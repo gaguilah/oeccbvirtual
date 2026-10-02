@@ -4,7 +4,14 @@ import { cn } from '../../lib/cn'
 
 function Icon({ d }: { d: string }) {
   return (
-    <svg className="size-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+    <svg
+      className="size-4 shrink-0"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d={d} />
     </svg>
   )

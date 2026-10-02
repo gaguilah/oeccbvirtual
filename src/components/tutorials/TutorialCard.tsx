@@ -24,7 +24,9 @@ export default function TutorialCard({ tutorial, number, className }: TutorialCa
         {number}
       </span>
       <span className="flex-1 space-y-2">
-        <span className="block font-display text-xl font-bold tracking-[-0.02em] text-on-surface">{tutorial.title}</span>
+        <span className="block font-display text-xl font-bold tracking-[-0.02em] text-on-surface">
+          {tutorial.title}
+        </span>
         <span className="block text-sm text-on-surface-variant">{tutorial.description}</span>
       </span>
       <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">

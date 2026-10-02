@@ -1,42 +1,42 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
-import { useAuth } from "../context/auth";
-import { Container, PageHeader } from "../components/layout";
-import { Button, Card, CardBody, Spinner } from "../components/ui";
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/auth'
+import { Container, PageHeader } from '../components/layout'
+import { Button, Card, CardBody, Spinner } from '../components/ui'
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { session } = useAuth();
-  const [fullName, setFullName] = useState<string | null>(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const navigate = useNavigate()
+  const { session } = useAuth()
+  const [fullName, setFullName] = useState<string | null>(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
 
   useEffect(() => {
     async function loadProfile() {
-      if (!session) return;
+      if (!session) return
 
       const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", session.user.id)
-        .maybeSingle();
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .maybeSingle()
 
       if (error) {
-        console.error("Error cargando perfil:", error);
+        console.error('Error cargando perfil:', error)
       } else if (!data) {
-        setFullName(null); // no existe perfil todavía, pero no es un error fatal
+        setFullName(null) // no existe perfil todavía, pero no es un error fatal
       } else {
-        setFullName(data.full_name);
+        setFullName(data.full_name)
       }
-      setLoadingProfile(false);
+      setLoadingProfile(false)
     }
 
-    loadProfile();
-  }, [session]);
+    loadProfile()
+  }, [session])
 
   async function handleLogout() {
-    await supabase.auth.signOut();
-    navigate("/login");
+    await supabase.auth.signOut()
+    navigate('/login')
   }
 
   return (
@@ -57,10 +57,10 @@ export default function Dashboard() {
               <Spinner size="sm" label="" /> Cargando perfil...
             </span>
           ) : (
-            <p>Bienvenido, {fullName ?? "usuario sin nombre"}</p>
+            <p>Bienvenido, {fullName ?? 'usuario sin nombre'}</p>
           )}
         </CardBody>
       </Card>
     </Container>
-  );
+  )
 }

@@ -38,7 +38,14 @@ export default function TutorialContent({ steps, className }: TutorialContentPro
               {step.link && (
                 <ButtonAnchor href={step.link.href} external variant="secondary" size="sm" className="max-w-full">
                   <span className="truncate">{step.link.label}</span>
-                  <svg className="size-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+                  <svg
+                    className="size-4 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

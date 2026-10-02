@@ -64,9 +64,7 @@ export default function Footer() {
       </Container>
 
       <div className="bg-surface-container">
-        <Container className="py-5 text-center text-xs sm:text-left">
-          © {year} OECCB · Rama Judicial
-        </Container>
+        <Container className="py-5 text-center text-xs sm:text-left">© {year} OECCB · Rama Judicial</Container>
       </div>
     </footer>
   )

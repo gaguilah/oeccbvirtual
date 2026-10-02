@@ -15,9 +15,7 @@ export default function Header() {
   const { session } = useAuth()
   const close = () => setOpen(false)
 
-  const cta = session
-    ? { to: '/dashboard', label: 'Ir al dashboard' }
-    : { to: '/login', label: 'Iniciar sesión' }
+  const cta = session ? { to: '/dashboard', label: 'Ir al dashboard' } : { to: '/login', label: 'Iniciar sesión' }
 
   return (
     <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl">
@@ -40,7 +38,14 @@ export default function Header() {
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           className="inline-flex size-10 items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface xl:hidden"
         >
-          <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+          <svg
+            className="size-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden="true"
+          >
             {open ? (
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             ) : (

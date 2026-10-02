@@ -11,11 +11,7 @@ import { requestSchema, stepFields, validateFields, type FieldErrors, type Reque
 
 const STEPS = ['Tipo de solicitud', 'Datos de contacto', 'Su solicitud']
 
-const STEP_TITLES = [
-  '¿Qué tipo de solicitud desea presentar?',
-  '¿Cómo podemos contactarle?',
-  'Cuéntenos su caso',
-]
+const STEP_TITLES = ['¿Qué tipo de solicitud desea presentar?', '¿Cómo podemos contactarle?', 'Cuéntenos su caso']
 
 const EMPTY_DRAFT: RequestDraft = { type: null, name: '', email: '', summary: '' }
 
@@ -125,11 +121,11 @@ export default function PqrsForm() {
               {STEP_TITLES[step]}
             </h3>
 
-            {step === 0 && <TypeStep value={draft.type} onChange={(value) => update('type', value)} error={errors.type} />}
-
-            {step === 1 && (
-              <ContactStep name={draft.name} email={draft.email} onChange={update} errors={errors} />
+            {step === 0 && (
+              <TypeStep value={draft.type} onChange={(value) => update('type', value)} error={errors.type} />
             )}
+
+            {step === 1 && <ContactStep name={draft.name} email={draft.email} onChange={update} errors={errors} />}
 
             {step === 2 && (
               <SummaryStep
@@ -139,7 +135,9 @@ export default function PqrsForm() {
                 error={errors.summary}
                 captchaRef={captchaRef}
                 onCaptchaToken={setCaptchaToken}
-                onCaptchaError={() => setSubmitError('No se pudo cargar la verificación de seguridad. Recargue la página.')}
+                onCaptchaError={() =>
+                  setSubmitError('No se pudo cargar la verificación de seguridad. Recargue la página.')
+                }
               />
             )}
 

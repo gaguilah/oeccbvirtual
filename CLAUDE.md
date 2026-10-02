@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build`: type-check (`tsc -b`, project references in `tsconfig.app.json` / `tsconfig.node.json`), then `vite build` to `dist/`
 - `npm run lint`: ESLint flat config (typescript-eslint recommended, react-hooks, react-refresh)
 - `npm run preview`: serve the production build
+- `npm run format` / `npm run format:check`: Prettier (`.prettierrc.json`: single quotes, no semicolons, width 120, trailing commas). Markdown is ignored (`.prettierignore`)
 
 There is no test framework configured yet.
 
@@ -25,6 +26,7 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
 ## Conventions
 
 - UI text and user-facing messages are in Spanish.
+- Format with Prettier, not with the Deno formatter: `.vscode/settings.json` sets Prettier as default formatter; Deno is only the language server for `supabase/functions`.
 - TS config is strict about unused locals/params and uses `verbatimModuleSyntax`, so use `import type` for type-only imports.
 - Styling uses Tailwind CSS v4 through the `@tailwindcss/vite` plugin. It has no `tailwind.config.js`: add any config in CSS in `src/index.css` (`@theme`, `@layer base`). Use utility classes in `className` rather than inline `style` props or new CSS files. Dark mode uses the `dark:` variant, which follows the system setting.
 

@@ -13,7 +13,15 @@ type ChoiceOptionProps = {
 }
 
 // Opción seleccionable respaldada por un radio nativo: funciona con teclado (flechas) y lectores de pantalla.
-export default function ChoiceOption({ name, checked, onSelect, invalid, children, srLabel, className }: ChoiceOptionProps) {
+export default function ChoiceOption({
+  name,
+  checked,
+  onSelect,
+  invalid,
+  children,
+  srLabel,
+  className,
+}: ChoiceOptionProps) {
   return (
     <label
       className={cn(

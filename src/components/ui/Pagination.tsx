@@ -52,7 +52,10 @@ export default function Pagination({ page, pageCount, onPageChange, className }:
             onClick={() => onPageChange(page - 1)}
             disabled={page <= 1}
             aria-label="Página anterior"
-            className={cn(itemBase, 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface disabled:pointer-events-none disabled:opacity-40')}
+            className={cn(
+              itemBase,
+              'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface disabled:pointer-events-none disabled:opacity-40',
+            )}
           >
             <Chevron direction="left" />
           </button>
@@ -76,7 +79,11 @@ export default function Pagination({ page, pageCount, onPageChange, className }:
               </button>
             </li>
           ) : (
-            <li key={item} aria-hidden="true" className="inline-flex size-9 items-center justify-center text-on-surface-variant">
+            <li
+              key={item}
+              aria-hidden="true"
+              className="inline-flex size-9 items-center justify-center text-on-surface-variant"
+            >
               …
             </li>
           ),
@@ -87,7 +94,10 @@ export default function Pagination({ page, pageCount, onPageChange, className }:
             onClick={() => onPageChange(page + 1)}
             disabled={page >= pageCount}
             aria-label="Página siguiente"
-            className={cn(itemBase, 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface disabled:pointer-events-none disabled:opacity-40')}
+            className={cn(
+              itemBase,
+              'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface disabled:pointer-events-none disabled:opacity-40',
+            )}
           >
             <Chevron direction="right" />
           </button>

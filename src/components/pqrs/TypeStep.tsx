@@ -12,9 +12,7 @@ type TypeStepProps = {
 export default function TypeStep({ value, onChange, error }: TypeStepProps) {
   return (
     <fieldset className="space-y-4" aria-describedby={error ? 'request-type-error' : undefined}>
-      <legend className="text-sm text-on-surface-variant">
-        Seleccione la opción que mejor describe su caso.
-      </legend>
+      <legend className="text-sm text-on-surface-variant">Seleccione la opción que mejor describe su caso.</legend>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {REQUEST_TYPE_IDS.map((id) => {
           const type = requestTypes[id]

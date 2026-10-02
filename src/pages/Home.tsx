@@ -52,7 +52,14 @@ function ServiceCard({ service }: { service: Service }) {
       className="group flex h-full flex-col gap-6 rounded-lg bg-surface-container-lowest p-6 transition-colors hover:bg-primary-container/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:p-8"
     >
       <span className="flex size-12 items-center justify-center rounded-lg bg-primary-container text-primary">
-        <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+        <svg
+          className="size-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          aria-hidden="true"
+        >
           {service.icon.map((d) => (
             <path key={d} strokeLinecap="round" strokeLinejoin="round" d={d} />
           ))}

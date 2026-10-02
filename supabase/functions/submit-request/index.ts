@@ -36,14 +36,11 @@ Deno.serve(async (req) => {
 
     // 2. Verificar el CAPTCHA con Cloudflare Turnstile
     const turnstileSecret = Deno.env.get('TURNSTILE_SECRET_KEY')!
-    const captchaResponse = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: turnstileSecret, response: captchaToken }),
-      }
-    )
+    const captchaResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: turnstileSecret, response: captchaToken }),
+    })
     const captchaResult = await captchaResponse.json()
 
     if (!captchaResult.success) {
@@ -54,10 +51,7 @@ Deno.serve(async (req) => {
     }
 
     // 3. Insertar usando la service_role key (solo existe aquí, en el servidor)
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    )
+    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
     const { error } = await supabaseAdmin.from('customer_requests').insert({
       type,

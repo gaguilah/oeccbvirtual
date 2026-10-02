@@ -16,9 +16,7 @@ type LinkState = { isActive: boolean }
 export function desktopLinkClass({ isActive }: LinkState) {
   return [
     'inline-flex min-h-10 items-center border-b-2 px-3 text-sm font-medium transition-colors',
-    isActive
-      ? 'border-primary text-on-surface'
-      : 'border-transparent text-on-surface-variant hover:text-on-surface',
+    isActive ? 'border-primary text-on-surface' : 'border-transparent text-on-surface-variant hover:text-on-surface',
   ].join(' ')
 }
 

@@ -21,9 +21,7 @@ export default function Encuesta() {
             <p className="mt-6 font-display text-xl font-semibold text-on-surface sm:text-2xl">
               Ayúdenos a mejorar nuestros servicios
             </p>
-            <p className="mt-4 text-sm text-on-surface-variant sm:text-base">
-              Responder le tomará solo unos minutos.
-            </p>
+            <p className="mt-4 text-sm text-on-surface-variant sm:text-base">Responder le tomará solo unos minutos.</p>
             <div className="mt-10">
               <ButtonAnchor href="#responder" size="lg">
                 Responder encuesta

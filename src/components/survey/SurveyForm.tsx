@@ -121,12 +121,21 @@ export default function SurveyForm({ survey }: { survey: Survey }) {
 
   return (
     <div className="space-y-8">
-      <SurveyProgress current={step} total={totalSteps} label={isReview ? 'Revisión y envío' : `Pregunta ${step + 1}`} />
+      <SurveyProgress
+        current={step}
+        total={totalSteps}
+        label={isReview ? 'Revisión y envío' : `Pregunta ${step + 1}`}
+      />
 
       <Card>
         <CardBody className="sm:p-8">
           <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-6">
-            <h3 id={TITLE_ID} ref={headingRef} tabIndex={-1} className="text-xl font-bold sm:text-2xl focus:outline-none">
+            <h3
+              id={TITLE_ID}
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-xl font-bold sm:text-2xl focus:outline-none"
+            >
               {question ? question.text : 'Revise sus respuestas'}
               {question && !question.is_required && (
                 <span className="ml-2 align-middle text-sm font-normal text-on-surface-variant">(opcional)</span>
@@ -149,7 +158,9 @@ export default function SurveyForm({ survey }: { survey: Survey }) {
                 onEdit={goTo}
                 captchaRef={captchaRef}
                 onCaptchaToken={setCaptchaToken}
-                onCaptchaError={() => setSubmitError('No se pudo cargar la verificación de seguridad. Recargue la página.')}
+                onCaptchaError={() =>
+                  setSubmitError('No se pudo cargar la verificación de seguridad. Recargue la página.')
+                }
               />
             )}
 
@@ -164,7 +175,13 @@ export default function SurveyForm({ survey }: { survey: Survey }) {
                 <span aria-hidden="true" />
               )}
               <Button type="submit" loading={submitting}>
-                {isReview ? (submitting ? 'Enviando...' : 'Enviar encuesta') : step === reviewStep - 1 ? 'Revisar' : 'Siguiente'}
+                {isReview
+                  ? submitting
+                    ? 'Enviando...'
+                    : 'Enviar encuesta'
+                  : step === reviewStep - 1
+                    ? 'Revisar'
+                    : 'Siguiente'}
               </Button>
             </div>
           </form>

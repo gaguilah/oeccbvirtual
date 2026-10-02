@@ -35,7 +35,9 @@ export default function Pqrs() {
             <h2 id="radicar-title" className="text-3xl font-bold sm:text-4xl">
               Radique su PQRS
             </h2>
-            <p className="mt-2 text-sm text-on-surface-variant">Tres pasos sencillos. Todos los campos son obligatorios.</p>
+            <p className="mt-2 text-sm text-on-surface-variant">
+              Tres pasos sencillos. Todos los campos son obligatorios.
+            </p>
           </div>
           <PqrsForm />
         </Container>

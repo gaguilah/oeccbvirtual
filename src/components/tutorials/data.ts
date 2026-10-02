@@ -174,7 +174,8 @@ export const tutorials: Tutorial[] = [
     title: 'Audiencias de Remate',
     description: 'Aprenda a consultar las audiencias de remate programadas y su enlace de conexión.',
     prerequisites: ['publicaciones-procesales'],
-    summary: 'De esta forma ha aprendido a buscar y abrir la información de las audiencias de remate publicadas por la OECCB.',
+    summary:
+      'De esta forma ha aprendido a buscar y abrir la información de las audiencias de remate publicadas por la OECCB.',
     next: 'realizacion-audiencias',
     steps: [
       {
@@ -225,7 +226,8 @@ export const tutorials: Tutorial[] = [
     prerequisitesNote: 'De Audiencias de Remate y Avisos (otras audiencias), lea el que corresponda a su audiencia.',
     intro:
       'De acuerdo con la Circular PCSJC24-10, emitida el 15 de marzo de 2024, la plataforma para el servicio de audiencias virtuales es Microsoft Teams Premium. Por lo tanto, se sugiere que instale Microsoft Teams en su dispositivo.',
-    summary: 'De esta forma ha aprendido a descargar Microsoft Teams y a ingresar a las audiencias publicadas por la OECCB.',
+    summary:
+      'De esta forma ha aprendido a descargar Microsoft Teams y a ingresar a las audiencias publicadas por la OECCB.',
     steps: [
       {
         text: 'Visite el sitio oficial de Microsoft Teams.',
