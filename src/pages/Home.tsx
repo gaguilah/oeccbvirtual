@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { HeroIllustration } from '../components/home'
 import { Container } from '../components/layout'
 
 type Service = {
@@ -89,16 +90,17 @@ function ServiceCard({ service }: { service: Service }) {
 export default function Home() {
   return (
     <>
-      {/* Hero: titular editorial alineado a la izquierda con una leyenda pequeña debajo. */}
-      <section>
-        <Container className="py-16 sm:py-24 lg:py-32">
-          <div className="max-w-4xl">
+      {/* Hero: titular editorial a la izquierda e ilustración decorativa a la derecha (debajo en celular). */}
+      <section className="overflow-hidden">
+        <Container className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-12 lg:py-24">
+          <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">OECCB</p>
-            <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl lg:text-6xl">
+            <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">
               Oficina de Apoyo para los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga
             </h1>
             <p className="mt-6 text-sm text-on-surface-variant sm:text-base">Servicios digitales para ciudadanos</p>
           </div>
+          <HeroIllustration className="mx-auto w-[90%] max-w-lg lg:mx-0 lg:w-full lg:max-w-none" />
         </Container>
       </section>
 

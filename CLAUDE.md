@@ -65,6 +65,12 @@ Plan and decisions in `docs/plan-remates.md`. Schema in `supabase/migrations/202
 - "Ver aviso" in each row opens `RemateDetailModal`, which refetches the notice by id on every opening (`NoticeSelection.openedAt`) and shows a spinner meanwhile. It offers "Ver aviso" (new tab) and "Descargar PDF" via `pdfDownloadUrl()` (`?download=true`, which makes the publications site answer `Content-Disposition: attachment`). The `download` attribute does not work because the PDF is cross-origin without CORS.
 - `ui/Pagination` is generic: reuse it for other paginated lists.
 
+## Home illustration
+
+The hero of `pages/Home.tsx` shows `HeroIllustration` (`components/home/`, plan in `docs/plan-hero.md`): decorative cards on a tilted plane (`matrix(.996,.087,-.174,.985)`), `aria-hidden`, with fixed texts in `home/data.ts` (tutorial titles and step counts come from `tutorials/data.ts`).
+- It is drawn on a 512 × 400 unit canvas. The `hero-scale` utility (`index.css`) sets `--u` = 1/512 of the nearest `@container` and redefines `--spacing`, text sizes and radii from it, so regular classes (`left-14`, `text-sm`) scale with the width. Only use spacing/text/radius utilities inside it, not fixed px values.
+- Entrance uses `motion-safe:animate-hero-in` (keyframes animate `transform`; hover lifts use the separate `translate` property). Don't add `inert`: it would disable the hover effects, and nothing inside is focusable.
+
 ## Tutorials
 
 `/tutoriales` (`pages/Tutoriales.tsx`) lists the tutorials as cards, and `/tutoriales/:slug` (`pages/Tutorial.tsx`) shows one, with breadcrumb `Inicio › Tutoriales › <title>`, its numbered steps and Anterior / Siguiente links. An unknown slug shows a "not found" EmptyState.

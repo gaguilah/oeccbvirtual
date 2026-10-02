@@ -30,6 +30,8 @@ All colors come from the default Tailwind CSS palette: **`slate`** for surfaces,
 | `primary-dim` | End of the primary gradient | `to-primary-dim` | `blue-900` | `blue-500` |
 | `on-primary` | Text on primary | `text-on-primary` | `white` | `slate-950` |
 | `primary-container` | Subtle highlights (calendar, scheduling) | `bg-primary-container` | `blue-100` | `blue-950` |
+| `inverse-surface` | Dark floating surfaces (menus in the home illustration) | `bg-inverse-surface` | `slate-900` | `slate-700` |
+| `on-inverse-surface` | Text on inverse-surface | `text-on-inverse-surface` | `white` | `slate-50` |
 
 **Status colors (the only exception):** alerts, badges and validation errors may use Tailwind's `green`, `amber` and `red` on low-opacity backgrounds (e.g. `bg-red-600/10 text-red-800 dark:text-red-300`). Use them only to communicate state, never for decoration.
 
