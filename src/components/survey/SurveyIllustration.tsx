@@ -45,15 +45,15 @@ export default function SurveyIllustration({ className }: { className?: string }
       </IllustrationPanel>
 
       {/* Línea de la pregunta Sí / No a la calificación. */}
-      <div className={cn(connector, 'top-26 left-42 h-px w-6', enter, '[animation-delay:150ms]')} />
+      <div className={cn(connector, 'top-26 left-42 h-px w-6', enter, '[--illustration-delay:150ms]')} />
 
       <IllustrationPanel label={texts.mainPanel} className={cn('top-2 left-44 h-96 w-84', enter)}>
         {/* Calificación con estrellas que se llenan. */}
-        <IllustrationHatch className={cn('top-12 left-6 h-44 w-76', enter, '[animation-delay:150ms]')} />
+        <IllustrationHatch className={cn('top-12 left-6 h-44 w-76', enter, '[--illustration-delay:150ms]')} />
         <IllustrationCard
           title={texts.ratingCard}
           icon={icons.star}
-          className={cn('top-10 left-4 h-44 w-76', enter, '[animation-delay:150ms]', lift)}
+          className={cn('top-10 left-4 h-44 w-76', enter, '[--illustration-delay:150ms]', lift)}
         >
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
@@ -61,7 +61,7 @@ export default function SurveyIllustration({ className }: { className?: string }
               <span className="text-on-surface-variant">60 %</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-on-surface/10">
-              <div className="h-full w-3/5 rounded-full bg-linear-135 from-primary to-primary-dim motion-safe:animate-illustration-fill motion-safe:[animation-delay:300ms]" />
+              <div className="h-full w-3/5 rounded-full bg-linear-135 from-primary to-primary-dim motion-safe:animate-illustration-fill [--illustration-delay:300ms]" />
             </div>
           </div>
           <div className="space-y-1.5 pt-6">
@@ -76,14 +76,14 @@ export default function SurveyIllustration({ className }: { className?: string }
         {/* Revisión final, como SurveyReview. */}
         <IllustrationHatch
           tone="neutral"
-          className={cn('top-60 left-4 h-34 w-76', enter, '[animation-delay:1800ms]')}
+          className={cn('top-60 left-4 h-34 w-76', enter, '[--illustration-delay:1800ms]')}
         />
         <IllustrationCard
           title={texts.reviewCard}
           icon={icons.checkCircle}
-          className={cn('top-58 left-2 h-34 w-76', enter, '[animation-delay:1800ms]', lift)}
+          className={cn('top-58 left-2 h-34 w-76', enter, '[--illustration-delay:1800ms]', lift)}
         >
-          <div className={cn(enter, '[animation-delay:1950ms]')}>
+          <div className={cn(enter, '[--illustration-delay:1950ms]')}>
             <IllustrationRow
               status={
                 <span className="flex shrink-0 items-center gap-2 text-sm">
@@ -95,7 +95,7 @@ export default function SurveyIllustration({ className }: { className?: string }
               {texts.reviewInfo}
             </IllustrationRow>
           </div>
-          <div className={cn(enter, '[animation-delay:2100ms]')}>
+          <div className={cn(enter, '[--illustration-delay:2100ms]')}>
             <IllustrationRow
               status={
                 <span className="flex shrink-0 items-center gap-2 text-sm">
@@ -110,11 +110,13 @@ export default function SurveyIllustration({ className }: { className?: string }
           <div className="flex items-center justify-between gap-3 text-xs text-on-surface-variant">
             <span className="flex items-center gap-1.5">
               <span className="flex size-4 items-center justify-center rounded-sm bg-surface-container-lowest ring-1 ring-on-surface/20">
-                <Check className={cn('size-3 text-green-600 dark:text-green-400', enter, '[animation-delay:2600ms]')} />
+                <Check
+                  className={cn('size-3 text-green-600 dark:text-green-400', enter, '[--illustration-delay:2600ms]')}
+                />
               </span>
               {texts.captcha}
             </span>
-            <StatusDot label={texts.sent} className={cn(enter, '[animation-delay:2600ms]')} />
+            <StatusDot label={texts.sent} className={cn(enter, '[--illustration-delay:2600ms]')} />
           </div>
         </IllustrationCard>
       </IllustrationPanel>

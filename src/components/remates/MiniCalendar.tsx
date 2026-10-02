@@ -38,7 +38,7 @@ export default function MiniCalendar({ className }: { className?: string }) {
                   className={cn(
                     'absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 rounded-md bg-inverse-surface px-2 py-1 font-medium whitespace-nowrap text-on-inverse-surface shadow-lg',
                     enter,
-                    '[animation-delay:300ms]',
+                    '[--illustration-delay:300ms]',
                   )}
                 >
                   {calendar.tooltip}

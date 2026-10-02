@@ -44,49 +44,92 @@
 
   /* Sombra "ambiental": 32px de desenfoque, 8px en Y, on-surface al 5 %. */
   --shadow-ambient: 0 8px 32px color-mix(in oklab, var(--color-on-surface) 5%, transparent);
+}
 
-  /* Entrada de las ilustraciones (components/illustration). Usa transform (no translate) para no chocar
-     con las utilidades translate-* del hover, que usan la propiedad translate. */
-  --animate-illustration-in: illustration-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+/*
+ * Animaciones de las ilustraciones (components/illustration). Se definen como @utility, y no como
+ * variables --animate-* del tema, para que var(--illustration-delay) se resuelva en cada elemento:
+ * dentro de una variable del tema se resolvería en :root, donde vale 0. Tampoco sirve una clase
+ * [animation-delay:…] aparte: queda antes en el CSS que motion-safe:animate-… y el atajo
+ * `animation` la restablece a 0. El retraso se fija por pieza con [--illustration-delay:150ms];
+ * no se hereda, así cada pieza usa solo el suyo.
+ */
+@property --illustration-delay {
+  syntax: '<time>';
+  inherits: false;
+  initial-value: 0s;
+}
 
-  @keyframes illustration-in {
-    from {
-      opacity: 0;
-      transform: translateY(calc(var(--u, 1px) * 16));
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
+/* Entrada. Usa transform (no translate) para no chocar con las utilidades translate-* del hover,
+   que usan la propiedad translate. */
+@utility animate-illustration-in {
+  animation: illustration-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--illustration-delay) both;
+}
+
+@keyframes illustration-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--u, 1px) * 16));
   }
-
-  /* Barra que se llena (descarga simulada). Anima el ancho desde 0 hasta el del elemento. */
-  --animate-illustration-fill: illustration-fill 1000ms cubic-bezier(0.4, 0, 0.2, 1) both;
-
-  @keyframes illustration-fill {
-    from {
-      width: 0;
-    }
+  to {
+    opacity: 1;
+    transform: none;
   }
+}
 
-  /* Texto que se escribe solo (máquina de escribir): anima max-width de 0 a su valor (p. ej.
-     max-w-full) por pasos. El elemento necesita inline-block, overflow-hidden y whitespace-nowrap;
-     un cursor justo después lo sigue y termina pegado al final del texto. */
-  --animate-illustration-type: illustration-type 1500ms steps(36, end) both;
+/* Barra que se llena (descarga simulada). Anima el ancho desde 0 hasta el del elemento. */
+@utility animate-illustration-fill {
+  animation: illustration-fill 1000ms cubic-bezier(0.4, 0, 0.2, 1) var(--illustration-delay) both;
+}
 
-  @keyframes illustration-type {
-    from {
-      max-width: 0;
-    }
+@keyframes illustration-fill {
+  from {
+    width: 0;
   }
+}
 
-  /* Cursor que parpadea mientras se escribe. */
-  --animate-illustration-caret: illustration-caret 900ms step-end infinite;
+/* Texto que se escribe solo (máquina de escribir): anima max-width de 0 a su valor (p. ej.
+   max-w-full) por pasos. El elemento necesita inline-block, overflow-hidden y whitespace-nowrap;
+   un cursor justo después lo sigue y termina pegado al final del texto. */
+@utility animate-illustration-type {
+  animation: illustration-type 1500ms steps(36, end) var(--illustration-delay) both;
+}
 
-  @keyframes illustration-caret {
-    50% {
-      opacity: 0;
-    }
+@keyframes illustration-type {
+  from {
+    max-width: 0;
+  }
+}
+
+/* Ciclo de 6 textos apilados (Tutoriales): cada uno aparece, se mantiene y desaparece dentro de
+   su sexto del ciclo de 18 s (termina de irse antes de que llegue el siguiente). Turnos con
+   --illustration-delay 0 s, 3 s, 6 s, 9 s, 12 s y 15 s. */
+@utility animate-illustration-cycle {
+  animation: illustration-cycle 18s ease-in-out var(--illustration-delay) infinite both;
+}
+
+@keyframes illustration-cycle {
+  0% {
+    opacity: 0;
+  }
+  2%,
+  14% {
+    opacity: 1;
+  }
+  16%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Cursor que parpadea mientras se escribe. */
+@utility animate-illustration-caret {
+  animation: illustration-caret 900ms step-end infinite;
+}
+
+@keyframes illustration-caret {
+  50% {
+    opacity: 0;
   }
 }
 

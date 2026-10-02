@@ -3,7 +3,7 @@ import { enter, illustrationIcons as icons } from '../illustration'
 import { steps } from './illustrationData'
 
 // Los ✓ de los pasos completados aparecen uno tras otro (clases completas para Tailwind).
-const checkDelays = ['[animation-delay:300ms]', '[animation-delay:450ms]', '[animation-delay:600ms]']
+const checkDelays = ['[--illustration-delay:300ms]', '[--illustration-delay:450ms]', '[--illustration-delay:600ms]']
 
 // Indicador de pasos en miniatura (como StepIndicator): pasos anteriores completados con ✓ y el
 // último activo con degradado primary. Decorativo.

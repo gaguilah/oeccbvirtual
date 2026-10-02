@@ -4,6 +4,7 @@ export { default as TutorialImage } from './TutorialImage'
 export { default as TutorialNav } from './TutorialNav'
 export { default as TutorialPrerequisites } from './TutorialPrerequisites'
 export { default as TutorialSummary } from './TutorialSummary'
+export { default as TutorialsIllustration } from './TutorialsIllustration'
 export {
   TUTORIALS_PATH,
   findTutorial,

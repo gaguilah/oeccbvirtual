@@ -54,15 +54,15 @@ export default function PqrsIllustration({ className }: { className?: string }) 
       </IllustrationPanel>
 
       {/* Línea de los tipos a la solicitud. */}
-      <div className={cn(connector, 'top-26 left-42 h-px w-6', enter, '[animation-delay:150ms]')} />
+      <div className={cn(connector, 'top-26 left-42 h-px w-6', enter, '[--illustration-delay:150ms]')} />
 
       <IllustrationPanel label={texts.mainPanel} className={cn('top-2 left-44 h-96 w-84', enter)}>
         {/* Paso 3: la solicitud se escribe sola. */}
-        <IllustrationHatch className={cn('top-12 left-6 h-52 w-76', enter, '[animation-delay:150ms]')} />
+        <IllustrationHatch className={cn('top-12 left-6 h-52 w-76', enter, '[--illustration-delay:150ms]')} />
         <IllustrationCard
           title={texts.requestCard}
           icon={icons.mail}
-          className={cn('top-10 left-4 h-52 w-76', enter, '[animation-delay:150ms]', lift)}
+          className={cn('top-10 left-4 h-52 w-76', enter, '[--illustration-delay:150ms]', lift)}
         >
           <MiniSteps />
           <div className="grid grid-cols-2 gap-3">
@@ -74,7 +74,7 @@ export default function PqrsIllustration({ className }: { className?: string }) 
             ))}
           </div>
           <div className="flex h-8 items-start rounded-t-md border-b border-primary bg-surface-variant px-2 pt-1.5 text-sm text-on-surface">
-            <span className="inline-block max-w-full overflow-hidden whitespace-nowrap motion-safe:animate-illustration-type motion-safe:[animation-delay:600ms]">
+            <span className="inline-block max-w-full overflow-hidden whitespace-nowrap motion-safe:animate-illustration-type [--illustration-delay:600ms]">
               {texts.summary}
             </span>
             <span className="ml-px h-[1.2em] w-0.5 shrink-0 bg-primary motion-safe:animate-illustration-caret" />
@@ -83,7 +83,7 @@ export default function PqrsIllustration({ className }: { className?: string }) 
             <span className="flex items-center gap-1.5 text-xs text-on-surface-variant">
               <span className="flex size-4 items-center justify-center rounded-sm bg-surface-container-lowest ring-1 ring-on-surface/20">
                 <svg
-                  className={cn('size-3 text-green-600 dark:text-green-400', enter, '[animation-delay:2200ms]')}
+                  className={cn('size-3 text-green-600 dark:text-green-400', enter, '[--illustration-delay:2200ms]')}
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={3}
@@ -101,12 +101,12 @@ export default function PqrsIllustration({ className }: { className?: string }) 
         {/* Confirmación, como RequestSent. */}
         <IllustrationHatch
           tone="neutral"
-          className={cn('top-66 left-4 h-26 w-76', enter, '[animation-delay:2600ms]')}
+          className={cn('top-66 left-4 h-26 w-76', enter, '[--illustration-delay:2600ms]')}
         />
         <IllustrationCard
           title={texts.sentCard}
           icon={icons.checkCircle}
-          className={cn('top-64 left-2 h-26 w-76', enter, '[animation-delay:2600ms]', lift)}
+          className={cn('top-64 left-2 h-26 w-76', enter, '[--illustration-delay:2600ms]', lift)}
         >
           <IllustrationRow status={<StatusDot label={texts.sentStatus} />}>
             <span className="text-on-surface">{texts.sentTitle}</span>

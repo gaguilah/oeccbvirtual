@@ -1,5 +1,5 @@
 // Clases compartidas por las ilustraciones. Los retrasos de la entrada escalonada se escriben
-// en cada composición como '[animation-delay:150ms]' (Tailwind necesita el literal completo).
+// en cada composición como '[--illustration-delay:150ms]' (Tailwind necesita el literal completo).
 
 // Entrada; con "reducir movimiento" no se anima.
 export const enter = 'motion-safe:animate-illustration-in'

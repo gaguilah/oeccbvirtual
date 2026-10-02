@@ -21,20 +21,20 @@ export default function HeroIllustration({ className }: { className?: string }) 
       <IllustrationPanel label="Servicios en línea" className={cn('top-4 left-8 h-90 w-88', enter)} />
 
       {/* Líneas que conectan con el panel de publicaciones. */}
-      <div className={cn(connector, 'top-28 left-91 h-px w-11', enter, '[animation-delay:450ms]')} />
+      <div className={cn(connector, 'top-28 left-91 h-px w-11', enter, '[--illustration-delay:450ms]')} />
       <div
         className={cn(
           connectorCorner,
           'top-54 left-86 h-14 w-12 rounded-br-lg border-r border-b',
           enter,
-          '[animation-delay:450ms]',
+          '[--illustration-delay:450ms]',
         )}
       />
 
       <IllustrationCard
         title="Tutoriales"
         icon={icons.play}
-        className={cn('top-12 left-11 w-80', enter, '[animation-delay:150ms]', lift)}
+        className={cn('top-12 left-11 w-80', enter, '[--illustration-delay:150ms]', lift)}
       >
         {heroTutorials.map((tutorial) => (
           <IllustrationRow
@@ -54,13 +54,13 @@ export default function HeroIllustration({ className }: { className?: string }) 
           { label: 'Ver tutorial', icon: icons.playSolid },
           { label: 'Paso siguiente', icon: icons.arrow },
         ]}
-        className={cn('top-1 left-42 w-52', enter, '[animation-delay:300ms]', lift)}
+        className={cn('top-1 left-42 w-52', enter, '[--illustration-delay:300ms]', lift)}
       />
 
       <IllustrationCard
         title={heroPqrs.title}
         icon={icons.mail}
-        className={cn('top-60 left-6 w-80', enter, '[animation-delay:300ms]', lift)}
+        className={cn('top-60 left-6 w-80', enter, '[--illustration-delay:300ms]', lift)}
       >
         <IllustrationRow status={<StatusDot label={heroPqrs.status} />}>{heroPqrs.row}</IllustrationRow>
         <p className="text-sm text-on-surface-variant/70">{heroPqrs.hint}</p>
@@ -68,7 +68,7 @@ export default function HeroIllustration({ className }: { className?: string }) 
 
       <IllustrationPanel
         label={heroPublications.panel}
-        className={cn('top-6 left-102 h-50 w-88', enter, '[animation-delay:450ms]')}
+        className={cn('top-6 left-102 h-50 w-88', enter, '[--illustration-delay:450ms]')}
       >
         <IllustrationCard
           title={heroPublications.title}

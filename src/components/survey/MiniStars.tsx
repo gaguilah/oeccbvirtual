@@ -32,7 +32,7 @@ export default function MiniStars({ size = 'md', animated = false, tooltip, clas
           <span key={index} className={cn('relative', sizes[size])}>
             <Star className={cn('absolute inset-0 text-on-surface/15', sizes[size])} />
             {animated && last && (
-              <span className="absolute inset-0 rounded-full bg-primary/30 motion-safe:animate-ping motion-safe:[animation-delay:1400ms]" />
+              <span className="absolute inset-0 rounded-full bg-primary/30 motion-safe:animate-ping" />
             )}
             <Star
               className={cn('absolute inset-0 text-primary', sizes[size], animated && [enter, starDelays[index]])}
@@ -41,7 +41,7 @@ export default function MiniStars({ size = 'md', animated = false, tooltip, clas
               <span
                 className={cn(
                   'absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 rounded-md bg-inverse-surface px-2 py-1 text-xs font-medium whitespace-nowrap text-on-inverse-surface shadow-lg',
-                  animated && [enter, '[animation-delay:1400ms]'],
+                  animated && [enter, '[--illustration-delay:1400ms]'],
                 )}
               >
                 {tooltip}

@@ -5,11 +5,11 @@ export const STAR_COUNT = 5
 
 // Retraso de cada estrella llena (se llenan una por una). Clases completas para Tailwind.
 export const starDelays = [
-  '[animation-delay:600ms]',
-  '[animation-delay:750ms]',
-  '[animation-delay:900ms]',
-  '[animation-delay:1050ms]',
-  '[animation-delay:1200ms]',
+  '[--illustration-delay:600ms]',
+  '[--illustration-delay:750ms]',
+  '[--illustration-delay:900ms]',
+  '[--illustration-delay:1050ms]',
+  '[--illustration-delay:1200ms]',
 ]
 
 export const texts = {

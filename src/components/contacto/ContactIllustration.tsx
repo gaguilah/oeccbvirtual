@@ -23,20 +23,20 @@ export default function ContactIllustration({ className }: { className?: string 
       <IllustrationPanel label={contactMap.panel} className={cn('top-4 left-8 h-92 w-88', enter)} />
 
       {/* Líneas que conectan con el panel de atención. */}
-      <div className={cn(connector, 'top-28 left-91 h-px w-11', enter, '[animation-delay:450ms]')} />
+      <div className={cn(connector, 'top-28 left-91 h-px w-11', enter, '[--illustration-delay:450ms]')} />
       <div
         className={cn(
           connectorCorner,
           'top-54 left-86 h-18 w-12 rounded-br-lg border-r border-b',
           enter,
-          '[animation-delay:450ms]',
+          '[--illustration-delay:450ms]',
         )}
       />
 
       <IllustrationCard
         title={contactMap.title}
         icon={icons.mapPin}
-        className={cn('top-12 left-11 w-80', enter, '[animation-delay:150ms]', lift)}
+        className={cn('top-12 left-11 w-80', enter, '[--illustration-delay:150ms]', lift)}
       >
         <MapSketch />
         <div>
@@ -50,13 +50,13 @@ export default function ContactIllustration({ className }: { className?: string 
           { label: 'Cómo llegar', icon: icons.directions },
           { label: 'Copiar dirección', icon: icons.copy },
         ]}
-        className={cn('top-1 left-50 w-48', enter, '[animation-delay:300ms]', lift)}
+        className={cn('top-1 left-50 w-48', enter, '[--illustration-delay:300ms]', lift)}
       />
 
       <IllustrationCard
         title={contactEmail.title}
         icon={icons.mail}
-        className={cn('top-64 left-6 w-80', enter, '[animation-delay:300ms]', lift)}
+        className={cn('top-64 left-6 w-80', enter, '[--illustration-delay:300ms]', lift)}
       >
         <IllustrationRow>
           <span className="shrink-0 text-on-surface-variant/70">Para</span>
@@ -74,7 +74,7 @@ export default function ContactIllustration({ className }: { className?: string 
 
       <IllustrationPanel
         label={contactAttention.panel}
-        className={cn('top-6 left-102 h-56 w-88', enter, '[animation-delay:450ms]')}
+        className={cn('top-6 left-102 h-56 w-88', enter, '[--illustration-delay:450ms]')}
       >
         <IllustrationCard title={contactAttention.title} icon={icons.clock} className={cn('top-10 left-2 w-80', lift)}>
           <IllustrationRow>{contactAttention.days}</IllustrationRow>
