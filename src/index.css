@@ -76,6 +76,12 @@
     @apply min-h-svh bg-surface font-sans text-on-surface antialiased;
   }
 
+  /* Tailwind v4 deja los botones con cursor por defecto: se restaura la mano en los habilitados. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
   h1,
   h2,
   h3 {
