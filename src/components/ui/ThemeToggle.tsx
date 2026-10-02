@@ -42,14 +42,112 @@ const options: { value: Theme; label: string; icon: ReactNode }[] = [
 ]
 
 type ThemeToggleProps = {
-  // Muestra el texto junto al icono (recomendado en móvil, donde hay espacio vertical).
+  // 'segmented' (por defecto): las 3 opciones siempre visibles. 'compact': solo el ícono del tema
+  // actual; las 3 opciones aparecen en un desplegable al pasar el mouse o al enfocarlo (escritorio).
+  variant?: 'segmented' | 'compact'
+  // Muestra el texto junto al icono en la variante segmentada (menú móvil).
   showLabels?: boolean
+  // Se llama después de elegir un tema (p. ej. para cerrar el menú móvil).
+  onSelect?: (theme: Theme) => void
   className?: string
 }
 
-// Control segmentado: fondo tonal, sin bordes; la opción activa se "eleva" con surface-container-lowest.
-export default function ThemeToggle({ showLabels = false, className }: ThemeToggleProps) {
+function CheckMark() {
+  return (
+    <svg
+      className="ml-auto size-4 shrink-0 text-primary"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2.5}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    </svg>
+  )
+}
+
+// Botón con el tema actual y desplegable debajo con las 3 opciones. Se abre con hover o con el
+// foco (group-focus-within), así funciona con mouse, teclado (Tab / Escape) y toque. Las opciones
+// están `invisible` mientras está cerrado, por eso Tab no entra en ellas hasta que el grupo tiene foco.
+function CompactThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme()
+  const current = options.find((option) => option.value === theme) ?? options[2]
+
+  return (
+    <div
+      className={cn('group/theme relative', className)}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && document.activeElement instanceof HTMLElement) document.activeElement.blur()
+      }}
+    >
+      <button
+        type="button"
+        aria-label={`Tema: ${current.label}`}
+        className={cn(
+          'inline-flex size-10 items-center justify-center rounded-md bg-surface-container-low text-on-surface transition-colors hover:bg-surface-container',
+          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        )}
+      >
+        {current.icon}
+      </button>
+
+      {/* pt-2 hace de puente: el panel no se cierra al bajar el mouse desde el botón. */}
+      <div
+        className={cn(
+          'absolute top-full right-0 z-20 pt-2',
+          'invisible opacity-0 group-focus-within/theme:visible group-focus-within/theme:opacity-100 group-hover/theme:visible group-hover/theme:opacity-100',
+          'motion-safe:-translate-y-1 motion-safe:transition-[opacity,visibility,translate] motion-safe:duration-150 motion-safe:group-focus-within/theme:translate-y-0 motion-safe:group-hover/theme:translate-y-0',
+        )}
+      >
+        <div
+          role="group"
+          aria-label="Tema de color"
+          className="w-40 rounded-lg bg-surface-container-lowest p-1 shadow-ambient"
+        >
+          {options.map((option) => {
+            const active = theme === option.value
+            return (
+              <button
+                key={option.value}
+                type="button"
+                aria-pressed={active}
+                onClick={(event) => {
+                  setTheme(option.value)
+                  // Con mouse (detail > 0) se suelta el foco para que el panel se cierre;
+                  // con teclado se conserva para seguir navegando.
+                  if (event.detail > 0) event.currentTarget.blur()
+                }}
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
+                  'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
+                  active
+                    ? 'bg-primary-container text-on-surface'
+                    : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface',
+                )}
+              >
+                {option.icon}
+                {option.label}
+                {active && <CheckMark />}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Control segmentado: fondo tonal, sin bordes; la opción activa se "eleva" con surface-container-lowest.
+export default function ThemeToggle({
+  variant = 'segmented',
+  showLabels = false,
+  onSelect,
+  className,
+}: ThemeToggleProps) {
+  const { theme, setTheme } = useTheme()
+
+  if (variant === 'compact') return <CompactThemeToggle className={className} />
 
   return (
     <div
@@ -63,7 +161,10 @@ export default function ThemeToggle({ showLabels = false, className }: ThemeTogg
           <button
             key={option.value}
             type="button"
-            onClick={() => setTheme(option.value)}
+            onClick={() => {
+              setTheme(option.value)
+              onSelect?.(option.value)
+            }}
             aria-pressed={active}
             aria-label={showLabels ? undefined : option.label}
             title={option.label}

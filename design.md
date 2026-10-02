@@ -87,7 +87,12 @@ The components in `src/components/` already follow these rules. Reuse them befor
 
 ### Segmented Controls — `ThemeToggle`
 - Group on a `bg-surface-container-low` background, with no borders. The active option rises onto `bg-surface-container-lowest` with `text-on-surface` and `shadow-ambient`. Inactive options use `text-on-surface-variant`.
-- In primary navigation on mobile, show text labels next to the icons. On desktop, icons must have `aria-label` and `title`.
+- In primary navigation on mobile, show text labels next to the icons.
+- On desktop the header uses the **compact** variant: a single `bg-surface-container-low` square with the current theme's icon (`aria-label="Tema: …"`). Hovering or focusing it opens a floating `bg-surface-container-lowest` panel with `shadow-ambient` (no borders) listing the 3 options with icon and label; the active one uses `bg-primary-container` and a `primary` check.
+
+### Tooltips — `Tooltip`
+- A short caption below the element, shown on hover and on keyboard focus: `bg-inverse-surface`, `text-on-inverse-surface`, `text-xs`, `rounded-md`, `shadow-ambient`. It fades in only under `motion-safe:`.
+- It is visual only (`aria-hidden`): the element it describes must carry the same text in `aria-label`. Use it for icon-only buttons, such as the header's sign-in button.
 
 ### Tabs (The Flat Toggle) — `MainNav`
 - Use "Flat Tabs" where the active state is indicated by a color shift to `text-on-surface` and a 2px `primary` underline (`border-b-2 border-primary`). The inactive states should be `text-on-surface-variant` with no containing box.

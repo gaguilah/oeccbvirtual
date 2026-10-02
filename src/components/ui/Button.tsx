@@ -17,6 +17,8 @@ const sizes = {
   sm: 'min-h-8 px-3 py-1.5 text-sm',
   md: 'min-h-10 px-4 py-2 text-sm',
   lg: 'min-h-12 px-6 py-3 text-base',
+  // Cuadrado, solo ícono: el nombre accesible va en aria-label (y una leyenda con Tooltip).
+  icon: 'size-10 p-0',
 }
 
 type StyleProps = {

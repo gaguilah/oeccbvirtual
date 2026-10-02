@@ -3,7 +3,7 @@ export type NavItem = { to: string; label: string }
 
 export const mainLinks: NavItem[] = [
   { to: '/', label: 'Inicio' },
-  { to: '/avisos-remates', label: 'Remates' },
+  { to: '/avisos-remates', label: 'Avisos Remate' },
   { to: '/pqrs', label: 'PQRS' },
   { to: '/encuesta', label: 'Encuesta' },
   { to: '/tutoriales', label: 'Tutoriales' },
