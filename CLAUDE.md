@@ -55,6 +55,10 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
   Deploy with `supabase functions deploy submit-survey --no-verify-jwt`. JWT verification is off because the client calls it with the publishable key.- Schema: `surveys` and `survey_questions` are publicly readable only when the survey is active. `survey_responses` and `survey_answers` have RLS enabled with no policies, so they are unreadable and unwritable from the client.
 - `CaptchaField` (Turnstile) and `CheckIcon` live in `components/ui` and are shared by PQRS and the survey.
 
+## Auction notices (Remates, in progress)
+
+Plan and decisions in `docs/plan-remates.md`. Schema in `supabase/migrations/20261002120000_create_auction_notices.sql`: `auction_notices` (public read of `is_published` rows only, no write policies yet) and `pdf_folders` (the two number segments of the PDF URL, picked by the notice's `created_at`; no policies). The `auction_notices_before_write` trigger builds `pdf_url` (12-hour `HH`, America/Bogota), keeps `created_at` immutable and sets `updated_at`. It is `security invoker`: whoever writes notices must be able to read `pdf_folders`.
+
 ## Tutorials
 
 `/tutoriales` (`pages/Tutoriales.tsx`) lists the tutorials as cards, and `/tutoriales/:slug` (`pages/Tutorial.tsx`) shows one, with breadcrumb `Inicio › Tutoriales › <title>`, its numbered steps and Anterior / Siguiente links. An unknown slug shows a "not found" EmptyState.
