@@ -38,7 +38,8 @@ function AppRoutes() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/remates" element={<Remates />} />
+        <Route path="/avisos-remates" element={<Remates />} />
+        <Route path="/remates" element={<Navigate to="/avisos-remates" replace />} />
         <Route path="/pqrs" element={<Pqrs />} />
         <Route path="/encuesta" element={<Encuesta />} />
         <Route path="/tutoriales" element={<Tutoriales />} />

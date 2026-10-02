@@ -1,6 +1,6 @@
 # Plan: Avisos de Remate
 
-Migración del proyecto `avisos26Mod` (HTML + `data.json` editado a mano) a la sección `/remates` del sitio, con los datos en Supabase.
+Migración del proyecto `avisos26Mod` (HTML + `data.json` editado a mano) a la sección `/avisos-remates` del sitio (`/remates` redirige ahí), con los datos en Supabase.
 
 Se hace en dos etapas:
 
@@ -67,7 +67,7 @@ Mientras no exista la parte privada, los avisos nuevos se agregan desde el Table
 - Pantalla para administrar `pdf_folders`.
 - Rol de administrador, y políticas RLS de escritura en `auction_notices` y de lectura y escritura en `pdf_folders`.
 
-## Etapa 2: Frontend (listado)
+## Etapa 2: Frontend (listado, hecho el 2026-10-02)
 
 ### Comportamiento
 - **Filtro de juzgado:** Todos / Juzgado 1 / Juzgado 2.
@@ -76,7 +76,7 @@ Mientras no exista la parte privada, los avisos nuevos se agregan desde el Table
   - **Pasados:** `scheduled_at <= ahora − 60 min`, del más reciente al más antiguo, con estado **Realizado**.
 - **Búsqueda por radicado:** parcial; el campo solo acepta dígitos (máximo 23, `inputMode="numeric"`) y espera 300 ms después de escribir antes de buscar.
 - **Paginación:** de a 10 en el servidor (`.range()` + `count: 'exact'`), con "Mostrando 1–10 de N remates".
-- **Filtros en la URL:** `?juzgado=1&periodo=pasados&q=6800&pagina=2`.
+- **Filtros en la URL:** `/avisos-remates?juzgado=1&periodo=pasados&q=6800&pagina=2`.
 
 ### Archivos
 **En `src/components/remates/`:**

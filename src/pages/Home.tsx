@@ -11,7 +11,7 @@ type Service = {
 
 const services: Service[] = [
   {
-    to: '/remates',
+    to: '/avisos-remates',
     title: 'Remates',
     description: 'Consulte los avisos de remate publicados.',
     icon: [

@@ -3,7 +3,7 @@ import { CONTACT_ADDRESS, CONTACT_CITY, CONTACT_EMAIL } from '../../lib/contact'
 import Container from './Container'
 
 const services = [
-  { to: '/remates', label: 'Avisos de Remate' },
+  { to: '/avisos-remates', label: 'Avisos de Remate' },
   { to: '/pqrs', label: 'PQRS' },
   { to: '/encuesta', label: 'Encuesta' },
   { to: '/tutoriales', label: 'Tutoriales' },
