@@ -1,5 +1,7 @@
 # Plan: ilustración del hero del inicio (construida el 2026-10-02)
 
+> Desde el plan de contacto, las piezas comunes están en `components/illustration/` y las utilidades se llaman `illustration-scale`, `illustration-dots` y `animate-illustration-in`.
+
 Ilustración decorativa junto al título del inicio, inspirada en la de laravel.com/cloud/network: tarjetas de interfaz sobre un plano inclinado, con fondo de puntos, bordes desvanecidos y animación de entrada. No se copia el SVG de Laravel: se construye con HTML + Tailwind.
 
 ## Contenido (datos fijos)

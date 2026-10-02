@@ -41,7 +41,9 @@ export default function IllustrationCard({ title, icon, className, children }: I
 export function IllustrationRow({ children, status }: { children: ReactNode; status?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="flex min-w-0 items-center gap-2 font-medium text-on-surface-variant">{children}</span>
+      <span className="flex min-w-0 items-center gap-2 font-medium whitespace-nowrap text-on-surface-variant">
+        {children}
+      </span>
       {status}
     </div>
   )

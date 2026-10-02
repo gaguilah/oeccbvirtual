@@ -65,11 +65,16 @@ Plan and decisions in `docs/plan-remates.md`. Schema in `supabase/migrations/202
 - "Ver aviso" in each row opens `RemateDetailModal`, which refetches the notice by id on every opening (`NoticeSelection.openedAt`) and shows a spinner meanwhile. It offers "Ver aviso" (new tab) and "Descargar PDF" via `pdfDownloadUrl()` (`?download=true`, which makes the publications site answer `Content-Disposition: attachment`). The `download` attribute does not work because the PDF is cross-origin without CORS.
 - `ui/Pagination` is generic: reuse it for other paginated lists.
 
-## Home illustration
+## Decorative illustrations (home and contact)
 
-The hero of `pages/Home.tsx` shows `HeroIllustration` (`components/home/`, plan in `docs/plan-hero.md`): decorative cards on a tilted plane (`matrix(.996,.087,-.174,.985)`), `aria-hidden`, with fixed texts in `home/data.ts` (tutorial titles and step counts come from `tutorials/data.ts`).
-- It is drawn on a 512 × 400 unit canvas. The `hero-scale` utility (`index.css`) sets `--u` = 1/512 of the nearest `@container` and redefines `--spacing`, text sizes and radii from it, so regular classes (`left-14`, `text-sm`) scale with the width. Only use spacing/text/radius utilities inside it, not fixed px values.
-- Entrance uses `motion-safe:animate-hero-in` (keyframes animate `transform`; hover lifts use the separate `translate` property). Don't add `inert`: it would disable the hover effects, and nothing inside is focusable.
+The home hero (`home/HeroIllustration`, plan in `docs/plan-hero.md`) and the contact header (`contacto/ContactIllustration`, plan in `docs/plan-contacto.md`) show decorative cards on a tilted plane. Shared pieces live in `components/illustration/`: `IllustrationCanvas` (container, scale, tilted plane `matrix(.996,.087,-.174,.985)`, dots and edge masks, `aria-hidden`), `IllustrationPanel`, `IllustrationCard` + `IllustrationRow`, `IllustrationMenu`, `StatusDot`, the Heroicons paths (`illustrationIcons`) and the class strings `enter`, `lift`, `connector`, `connectorCorner`. Each section keeps only its composition and its `data.ts`.
+- The canvas is 512 × 400 units. The `illustration-scale` utility (`index.css`) sets `--u` = 1/512 of the nearest `@container` and redefines `--spacing`, text sizes and radii from it, so regular classes (`left-14`, `text-sm`) scale with the width. Inside it, use spacing/text/radius utilities, not fixed px values.
+- Entrance: `motion-safe:animate-illustration-in` plus a literal `[animation-delay:150ms]` per piece (the keyframes animate `transform`; hover lifts use the separate `translate` property). Don't add `inert`: it would disable the hover effects, and nothing inside is focusable.
+- Texts come from data (tutorials from `tutorials/data.ts`, contact details from `lib/contact.ts`), never hardcoded.
+
+## Contact
+
+`/contacto` (`pages/Contacto.tsx`): the header holds the title, `ContactSummary` (the real, accessible contact data: address with "Ver en Google Maps" via `CONTACT_MAPS_URL` in a new tab, email with `mailto:` + `CopyButton`, office hours) and `ContactIllustration` (schematic `MapSketch`, not a real map). Each detail appears once on the page. Below `lg` the order is title → illustration → details (details wrap in a row on tablet); on `lg` the grid places title and details on the left and the illustration across both rows on the right. Below, "Canales en línea" reuses `ServiceCard` from `components/services/` (shared with the home page). All values come from `src/lib/contact.ts`; the Footer shows them too.
 
 ## Tutorials
 

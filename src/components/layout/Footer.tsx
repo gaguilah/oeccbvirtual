@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom'
-import { CONTACT_ADDRESS, CONTACT_CITY, CONTACT_EMAIL } from '../../lib/contact'
+import {
+  CONTACT_ADDRESS,
+  CONTACT_CITY,
+  CONTACT_DAYS,
+  CONTACT_DEPARTMENT,
+  CONTACT_EMAIL,
+  CONTACT_HOURS,
+  CONTACT_HOURS_NOTE,
+} from '../../lib/contact'
 import Container from './Container'
 
 const services = [
@@ -30,7 +38,7 @@ export default function Footer() {
           </p>
           <address className="space-y-1 not-italic">
             <p>
-              {CONTACT_ADDRESS} · {CONTACT_CITY}
+              {CONTACT_ADDRESS} · {CONTACT_CITY}, {CONTACT_DEPARTMENT}
             </p>
             <p>
               <a href={`mailto:${CONTACT_EMAIL}`} className="break-all text-primary hover:underline">
@@ -38,6 +46,9 @@ export default function Footer() {
               </a>
             </p>
           </address>
+          <p>
+            {CONTACT_DAYS}: {CONTACT_HOURS} · {CONTACT_HOURS_NOTE}
+          </p>
         </div>
 
         <nav aria-label="Servicios" className="space-y-4">
