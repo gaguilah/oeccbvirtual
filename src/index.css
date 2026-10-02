@@ -68,6 +68,26 @@
       width: 0;
     }
   }
+
+  /* Texto que se escribe solo (máquina de escribir): anima max-width de 0 a su valor (p. ej.
+     max-w-full) por pasos. El elemento necesita inline-block, overflow-hidden y whitespace-nowrap;
+     un cursor justo después lo sigue y termina pegado al final del texto. */
+  --animate-illustration-type: illustration-type 1500ms steps(36, end) both;
+
+  @keyframes illustration-type {
+    from {
+      max-width: 0;
+    }
+  }
+
+  /* Cursor que parpadea mientras se escribe. */
+  --animate-illustration-caret: illustration-caret 900ms step-end infinite;
+
+  @keyframes illustration-caret {
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 :root {

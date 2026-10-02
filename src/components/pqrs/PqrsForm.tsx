@@ -3,13 +3,12 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Alert, Button, Card, CardBody } from '../ui'
 import { submitRequest } from './api'
 import ContactStep from './ContactStep'
+import { REQUEST_STEPS as STEPS } from './data'
 import RequestSent from './RequestSent'
 import StepIndicator from './StepIndicator'
 import SummaryStep from './SummaryStep'
 import TypeStep from './TypeStep'
 import { requestSchema, stepFields, validateFields, type FieldErrors, type RequestDraft } from './schema'
-
-const STEPS = ['Tipo de solicitud', 'Datos de contacto', 'Su solicitud']
 
 const STEP_TITLES = ['¿Qué tipo de solicitud desea presentar?', '¿Cómo podemos contactarle?', 'Cuéntenos su caso']
 

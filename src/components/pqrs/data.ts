@@ -4,6 +4,9 @@ export type RequestTypeId = (typeof REQUEST_TYPE_IDS)[number]
 
 export const SUMMARY_MAX_CHARS = 2000
 
+// Pasos del formulario (los usan PqrsForm y la ilustración del encabezado).
+export const REQUEST_STEPS = ['Tipo de solicitud', 'Datos de contacto', 'Su solicitud']
+
 export const requestTypes: Record<RequestTypeId, { label: string; description: string }> = {
   peticion: {
     label: 'Petición',
