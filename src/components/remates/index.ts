@@ -1,4 +1,5 @@
 export { default as RemateDetailModal } from './RemateDetailModal'
+export { default as RematesIllustration } from './RematesIllustration'
 export { default as RemateStatusBadge } from './RemateStatusBadge'
 export { default as RematesFilters } from './RematesFilters'
 export { default as RematesTable } from './RematesTable'

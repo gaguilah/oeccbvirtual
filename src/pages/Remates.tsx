@@ -5,6 +5,7 @@ import {
   PAGE_SIZE,
   RemateDetailModal,
   RematesFilters,
+  RematesIllustration,
   RematesTable,
   useAuctionNotices,
   useRematesFilters,
@@ -95,12 +96,18 @@ export default function Remates() {
 
   return (
     <Container className="space-y-8 py-12 sm:py-16">
-      <PageHeader
-        title="Avisos de Remate"
-        description="Consulta los avisos de remate publicados por los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga."
-        breadcrumb={[{ label: 'Inicio', to: '/' }, { label: 'Avisos de Remate' }]}
-      />
-      <RematesFilters filters={filters} onChange={updateFilters} />
+      {/* Encabezado: título a la izquierda e ilustración a la derecha (escritorio); en tableta la
+          ilustración va debajo y en celular se oculta para no alejar la tabla. */}
+      <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+        <PageHeader
+          title="Avisos de Remate"
+          description="Consulta los avisos de remate publicados por los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga."
+          breadcrumb={[{ label: 'Inicio', to: '/' }, { label: 'Avisos de Remate' }]}
+          className="pb-0"
+        />
+        <RematesIllustration className="mx-auto hidden w-[90%] max-w-lg md:block lg:mx-0 lg:w-full lg:max-w-none" />
+      </div>
+      <RematesFilters filters={filters} onChange={updateFilters} className="pt-4 md:pt-8" />
       <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3">
         {/* Anuncia el total a lectores de pantalla cuando cambian los filtros. */}
         <p aria-live="polite" className="sr-only">

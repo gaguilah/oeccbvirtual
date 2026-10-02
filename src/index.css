@@ -59,6 +59,15 @@
       transform: none;
     }
   }
+
+  /* Barra que se llena (descarga simulada). Anima el ancho desde 0 hasta el del elemento. */
+  --animate-illustration-fill: illustration-fill 1000ms cubic-bezier(0.4, 0, 0.2, 1) both;
+
+  @keyframes illustration-fill {
+    from {
+      width: 0;
+    }
+  }
 }
 
 :root {
@@ -100,6 +109,15 @@
   font-size: var(--text-sm);
 }
 
+/* Texto más pequeño dentro de una ilustración (IllustrationCanvas compact). Va en un elemento
+   hijo del que tiene illustration-scale, así sus valores ganan por herencia. */
+@utility illustration-compact {
+  --text-xs: calc(var(--u) * 10.5);
+  --text-sm: calc(var(--u) * 11.5);
+  --text-base: calc(var(--u) * 12.5);
+  font-size: var(--text-sm);
+}
+
 /* Trama de puntos de la ilustración (dentro de illustration-scale): un punto cada 15 unidades. */
 @utility illustration-dots {
   background-image: radial-gradient(
@@ -108,6 +126,17 @@
     transparent calc(var(--u) * 1.4)
   );
   background-size: calc(var(--u) * 15) calc(var(--u) * 15);
+}
+
+/* Fondo rayado de acento (IllustrationHatch): líneas a 52° y contorno en el color --hatch. */
+@utility illustration-hatch {
+  background-color: color-mix(in oklab, var(--hatch) 6%, transparent);
+  background-image: repeating-linear-gradient(
+    52deg,
+    color-mix(in oklab, var(--hatch) 40%, transparent) 0 calc(var(--u) * 0.6),
+    transparent calc(var(--u) * 0.6) calc(var(--u) * 4)
+  );
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hatch) 60%, transparent);
 }
 
 @layer base {
