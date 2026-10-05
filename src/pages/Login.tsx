@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, type Location } from 'react-router-dom'
 import { z } from 'zod'
 import { supabase } from '../lib/supabase'
 import { Container } from '../components/layout'
@@ -19,6 +19,11 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  // ProtectedRoute guarda la ruta pedida (state.from): tras iniciar sesión se vuelve a ella.
+  const from = (useLocation().state as { from?: Location } | null)?.from
+  const redirectTo = from?.pathname.startsWith('/dashboard')
+    ? `${from.pathname}${from.search}${from.hash}`
+    : '/dashboard'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -37,7 +42,7 @@ export default function Login() {
     if (error) {
       setError(error.message)
     } else {
-      navigate('/dashboard')
+      navigate(redirectTo, { replace: true })
     }
   }
 
