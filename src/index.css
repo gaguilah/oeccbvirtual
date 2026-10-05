@@ -141,6 +141,50 @@
   }
 }
 
+/*
+ * Luz en movimiento del footer (FooterGlow). Dos capas de franjas diagonales a 115° se desplazan
+ * de derecha a izquierda a velocidades distintas: las de luz (primary) y las del color del fondo
+ * que las tapan y destapan. Cada capa es más ancha que el footer en una repetición del patrón
+ * (--glow-repeat ≈ 706 px = 640 / sen 115°) y se desplaza esa distancia: el salto no se nota.
+ * La duración va en --glow-duration por capa y la pausa en --glow-play (running | paused), dentro
+ * del atajo `animation` para que nada la restablezca. Usar con motion-safe:.
+ */
+@utility animate-glow-scroll {
+  animation: glow-scroll var(--glow-duration, 12s) linear infinite var(--glow-play, running);
+}
+
+@keyframes glow-scroll {
+  to {
+    transform: translateX(calc(-1 * var(--glow-repeat, 706.16px)));
+  }
+}
+
+/* Franjas de luz: período de 320 px (dos períodos = una repetición horizontal). */
+@utility glow-stripes-light {
+  background: repeating-linear-gradient(
+    115deg,
+    var(--color-primary) 0px,
+    var(--color-primary) 50px,
+    transparent 110px,
+    transparent 150px,
+    color-mix(in oklab, var(--color-primary) 50%, transparent) 240px,
+    transparent 280px,
+    var(--color-primary) 320px
+  );
+}
+
+/* Franjas del color del fondo (--glow-bg) que tapan la luz: período de 640 px. */
+@utility glow-stripes-cover {
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0px,
+    var(--glow-bg) 128px,
+    var(--glow-bg) 160px,
+    transparent 533.33px,
+    transparent 640px
+  );
+}
+
 /* Cursor que parpadea mientras se escribe. */
 @utility animate-illustration-caret {
   animation: illustration-caret 900ms step-end infinite;

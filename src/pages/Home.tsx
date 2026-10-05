@@ -1,6 +1,7 @@
 import { HeroIllustration } from '../components/home'
 import { Container } from '../components/layout'
 import { ServiceCard, services } from '../components/services'
+import { OFFICE_NAME } from '../lib/contact'
 
 export default function Home() {
   return (
@@ -10,9 +11,7 @@ export default function Home() {
         <Container className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-12 lg:py-24">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">OECCB</p>
-            <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">
-              Oficina de Apoyo para los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga
-            </h1>
+            <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">{OFFICE_NAME}</h1>
             <p className="mt-6 text-sm text-on-surface-variant sm:text-base">Servicios digitales para ciudadanos</p>
           </div>
           <HeroIllustration className="mx-auto w-[90%] max-w-lg lg:mx-0 lg:w-full lg:max-w-none" />

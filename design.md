@@ -121,3 +121,7 @@ The components in `src/components/` already follow these rules. Reuse them befor
 
 ## 7. Responsive Focus
 The system transitions from an asymmetric editorial desktop view to a tightly stacked, high-contrast mobile view. On mobile, increase the use of `surface-container` tiers (`bg-surface-container-low`, `bg-surface-container`) to distinguish sections, as white space is limited. Ensure all touch targets for pagination and tabs are at least `min-h-10` (2.5rem) tall for accessibility.
+
+### Footer light — `FooterGlow`
+- The footer may carry a decorative moving light: diagonal stripes in `primary`, partly covered by stripes in the footer background, blurred and at about 20 % opacity, under a faint dot pattern. It moves right to left only under `motion-safe:` and pauses when the footer is off screen.
+- Keep it subtle: footer text must stay readable in both themes. Don't reuse it as a background behind dense content.

@@ -45,6 +45,9 @@ function AppRoutes() {
         <Route path="/tutoriales" element={<Tutoriales />} />
         <Route path="/tutoriales/:slug" element={<Tutorial />} />
         <Route path="/contacto" element={<Contacto />} />
+      </Route>
+      {/* Mismo encabezado, sin footer. */}
+      <Route element={<PublicLayout footer={false} />}>
         <Route path="/login" element={<Login />} />
       </Route>
       <Route

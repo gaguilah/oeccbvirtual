@@ -1,3 +1,4 @@
+import { courtByNumber } from '../../lib/courts'
 import type { Court } from './types'
 
 export const AVISOS_REMATES_PATH = '/avisos-remates'
@@ -12,10 +13,14 @@ export const REALIZADO_DESPUES_DE_MIN = 60
 
 export const CASE_NUMBER_LENGTH = 23
 
-const COURT_DETAIL = 'de Ejecución Civil del Circuito de Bucaramanga'
+// Nombres desde src/lib/courts.ts (fuente única de todo el sitio).
+// short + detail = name, p. ej. "Juzgado 1" + "Civil del Circuito de Ejecución de Sentencias de Bucaramanga".
+function courtNames(number: Court) {
+  const court = courtByNumber(number)
+  return { short: court.short, detail: court.name.slice(court.short.length + 1), name: court.name }
+}
 
-// short + detail = name.
 export const COURTS: Record<Court, { short: string; detail: string; name: string }> = {
-  1: { short: 'Juzgado 1', detail: COURT_DETAIL, name: `Juzgado 1 ${COURT_DETAIL}` },
-  2: { short: 'Juzgado 2', detail: COURT_DETAIL, name: `Juzgado 2 ${COURT_DETAIL}` },
+  1: courtNames(1),
+  2: courtNames(2),
 }
