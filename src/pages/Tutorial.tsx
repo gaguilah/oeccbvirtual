@@ -48,7 +48,8 @@ export default function Tutorial() {
           { label: tutorial.title },
         ]}
       />
-      <div className="max-w-3xl space-y-8">
+      {/* Ancho completo del contenedor: avisos, introducción y pasos alineados con el título. */}
+      <div className="space-y-8">
         {tutorial.prerequisites && (
           <TutorialPrerequisites slugs={tutorial.prerequisites} note={tutorial.prerequisitesNote} />
         )}
