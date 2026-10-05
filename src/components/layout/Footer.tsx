@@ -10,6 +10,8 @@ import {
   OFFICE_NAME,
 } from '../../lib/contact'
 import { COURTS, courtPublicationsUrl } from '../../lib/courts'
+import { INTEREST_LINKS } from '../../lib/externalLinks'
+import { ExternalLinkIcon } from '../ui'
 import Container from './Container'
 import FooterGlow from './FooterGlow'
 
@@ -28,8 +30,9 @@ function ColumnTitle({ children, id }: { children: string; id?: string }) {
   )
 }
 
-// Sin líneas divisorias: las zonas se separan con espacio y cambios de fondo. Fila 1: OECCB y
-// Servicios. Fila 2: enlaces a las publicaciones de los juzgados, uno debajo del otro. Detrás de
+// Sin líneas divisorias: las zonas se separan con espacio y cambios de fondo. Fila 1: OECCB,
+// Servicios y Enlaces de interés (en sm, OECCB ocupa la fila y las dos listas van debajo; desde lg,
+// las tres en una fila). Fila 2: enlaces a las publicaciones de los juzgados, uno debajo del otro. Detrás de
 // todo, la luz en movimiento (FooterGlow). Ver docs/plan-footer.md.
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -39,8 +42,8 @@ export default function Footer() {
       <FooterGlow />
 
       <Container className="relative space-y-12 py-12 lg:py-16">
-        <div className="grid gap-10 sm:grid-cols-[2fr_1fr]">
-          <div className="space-y-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr]">
+          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
             <p className="font-display text-xl font-extrabold tracking-[-0.02em] text-on-surface">OECCB</p>
             <p className="max-w-sm">{OFFICE_NAME}</p>
             <address className="space-y-1 not-italic">
@@ -70,6 +73,21 @@ export default function Footer() {
               ))}
             </ul>
           </nav>
+
+          <nav aria-labelledby="footer-links-title" className="space-y-4">
+            <ColumnTitle id="footer-links-title">Enlaces de interés</ColumnTitle>
+            <ul className="space-y-2">
+              {INTEREST_LINKS.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:text-on-surface">
+                    {link.title}
+                    <ExternalLinkIcon className="ml-1.5 inline-block align-[-0.15em]" />
+                    <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         <nav aria-labelledby="footer-courts-title" className="space-y-4">
@@ -85,20 +103,7 @@ export default function Footer() {
                 >
                   {court.name}
                   {/* En línea con el texto: si el nombre se parte, el ícono sigue a la última palabra. */}
-                  <svg
-                    className="ml-1.5 inline-block size-4 align-[-0.15em]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.75}
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                    />
-                  </svg>
+                  <ExternalLinkIcon className="ml-1.5 inline-block align-[-0.15em]" />
                   <span className="sr-only"> – publicaciones procesales (se abre en una pestaña nueva)</span>
                 </a>
               </li>

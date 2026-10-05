@@ -1,7 +1,8 @@
 import { HeroIllustration } from '../components/home'
 import { Container } from '../components/layout'
-import { ServiceCard, services } from '../components/services'
+import { ExternalLinkCard, ServiceCard, services } from '../components/services'
 import { OFFICE_NAME } from '../lib/contact'
+import { INTEREST_LINKS } from '../lib/externalLinks'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Home() {
@@ -33,6 +34,29 @@ export default function Home() {
             {services.map((service) => (
               <li key={service.to}>
                 <ServiceCard service={service} />
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+
+      {/* Enlaces de interés: vuelve al fondo surface (el cambio de tono separa las secciones) y las
+          tarjetas usan surface-container-low. Ver docs/plan-enlaces-interes.md. */}
+      <section aria-labelledby="enlaces-title">
+        <Container className="space-y-8 py-12 sm:py-16 lg:py-20">
+          <div className="space-y-2">
+            <h2
+              id="enlaces-title"
+              className="font-sans text-xs font-semibold uppercase tracking-widest text-on-surface-variant"
+            >
+              Enlaces de interés
+            </h2>
+            <p className="text-sm text-on-surface-variant">Sitios oficiales de la Rama Judicial.</p>
+          </div>
+          <ul className="grid gap-4 sm:gap-6 md:grid-cols-3">
+            {INTEREST_LINKS.map((link) => (
+              <li key={link.href}>
+                <ExternalLinkCard link={link} />
               </li>
             ))}
           </ul>

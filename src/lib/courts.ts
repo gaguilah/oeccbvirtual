@@ -28,7 +28,8 @@ export function courtByNumber(number: CourtNumber): CourtInfo {
 
 // Portal de publicaciones procesales. Si la Rama Judicial cambia la página o el identificador
 // del portlet, se corrige solo aquí.
-const PUBLICATIONS_PAGE = 'https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio'
+export const PUBLICATIONS_PAGE =
+  'https://publicacionesprocesales.ramajudicial.gov.co/web/publicaciones-procesales/inicio'
 const PORTLET = 'co_com_avanti_efectosProcesales_PublicacionesEfectosProcesalesPortletV2_INSTANCE_BIyXQFHVaYaq'
 
 // Publicaciones procesales de un despacho, ya filtradas (verificado el 2026-10-04).
