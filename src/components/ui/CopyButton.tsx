@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button } from '../ui'
+import Button from './Button'
 
 type CopyButtonProps = {
   value: string

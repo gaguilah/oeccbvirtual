@@ -1,4 +1,4 @@
-# Plan: usuarios, roles y permisos (fase 1 construida el 2026-10-05)
+# Plan: usuarios, roles y permisos (fases 1 y 2 construidas el 2026-10-05)
 
 Plan 2 de la hoja de ruta de `docs/plan-dashboard.md`. Va antes de cualquier sección con datos privados: las reglas (RLS) de Avisos de Remate, PQRS, Encuestas y Audiencias se apoyarán en lo que deja listo este plan. Rama: `dashboard` (la misma de la base del dashboard).
 
@@ -137,6 +137,15 @@ La misma migración busca la cuenta del propietario en `auth.users` por correo, 
   4. hace la operación con la service role key (`auth.admin.*`) y escribe el perfil;
   5. responde errores en español (correo ya registrado, último superadmin, etc.).
 - Nadie se edita ni se desactiva a sí mismo desde esta sección (para eso está Mi perfil).
+
+### Resultado de la fase 2 (2026-10-05)
+
+- Migración `20261005160000_list_users.sql`: `list_users()` (exige `usuarios.ver`; incluye cuentas de Auth sin perfil, que aparecen "Sin rol" con el botón "Asignar rol").
+- Edge Function `supabase/functions/manage-users/index.ts` (con verificación de JWT): acciones `create`, `update`, `set-active` y `reset-password`. Exige `usuarios.gestionar` llamando a `has_permission` con el JWT de quien llama; solo un superadmin asigna o modifica a un superadmin; nadie se gestiona a sí mismo; al crear, si falla el perfil se borra la cuenta de Auth; desactivar bloquea también el inicio de sesión (`ban_duration`); contraseña temporal de 14 caracteres (mayúsculas, minúsculas, números y un símbolo, sin 0/O/1/l/I).
+- Dashboard `src/dashboard/usuarios/`: lista (tabla desde `md`, tarjetas en celular; "Último ingreso" en la tabla desde `2xl` por espacio), búsqueda sin tildes y filtros por rol, dependencia y estado (en el navegador: son 16 usuarios, sin paginación), crear / editar en un modal (juzgado solo si el rol es de alcance `court`), desactivar / reactivar y restablecer con confirmación, y el aviso con la contraseña temporal (oculta, "Mostrar", "Copiar") arriba de la lista con el usuario resaltado. `CopyButton` pasó de `contacto/` a `components/ui`.
+- Probado en headless Edge con respuestas simuladas (lista, filtros, validaciones, correo repetido, crear con aviso y resaltado, desactivar).
+- **Probado contra Supabase real (2026-10-05):** crear usuario e iniciar sesión, cambio obligatorio de la contraseña temporal, desactivar (ya no puede iniciar sesión).
+- Lo que hacen otros usuarios en su sesión (cambiar la contraseña temporal, iniciar sesión) no llega solo a la lista: `useUsers` la vuelve a pedir al volver a la pestaña, cada minuto mientras está visible y con el botón "Actualizar".
 
 ### Fase 3: sección Roles (`/dashboard/roles`)
 

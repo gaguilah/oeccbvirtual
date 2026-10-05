@@ -5,6 +5,7 @@ import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
 import { ProfileProvider } from './profile'
+import { UsersPage } from './usuarios'
 
 // Secciones sin construir: su ruta muestra SectionPending. Al construir una, se le da su propia
 // <Route> abajo y se marca ready: true en navigation/links.ts.
@@ -28,6 +29,14 @@ export default function DashboardRoutes() {
       >
         <Route index element={<DashboardHome />} />
         <Route path="perfil" element={<ProfilePage />} />
+        <Route
+          path="usuarios"
+          element={
+            <RequirePermission permission="usuarios.ver">
+              <UsersPage />
+            </RequirePermission>
+          }
+        />
         {pendingSections.map((link) => (
           <Route
             key={link.to}
