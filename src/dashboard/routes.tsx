@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { AccessProvider, RequirePermission } from './access'
 import { ProtectedRoute } from './auth'
 import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
@@ -10,7 +11,7 @@ import { ProfileProvider } from './profile'
 const pendingSections = dashboardLinks.filter((link) => !link.ready)
 
 // Rutas anidadas bajo /dashboard/*. ProtectedRoute envuelve el layout una sola vez, así toda
-// subruta queda protegida.
+// subruta queda protegida; RequirePermission comprueba el permiso de cada sección.
 export default function DashboardRoutes() {
   return (
     <Routes>
@@ -18,7 +19,9 @@ export default function DashboardRoutes() {
         element={
           <ProtectedRoute>
             <ProfileProvider>
-              <DashboardLayout />
+              <AccessProvider>
+                <DashboardLayout />
+              </AccessProvider>
             </ProfileProvider>
           </ProtectedRoute>
         }
@@ -26,7 +29,15 @@ export default function DashboardRoutes() {
         <Route index element={<DashboardHome />} />
         <Route path="perfil" element={<ProfilePage />} />
         {pendingSections.map((link) => (
-          <Route key={link.to} path={relativePath(link)} element={<SectionPending />} />
+          <Route
+            key={link.to}
+            path={relativePath(link)}
+            element={
+              <RequirePermission permission={link.permission}>
+                <SectionPending />
+              </RequirePermission>
+            }
+          />
         ))}
         <Route path="*" element={<SectionNotFound />} />
       </Route>

@@ -1,6 +1,7 @@
 // Opciones del dashboard: fuente única del menú lateral, del título de la Topbar y de las tarjetas
 // de Inicio. El orden del arreglo es el orden del menú. Ver docs/plan-dashboard.md.
 import { services } from '../../components/services'
+import { icons } from '../ui/icons'
 
 export type DashboardLink = {
   to: string
@@ -14,6 +15,10 @@ export type DashboardLink = {
   group: 'main' | 'admin' | 'account'
   // false: el menú muestra "Pronto", Inicio "Próximamente" y la ruta muestra SectionPending.
   ready: boolean
+  // Permiso que muestra la opción en el menú y en Inicio y deja entrar a su ruta (RequirePermission).
+  // Sin permiso: cualquier usuario con acceso (Inicio, Mi perfil). superadmin las ve todas, incluso
+  // las de permisos que aún no existen en el catálogo (los crea la migración de cada sección).
+  permission?: string
   // Solo Inicio: así no queda resaltado en las subrutas.
   end?: boolean
 }
@@ -37,6 +42,7 @@ export const dashboardLinks: DashboardLink[] = [
   },
   {
     to: `${DASHBOARD_HOME}/avisos-remates`,
+    permission: 'remates.ver',
     label: 'Avisos de Remate',
     description: 'Cree, edite y publique los avisos de remate.',
     icon: auctionIcon,
@@ -45,6 +51,7 @@ export const dashboardLinks: DashboardLink[] = [
   },
   {
     to: `${DASHBOARD_HOME}/audiencias`,
+    permission: 'audiencias.ver',
     label: 'Audiencias',
     description: 'Programación y seguimiento de las audiencias.',
     icon: [
@@ -55,6 +62,7 @@ export const dashboardLinks: DashboardLink[] = [
   },
   {
     to: `${DASHBOARD_HOME}/pqrs`,
+    permission: 'pqrs.ver',
     label: 'PQRS',
     description: 'Revise y responda las solicitudes de los ciudadanos.',
     icon: [
@@ -65,6 +73,7 @@ export const dashboardLinks: DashboardLink[] = [
   },
   {
     to: `${DASHBOARD_HOME}/encuestas`,
+    permission: 'encuestas.ver',
     label: 'Encuestas',
     description: 'Estadísticas de la encuesta de satisfacción.',
     icon: [
@@ -75,11 +84,30 @@ export const dashboardLinks: DashboardLink[] = [
   },
   {
     to: `${DASHBOARD_HOME}/usuarios`,
+    permission: 'usuarios.ver',
     label: 'Usuarios',
     description: 'Cuentas, roles y permisos de acceso al dashboard.',
     icon: [
       'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z',
     ],
+    group: 'admin',
+    ready: false,
+  },
+  {
+    to: `${DASHBOARD_HOME}/roles`,
+    permission: 'roles.ver',
+    label: 'Roles',
+    description: 'Roles, su alcance (un juzgado o los dos) y sus permisos.',
+    icon: icons.shield,
+    group: 'admin',
+    ready: false,
+  },
+  {
+    to: `${DASHBOARD_HOME}/permisos`,
+    permission: 'permisos.ver',
+    label: 'Permisos',
+    description: 'Catálogo de permisos agrupado por módulo.',
+    icon: icons.key,
     group: 'admin',
     ready: false,
   },

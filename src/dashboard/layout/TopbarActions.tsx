@@ -1,27 +1,13 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Button, ButtonLink, ThemeToggle, Tooltip } from '../../components/ui'
 import { cn } from '../../lib/cn'
-import { supabase } from '../../lib/supabase'
+import { useSignOut } from '../auth'
 import { PROFILE_LINK } from '../navigation'
 import { Icon, icons } from '../ui'
 
 // Tema, Mi perfil y cerrar sesión. Botones de ícono con aria-label y Tooltip,
 // como el Header público.
 export default function TopbarActions({ className }: { className?: string }) {
-  const navigate = useNavigate()
-  const [signingOut, setSigningOut] = useState(false)
-
-  async function handleLogout() {
-    setSigningOut(true)
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Error cerrando sesión:', error)
-      setSigningOut(false)
-      return
-    }
-    navigate('/login', { replace: true })
-  }
+  const { signOut, signingOut } = useSignOut()
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
@@ -32,7 +18,7 @@ export default function TopbarActions({ className }: { className?: string }) {
         </ButtonLink>
       </Tooltip>
       <Tooltip label="Cerrar sesión" align="end">
-        <Button variant="secondary" size="icon" aria-label="Cerrar sesión" onClick={handleLogout} disabled={signingOut}>
+        <Button variant="secondary" size="icon" aria-label="Cerrar sesión" onClick={signOut} disabled={signingOut}>
           <Icon paths={icons.logout} />
         </Button>
       </Tooltip>

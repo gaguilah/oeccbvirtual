@@ -1,10 +1,13 @@
+import { Badge } from '../../components/ui'
 import { cn } from '../../lib/cn'
+import { roleLabel, useAccess } from '../access'
 import { initials, useProfile } from '../profile'
 
-// Encabezado del menú: iniciales, nombre y correo de quien está en sesión. Mientras carga el
+// Encabezado del menú: iniciales, nombre, correo y rol (con su juzgado) de quien está en sesión. Mientras carga el
 // perfil muestra barras tonales (esqueleto), no un spinner.
 export default function SidebarUser({ className }: { className?: string }) {
   const { displayName, email, loading } = useProfile()
+  const role = roleLabel(useAccess().access)
 
   if (loading) {
     return (
@@ -35,6 +38,7 @@ export default function SidebarUser({ className }: { className?: string }) {
             {email}
           </span>
         )}
+        {role && <Badge className="mt-1.5">{role}</Badge>}
       </span>
     </div>
   )

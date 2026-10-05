@@ -7,7 +7,8 @@ import { passwordSchema, type PasswordFields } from './schema'
 const EMPTY: PasswordFields = { current: '', password: '', confirm: '' }
 
 // Cambio de contraseña del usuario en sesión: pide la actual, la nueva y su confirmación.
-export default function PasswordForm() {
+// onChanged se llama tras un cambio exitoso (p. ej. para quitar el aviso de contraseña temporal).
+export default function PasswordForm({ onChanged }: { onChanged?: () => Promise<void> | void }) {
   const { email } = useProfile()
   const [fields, setFields] = useState<PasswordFields>(EMPTY)
   const [errors, setErrors] = useState<Partial<Record<keyof PasswordFields, string>>>({})
@@ -37,6 +38,7 @@ export default function PasswordForm() {
       await changePassword(email, result.data.current, result.data.password)
       setFields(EMPTY)
       setMessage({ variant: 'success', text: 'Contraseña actualizada.' })
+      await onChanged?.()
     } catch (err) {
       setMessage({
         variant: 'error',
