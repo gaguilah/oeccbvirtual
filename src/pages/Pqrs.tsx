@@ -13,8 +13,10 @@ import {
   CONTACT_HOURS,
   CONTACT_HOURS_NOTE,
 } from '../lib/contact'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Pqrs() {
+  useDocumentMeta({ title: 'PQRS' })
   return (
     <>
       {/* Hero: texto a la izquierda e ilustración a la derecha (escritorio); en tableta la ilustración va

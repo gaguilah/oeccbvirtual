@@ -1,7 +1,9 @@
 import { Container, PageHeader } from '../components/layout'
 import { TutorialCard, TutorialsIllustration, tutorials } from '../components/tutorials'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Tutoriales() {
+  useDocumentMeta({ title: 'Tutoriales' })
   return (
     <Container className="space-y-8 py-12 sm:py-16">
       {/* Encabezado como Avisos de Remate: título a la izquierda e ilustración a la derecha

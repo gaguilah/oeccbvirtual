@@ -12,6 +12,7 @@ import Tutoriales from './pages/Tutoriales'
 import Tutorial from './pages/Tutorial'
 import Contacto from './pages/Contacto'
 import Dashboard from './pages/Dashboard'
+import NotFound from './pages/NotFound'
 import { ScrollToTop } from './components/navigation'
 import { Spinner } from './components/ui'
 
@@ -45,6 +46,8 @@ function AppRoutes() {
         <Route path="/tutoriales" element={<Tutoriales />} />
         <Route path="/tutoriales/:slug" element={<Tutorial />} />
         <Route path="/contacto" element={<Contacto />} />
+        {/* Cualquier otra dirección: página 404 (Netlify entrega la app para toda ruta: public/_redirects). */}
+        <Route path="*" element={<NotFound />} />
       </Route>
       {/* Mismo encabezado, sin footer. */}
       <Route element={<PublicLayout footer={false} />}>

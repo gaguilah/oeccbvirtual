@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { supabase } from '../lib/supabase'
 import { Container } from '../components/layout'
 import { Alert, Button, Card, CardBody, Input } from '../components/ui'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 // Solo inicio de sesión: las cuentas no se crean desde la vista pública.
 const credentialsSchema = z.object({
@@ -12,6 +13,7 @@ const credentialsSchema = z.object({
 })
 
 export default function Login() {
+  useDocumentMeta({ title: 'Iniciar sesión' })
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)

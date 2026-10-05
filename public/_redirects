@@ -1,0 +1,3 @@
+# Netlify: entrega la aplicación para cualquier dirección, así React decide qué mostrar
+# (incluida la página 404). Ver docs/plan-404.md.
+/*    /index.html    200

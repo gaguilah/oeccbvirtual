@@ -12,8 +12,10 @@ import {
   type NoticeSelection,
 } from '../components/remates'
 import { Alert, Button, Card, EmptyState, Pagination, Spinner } from '../components/ui'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Remates() {
+  useDocumentMeta({ title: 'Avisos de Remate' })
   const { filters, updateFilters } = useRematesFilters()
   const { data, now, loading, error, retry } = useAuctionNotices(filters)
   const resultsRef = useRef<HTMLElement>(null)

@@ -2,7 +2,11 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Favicon: ícono de lista (el del sitio anterior de Tutoriales) en el color primary. SVG para navegadores modernos,
+         PNG de respaldo y apple-touch-icon para iPhone/iPad. ?v= evita que quede el de Vite en caché. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>oeccbvirtual</title>
+    <title>OECCB Virtual</title>
     <script>
       // Aplica el tema guardado antes del primer render para evitar un parpadeo.
       // La clave debe coincidir con THEME_STORAGE_KEY (src/context/theme.ts).

@@ -2,8 +2,10 @@ import { HeroIllustration } from '../components/home'
 import { Container } from '../components/layout'
 import { ServiceCard, services } from '../components/services'
 import { OFFICE_NAME } from '../lib/contact'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Home() {
+  useDocumentMeta({ title: 'Inicio' })
   return (
     <>
       {/* Hero: titular editorial a la izquierda e ilustración decorativa a la derecha (debajo en celular). */}

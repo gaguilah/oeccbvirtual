@@ -4,8 +4,10 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/auth'
 import { Container, PageHeader } from '../components/layout'
 import { Button, Card, CardBody, Spinner } from '../components/ui'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Dashboard() {
+  useDocumentMeta({ title: 'Dashboard' })
   const navigate = useNavigate()
   const { session } = useAuth()
   const [fullName, setFullName] = useState<string | null>(null)

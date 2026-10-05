@@ -4,10 +4,12 @@ import SurveyForm from '../components/survey/SurveyForm'
 import SurveyIllustration from '../components/survey/SurveyIllustration'
 import { useSurvey } from '../components/survey/useSurvey'
 import { Alert, ButtonAnchor, Spinner } from '../components/ui'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 const SURVEY_CODE = 'satisfaccion-oeccb'
 
 export default function Encuesta() {
+  useDocumentMeta({ title: 'Encuesta' })
   const { survey, loading, error } = useSurvey(SURVEY_CODE)
 
   return (

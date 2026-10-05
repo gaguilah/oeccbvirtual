@@ -9,31 +9,24 @@ import {
   findTutorialIndex,
   tutorials,
 } from '../components/tutorials'
-import { ButtonLink, EmptyState } from '../components/ui'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
+import NotFound from './NotFound'
 
 // Detalle de un tutorial: /tutoriales/:slug.
 export default function Tutorial() {
   const { slug } = useParams()
   const index = findTutorialIndex(slug)
   const tutorial = tutorials[index]
+  // Si no existe, el título lo pone NotFound.
+  useDocumentMeta({ title: tutorial ? tutorial.title : null })
 
   if (!tutorial) {
     return (
-      <Container className="space-y-8 py-12 sm:py-16">
-        <PageHeader
-          title="Tutorial no encontrado"
-          breadcrumb={[
-            { label: 'Inicio', to: '/' },
-            { label: 'Tutoriales', to: TUTORIALS_PATH },
-            { label: 'No encontrado' },
-          ]}
-        />
-        <EmptyState
-          title="No encontramos este tutorial"
-          description="Es posible que la dirección esté mal escrita o que el tutorial ya no exista."
-          action={<ButtonLink to={TUTORIALS_PATH}>Ver todos los tutoriales</ButtonLink>}
-        />
-      </Container>
+      <NotFound
+        title="Tutorial no encontrado"
+        description="Es posible que la dirección esté mal escrita o que el tutorial ya no exista."
+        primaryAction={{ label: 'Ver todos los tutoriales', to: TUTORIALS_PATH }}
+      />
     )
   }
 

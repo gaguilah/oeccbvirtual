@@ -4,6 +4,9 @@
 export const OFFICE_NAME =
   'Oficina de Apoyo para los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga'
 
+// Nombre del sitio: título de la pestaña ("OECCB Virtual | Página", ver useDocumentMeta).
+export const SITE_NAME = 'OECCB Virtual'
+
 export const CONTACT_EMAIL = 'ofejccbuc@cendoj.ramajudicial.gov.co'
 export const CONTACT_ADDRESS = 'Carrera 12 No. 31-08'
 export const CONTACT_CITY = 'Bucaramanga'

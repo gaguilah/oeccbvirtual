@@ -1,12 +1,14 @@
 import { ContactIllustration, ContactSummary } from '../components/contacto'
 import { Container, PageHeader } from '../components/layout'
 import { ServiceCard, services } from '../components/services'
+import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 // Servicios que se pueden hacer en línea en lugar de escribir o ir a la oficina.
 const ONLINE_SERVICES = ['/pqrs', '/encuesta', '/tutoriales']
 const onlineServices = services.filter((service) => ONLINE_SERVICES.includes(service.to))
 
 export default function Contacto() {
+  useDocumentMeta({ title: 'Contacto' })
   return (
     <>
       {/* Encabezado. Tableta y celular: título → ilustración → datos. Escritorio (lg): título y datos
