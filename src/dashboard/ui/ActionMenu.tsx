@@ -9,6 +9,9 @@ export type ActionMenuItem = {
   onSelect: () => void
   // Acción destructiva (p. ej. Eliminar): texto en rojo.
   danger?: boolean
+  // Opción que existe pero no se puede usar ahora: se muestra en gris con el motivo debajo, en vez
+  // de esconderla sin explicación (p. ej. Borrar un rol con usuarios: "Tiene usuarios asignados").
+  disabledReason?: string
 }
 
 type ActionMenuProps = {
@@ -20,7 +23,8 @@ type ActionMenuProps = {
 
 // Botón de tres puntos verticales que abre un menú debajo, con el mismo panel que el selector de
 // tema (ThemeToggle compacto). Se abre con clic o toque; se cierra al elegir, al tocar fuera o con
-// Escape (que devuelve el foco al botón).
+// Escape (que devuelve el foco al botón). Es la forma de mostrar las acciones de cada fila o
+// tarjeta en todo el dashboard (convención en CLAUDE.md).
 export default function ActionMenu({ items, label, className }: ActionMenuProps) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -72,27 +76,35 @@ export default function ActionMenu({ items, label, className }: ActionMenuProps)
             id={menuId}
             role="menu"
             aria-label={label}
-            className="w-44 rounded-lg bg-surface-container-lowest p-1 shadow-ambient"
+            className="w-max min-w-44 rounded-lg bg-surface-container-lowest p-1 shadow-ambient"
           >
             {items.map((item) => (
               <button
                 key={item.label}
                 type="button"
                 role="menuitem"
+                // aria-disabled (no disabled): sigue siendo enfocable y se lee el motivo.
+                aria-disabled={item.disabledReason ? true : undefined}
                 onClick={() => {
+                  if (item.disabledReason) return
                   setOpen(false)
                   item.onSelect()
                 }}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
+                  'flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left text-sm font-medium whitespace-nowrap transition-colors',
                   'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary',
-                  item.danger
-                    ? 'text-red-700 hover:bg-red-600/10 dark:text-red-400'
-                    : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface',
+                  item.disabledReason
+                    ? 'cursor-not-allowed text-on-surface-variant opacity-60'
+                    : item.danger
+                      ? 'text-red-700 hover:bg-red-600/10 dark:text-red-400'
+                      : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface',
                 )}
               >
-                <Icon paths={item.icon} className="size-4" />
-                {item.label}
+                <Icon paths={item.icon} className="mt-0.5 size-4" />
+                <span>
+                  {item.label}
+                  {item.disabledReason && <span className="block text-xs font-normal">{item.disabledReason}</span>}
+                </span>
               </button>
             ))}
           </div>

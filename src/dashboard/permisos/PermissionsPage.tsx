@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Alert, Badge, Button, Spinner } from '../../components/ui'
+import { Alert, Badge, Spinner } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
+import { ActionMenu, icons } from '../ui'
 import { fetchPermissionRoles, fetchPermissions } from './api'
 import { groupPermissions } from './data'
 import PermissionFormModal from './PermissionFormModal'
@@ -104,16 +105,11 @@ export default function PermissionsPage() {
                         <span className="text-xs text-on-surface-variant">Solo Superadmin</span>
                       )}
                       {canManage && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setEditing(permission)}
-                          aria-haspopup="dialog"
-                          className="sm:ml-2"
-                        >
-                          Editar
-                          <span className="sr-only"> el permiso {permission.name}</span>
-                        </Button>
+                        <ActionMenu
+                          label={`Opciones del permiso ${permission.name}`}
+                          className="sm:ml-1"
+                          items={[{ label: 'Editar', icon: icons.pencil, onSelect: () => setEditing(permission) }]}
+                        />
                       )}
                     </div>
                   </li>
