@@ -12,7 +12,7 @@ type ConfirmDialogProps = {
   onClose: () => void
 }
 
-// Confirmación de una acción sobre un usuario (desactivar, reactivar, restablecer contraseña).
+// Confirmación de una acción (desactivar un usuario, restablecer su contraseña, borrar un rol…).
 export default function ConfirmDialog({
   open,
   title,

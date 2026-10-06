@@ -5,6 +5,7 @@ import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
 import { ProfileProvider } from './profile'
+import { RoleEditorPage, RolesPage } from './roles'
 import { UsersPage } from './usuarios'
 
 // Secciones sin construir: su ruta muestra SectionPending. Al construir una, se le da su propia
@@ -34,6 +35,22 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="usuarios.ver">
               <UsersPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="roles"
+          element={
+            <RequirePermission permission="roles.ver">
+              <RolesPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="roles/:id"
+          element={
+            <RequirePermission permission="roles.ver">
+              <RoleEditorPage />
             </RequirePermission>
           }
         />

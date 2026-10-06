@@ -1,4 +1,4 @@
-# Plan: usuarios, roles y permisos (fases 1 y 2 construidas el 2026-10-05)
+# Plan: usuarios, roles y permisos (fases 1 a 3 construidas el 2026-10-05)
 
 Plan 2 de la hoja de ruta de `docs/plan-dashboard.md`. Va antes de cualquier sección con datos privados: las reglas (RLS) de Avisos de Remate, PQRS, Encuestas y Audiencias se apoyarán en lo que deja listo este plan. Rama: `dashboard` (la misma de la base del dashboard).
 
@@ -153,6 +153,21 @@ La misma migración busca la cuenta del propietario en `auth.users` por correo, 
 - Crear / editar: nombre, descripción, alcance y una **matriz de permisos** agrupada por módulo (casillas; "marcar todo el módulo").
 - Borrar: solo si no tiene usuarios. `superadmin` aparece bloqueado ("Tiene todos los permisos").
 - Con escritura directa por RLS (`roles.gestionar`), sin Edge Function: no toca Supabase Auth.
+
+### Resultado de la fase 3 (2026-10-05)
+
+- Migración `20261005170000_roles_admin.sql`:
+  - `list_roles()` (exige `roles.ver`): roles con número de usuarios y de permisos (security definer, porque contar usuarios exige leer perfiles ajenos).
+  - `save_role(p_id, p_code, p_name, p_description, p_scope, p_permissions)`: crea o edita el rol y deja exactamente esos permisos en una sola transacción. Es `security invoker`, así que se aplican los grants por columna, las políticas (`roles.gestionar`) y los triggers de la fase 1.
+  - Borrar es un `delete` directo con RLS: la llave foránea impide borrar un rol con usuarios y el trigger, el del sistema.
+- Dashboard `src/dashboard/roles/`:
+  - `/dashboard/roles`: tarjetas con alcance, usuarios y permisos; Borrar deshabilitado con el motivo ("Rol del sistema", "Tiene usuarios asignados").
+  - `/dashboard/roles/nuevo` y `/dashboard/roles/:id`: nombre (el código sale del nombre, sin tildes, y no cambia después), descripción, alcance (bloqueado si el rol tiene usuarios) y `PermissionMatrix` por módulo, con "Todo el módulo" (marcado, desmarcado o a medias).
+  - Superadmin y usuarios sin `roles.gestionar` lo ven en modo lectura.
+  - Al guardar se vuelve a la lista con un aviso y el rol resaltado.
+  - `ConfirmDialog` pasó a `src/dashboard/ui/` (lo usan Usuarios y Roles).
+  - Los nombres de los módulos están en `roles/data.ts` (`MODULE_LABELS`): agregar ahí el módulo de cada sección nueva.
+- Probado en headless Edge con respuestas simuladas y **contra Supabase real (2026-10-05)**.
 
 ### Fase 4: sección Permisos (`/dashboard/permisos`)
 

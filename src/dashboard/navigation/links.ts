@@ -100,7 +100,7 @@ export const dashboardLinks: DashboardLink[] = [
     description: 'Roles, su alcance (un juzgado o los dos) y sus permisos.',
     icon: icons.shield,
     group: 'admin',
-    ready: false,
+    ready: true,
   },
   {
     to: `${DASHBOARD_HOME}/permisos`,
