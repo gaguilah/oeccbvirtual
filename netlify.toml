@@ -1,0 +1,18 @@
+# Configuración de Netlify (despliegue desde GitHub, rama main).
+# Las variables VITE_* (Supabase y Turnstile) no van aquí: se cargan en el panel de Netlify
+# (Site configuration → Environment variables), igual que en .env / .env.local.
+# Las rutas de la SPA las resuelve public/_redirects (/* → /index.html 200).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 necesita Node 20.19+ o 22.12+.
+  NODE_VERSION = "22"
+
+# Los archivos de dist/assets llevan un hash en el nombre: se pueden guardar en caché para siempre.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
