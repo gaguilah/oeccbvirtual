@@ -11,8 +11,7 @@ import {
 } from '../../lib/contact'
 import { cn } from '../../lib/cn'
 import { illustrationIcons as icons } from '../illustration'
-import { Badge } from '../ui'
-import CopyButton from './CopyButton'
+import { Badge, CopyButton } from '../ui'
 
 type ItemProps = {
   icon: string[]

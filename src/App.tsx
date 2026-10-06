@@ -1,7 +1,7 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
-import { useAuth } from './context/auth'
 import PublicLayout from './layouts/PublicLayout'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -11,28 +11,12 @@ import Encuesta from './pages/Encuesta'
 import Tutoriales from './pages/Tutoriales'
 import Tutorial from './pages/Tutorial'
 import Contacto from './pages/Contacto'
-import Dashboard from './pages/Dashboard'
 import NotFound from './pages/NotFound'
 import { ScrollToTop } from './components/navigation'
-import { Spinner } from './components/ui'
+import { PageLoader } from './components/ui'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth()
-
-  if (loading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center text-primary">
-        <Spinner size="lg" />
-      </div>
-    )
-  }
-
-  if (!session) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <>{children}</>
-}
+// El dashboard (src/dashboard) se descarga solo al entrar: el sitio público no lo incluye.
+const DashboardRoutes = lazy(() => import('./dashboard'))
 
 function AppRoutes() {
   return (
@@ -53,12 +37,13 @@ function AppRoutes() {
       <Route element={<PublicLayout footer={false} />}>
         <Route path="/login" element={<Login />} />
       </Route>
+      {/* Área privada: rutas, protección y layout propios en src/dashboard. */}
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
+          <Suspense fallback={<PageLoader />}>
+            <DashboardRoutes />
+          </Suspense>
         }
       />
     </Routes>
