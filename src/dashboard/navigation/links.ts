@@ -47,7 +47,7 @@ export const dashboardLinks: DashboardLink[] = [
     description: 'Cree, edite y publique los avisos de remate.',
     icon: auctionIcon,
     group: 'main',
-    ready: false,
+    ready: true,
   },
   {
     to: `${DASHBOARD_HOME}/audiencias`,

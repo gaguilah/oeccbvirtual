@@ -154,9 +154,9 @@ export default function RolesPage() {
       {toDelete && (
         <ConfirmDialog
           open
-          title="Borrar rol"
+          title="¿Borrar este rol?"
           confirmLabel="Borrar"
-          danger
+          tone="danger"
           onClose={() => setToDelete(null)}
           onConfirm={async () => {
             await deleteRole(toDelete.id)

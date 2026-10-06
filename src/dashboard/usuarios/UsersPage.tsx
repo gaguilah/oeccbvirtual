@@ -131,9 +131,9 @@ export default function UsersPage() {
       {dialog?.kind === 'toggle' && (
         <ConfirmDialog
           open
-          title={dialog.user.active ? 'Desactivar usuario' : 'Reactivar usuario'}
+          title={dialog.user.active ? '¿Desactivar este usuario?' : '¿Reactivar este usuario?'}
           confirmLabel={dialog.user.active ? 'Desactivar' : 'Reactivar'}
-          danger={dialog.user.active}
+          icon={dialog.user.active ? icons.lock : icons.unlock}
           onClose={close}
           onConfirm={async () => {
             await manageUsers({ action: 'set-active', userId: dialog.user.id, active: !dialog.user.active })
@@ -159,8 +159,9 @@ export default function UsersPage() {
       {dialog?.kind === 'reset' && (
         <ConfirmDialog
           open
-          title="Restablecer contraseña"
+          title="¿Restablecer la contraseña?"
           confirmLabel="Restablecer"
+          icon={icons.key}
           onClose={close}
           onConfirm={async () => {
             const result = await manageUsers({ action: 'reset-password', userId: dialog.user.id })
