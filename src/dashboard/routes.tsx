@@ -4,6 +4,7 @@ import { ProtectedRoute } from './auth'
 import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
+import { PermissionsPage } from './permisos'
 import { ProfileProvider } from './profile'
 import { RoleEditorPage, RolesPage } from './roles'
 import { UsersPage } from './usuarios'
@@ -51,6 +52,14 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="roles.ver">
               <RoleEditorPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="permisos"
+          element={
+            <RequirePermission permission="permisos.ver">
+              <PermissionsPage />
             </RequirePermission>
           }
         />

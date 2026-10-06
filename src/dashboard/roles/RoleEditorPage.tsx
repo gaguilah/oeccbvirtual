@@ -4,10 +4,11 @@ import { Alert, Button, ButtonLink, Input, Spinner, Textarea } from '../../compo
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess, type RoleScope } from '../access'
-import { fetchPermissions, fetchRolePermissions, fetchRoles, saveRole } from './api'
-import { groupPermissions, ROLES_PATH, roleCode, SCOPES } from './data'
+import { fetchPermissions, groupPermissions, type Permission } from '../permisos'
+import { fetchRolePermissions, fetchRoles, saveRole } from './api'
+import { ROLES_PATH, roleCode, SCOPES } from './data'
 import PermissionMatrix from './PermissionMatrix'
-import type { Permission, RoleDraft, RoleRow, RolesFlash } from './types'
+import type { RoleDraft, RoleRow, RolesFlash } from './types'
 
 type Loaded = { permissions: Permission[]; role: RoleRow | null; draft: RoleDraft }
 

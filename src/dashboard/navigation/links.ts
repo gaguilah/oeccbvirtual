@@ -109,7 +109,7 @@ export const dashboardLinks: DashboardLink[] = [
     description: 'Catálogo de permisos agrupado por módulo.',
     icon: icons.key,
     group: 'admin',
-    ready: false,
+    ready: true,
   },
   {
     to: `${DASHBOARD_HOME}/perfil`,

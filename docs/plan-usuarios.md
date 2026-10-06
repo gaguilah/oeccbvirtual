@@ -1,4 +1,4 @@
-# Plan: usuarios, roles y permisos (fases 1 a 3 construidas el 2026-10-05)
+# Plan: usuarios, roles y permisos (construido el 2026-10-05)
 
 Plan 2 de la hoja de ruta de `docs/plan-dashboard.md`. Va antes de cualquier sección con datos privados: las reglas (RLS) de Avisos de Remate, PQRS, Encuestas y Audiencias se apoyarán en lo que deja listo este plan. Rama: `dashboard` (la misma de la base del dashboard).
 
@@ -166,13 +166,20 @@ La misma migración busca la cuenta del propietario en `auth.users` por correo, 
   - Superadmin y usuarios sin `roles.gestionar` lo ven en modo lectura.
   - Al guardar se vuelve a la lista con un aviso y el rol resaltado.
   - `ConfirmDialog` pasó a `src/dashboard/ui/` (lo usan Usuarios y Roles).
-  - Los nombres de los módulos están en `roles/data.ts` (`MODULE_LABELS`): agregar ahí el módulo de cada sección nueva.
+  - Los nombres de los módulos están en `permisos/data.ts` (`MODULE_LABELS`, movido ahí en la fase 4): agregar ahí el módulo de cada sección nueva.
 - Probado en headless Edge con respuestas simuladas y **contra Supabase real (2026-10-05)**.
 
 ### Fase 4: sección Permisos (`/dashboard/permisos`)
 
 - Catálogo agrupado por módulo: código, nombre, descripción y roles que lo tienen.
 - Editar nombre y descripción (`permisos.gestionar`).
+
+### Resultado de la fase 4 (2026-10-05)
+
+- Sin migración: la lectura del catálogo y la edición de nombre y descripción (grant por columna + política `permisos.gestionar`) existen desde la fase 1.
+- Dashboard `src/dashboard/permisos/` (`/dashboard/permisos`, `permisos.ver`): catálogo agrupado por módulo, con los roles que tienen cada permiso ("Solo Superadmin" si ninguno) y "Editar" (modal: código solo de lectura, nombre de 3 a 80 caracteres, descripción hasta 300) con `permisos.gestionar`.
+- El catálogo (`Permission`, `fetchPermissions`, `MODULE_LABELS`, `moduleLabel`, `groupPermissions`) pasó de `roles/` a `permisos/`; Roles lo importa de ahí.
+- Probado en headless Edge con respuestas simuladas (lista, roles por permiso, validación, guardar, y el editor de Roles tras mover el catálogo) y **contra Supabase real (2026-10-05)**.
 
 ### Menú resultante
 

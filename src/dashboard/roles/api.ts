@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase'
-import type { Permission, RoleDraft, RoleRow } from './types'
+import type { RoleDraft, RoleRow } from './types'
 
 // Errores de la base de datos (triggers, restricciones, políticas) → mensajes en español.
 function roleError(error: { message?: string; code?: string }): Error {
@@ -21,16 +21,6 @@ export async function fetchRoles(): Promise<RoleRow[]> {
   const { data, error } = await supabase.rpc('list_roles')
   if (error) throw roleError(error)
   return (data ?? []) as RoleRow[]
-}
-
-export async function fetchPermissions(): Promise<Permission[]> {
-  const { data, error } = await supabase
-    .from('permissions')
-    .select('code, module, name, description')
-    .order('module')
-    .order('code')
-  if (error) throw roleError(error)
-  return data as Permission[]
 }
 
 export async function fetchRolePermissions(roleId: string): Promise<string[]> {

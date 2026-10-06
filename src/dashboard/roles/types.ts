@@ -12,13 +12,6 @@ export type RoleRow = {
   permission_count: number
 }
 
-export type Permission = {
-  code: string
-  module: string
-  name: string
-  description: string | null
-}
-
 export type RoleDraft = {
   name: string
   description: string

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { cn } from '../../lib/cn'
-import type { PermissionGroup } from './data'
+import type { PermissionGroup } from '../permisos'
 
 type PermissionMatrixProps = {
   groups: PermissionGroup[]
