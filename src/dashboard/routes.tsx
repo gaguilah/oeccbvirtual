@@ -6,6 +6,7 @@ import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
 import { PermissionsPage } from './permisos'
 import { ProfileProvider } from './profile'
+import { FoldersPage, RematesAdminPage } from './remates'
 import { RoleEditorPage, RolesPage } from './roles'
 import { UsersPage } from './usuarios'
 
@@ -31,6 +32,22 @@ export default function DashboardRoutes() {
       >
         <Route index element={<DashboardHome />} />
         <Route path="perfil" element={<ProfilePage />} />
+        <Route
+          path="avisos-remates"
+          element={
+            <RequirePermission permission="remates.ver">
+              <RematesAdminPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="avisos-remates/carpetas"
+          element={
+            <RequirePermission permission="remates.carpetas">
+              <FoldersPage />
+            </RequirePermission>
+          }
+        />
         <Route
           path="usuarios"
           element={

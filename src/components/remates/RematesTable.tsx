@@ -1,8 +1,9 @@
 import { cn } from '../../lib/cn'
 import { Button } from '../ui'
-import { COURTS } from './constants'
-import { formatDate, formatTime, isRealizado } from './dates'
+import { isRealizado } from './dates'
+import { CaseNumberCell, CourtCell, MobileCaseNumber, MobileSchedule, ScheduleCell } from './NoticeCells'
 import RemateStatusBadge from './RemateStatusBadge'
+import { bodyCell, bodyRow, headerCell, mobileItem } from './tableStyles'
 import type { AuctionNotice } from './types'
 
 type RematesTableProps = {
@@ -39,9 +40,6 @@ function DetailButton({ notice, onSelect }: { notice: AuctionNotice; onSelect: (
   )
 }
 
-const headerCell = 'px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant lg:px-6'
-const bodyCell = 'px-4 py-4 lg:px-6'
-
 // Escritorio: tabla. Celular: tarjetas apiladas con los mismos datos.
 // Sin líneas divisorias: las filas se separan con un fondo alterno.
 export default function RematesTable({ rows, now, caption, onSelect, className }: RematesTableProps) {
@@ -70,20 +68,10 @@ export default function RematesTable({ rows, now, caption, onSelect, className }
         </thead>
         <tbody>
           {rows.map((notice) => (
-            <tr
-              key={notice.id}
-              className="transition-colors even:bg-surface-container-low/50 hover:bg-primary-container/30"
-            >
-              <td className={bodyCell}>
-                <span className="block text-sm font-semibold text-on-surface">{formatDate(notice.scheduled_at)}</span>
-                <span className="block text-xs text-on-surface-variant">{formatTime(notice.scheduled_at)}</span>
-              </td>
-              <td className={cn(bodyCell, 'text-sm font-medium tabular-nums text-on-surface')}>{notice.case_number}</td>
-              <td className={cn(bodyCell, 'text-sm text-on-surface-variant')}>
-                <abbr title={COURTS[notice.court].name} className="no-underline">
-                  {COURTS[notice.court].short}
-                </abbr>
-              </td>
+            <tr key={notice.id} className={bodyRow}>
+              <ScheduleCell scheduledAt={notice.scheduled_at} />
+              <CaseNumberCell caseNumber={notice.case_number} />
+              <CourtCell court={notice.court} />
               <td className={bodyCell}>
                 <RemateStatusBadge realizado={isRealizado(notice.scheduled_at, now)} />
               </td>
@@ -97,20 +85,12 @@ export default function RematesTable({ rows, now, caption, onSelect, className }
 
       <ul aria-label={caption} className="md:hidden">
         {rows.map((notice) => (
-          <li key={notice.id} className="space-y-3 px-4 py-4 even:bg-surface-container-low/50">
+          <li key={notice.id} className={mobileItem}>
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-on-surface">
-                  {formatDate(notice.scheduled_at)} · {formatTime(notice.scheduled_at)}
-                </p>
-                <p className="text-xs text-on-surface-variant">{COURTS[notice.court].name}</p>
-              </div>
+              <MobileSchedule scheduledAt={notice.scheduled_at} court={notice.court} />
               <RemateStatusBadge realizado={isRealizado(notice.scheduled_at, now)} className="shrink-0" />
             </div>
-            <p className="text-sm">
-              <span className="text-on-surface-variant">Radicado </span>
-              <span className="font-medium tabular-nums text-on-surface break-all">{notice.case_number}</span>
-            </p>
+            <MobileCaseNumber caseNumber={notice.case_number} />
             <DetailButton notice={notice} onSelect={onSelect} />
           </li>
         ))}
