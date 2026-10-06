@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatLongDate } from '../../components/remates'
 import { Alert, Badge, Button, Card, CardBody, Input, Spinner } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
-import { ConfirmDialog } from '../ui'
+import { ActionMenu, ConfirmDialog, icons } from '../ui'
 import { addFolder, deleteFolder, fetchFolders } from './api'
 import { REMATES_ADMIN_PATH } from './constants'
 import { todayInBogota } from './datetime'
@@ -114,11 +114,19 @@ export default function FoldersPage() {
                 <div className="flex items-center gap-2">
                   {folder.id === current?.id && <Badge variant="success">Vigente</Badge>}
                   {future && <Badge variant="primary">Próxima</Badge>}
-                  {future && (
-                    <Button variant="secondary" size="sm" onClick={() => setToDelete(folder)}>
-                      Borrar
-                    </Button>
-                  )}
+                  <ActionMenu
+                    label={`Opciones de la carpeta ${folder.group_id} / ${folder.folder_id}`}
+                    items={[
+                      {
+                        label: 'Borrar',
+                        icon: icons.trash,
+                        danger: true,
+                        // Solo las futuras: una vigente o pasada ya la usan avisos creados.
+                        disabledReason: future ? undefined : 'Ya rige: la usan avisos creados',
+                        onSelect: () => setToDelete(folder),
+                      },
+                    ]}
+                  />
                 </div>
               </li>
             )

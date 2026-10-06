@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { Badge, Button, Tooltip } from '../../components/ui'
+import { useNavigate } from 'react-router-dom'
+import { Badge } from '../../components/ui'
 import { cn } from '../../lib/cn'
-import { Icon, icons } from '../ui'
+import { PROFILE_LINK } from '../navigation'
+import { ActionMenu, icons, type ActionMenuItem } from '../ui'
 import { dependencyLabel, displayName, lastSignIn, STATUS, userStatus } from './data'
 import type { UserRow } from './types'
 
@@ -23,9 +25,13 @@ type UsersTableProps = Handlers & {
 const headerCell = 'px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant lg:px-6'
 const bodyCell = 'px-4 py-4 align-top lg:px-6'
 
-function StatusBadge({ user }: { user: UserRow }) {
+function StatusBadge({ user, className }: { user: UserRow; className?: string }) {
   const status = STATUS[userStatus(user)]
-  return <Badge variant={status.variant}>{status.label}</Badge>
+  return (
+    <Badge variant={status.variant} className={className}>
+      {status.label}
+    </Badge>
+  )
 }
 
 function NameCell({ user, isSelf, compact }: { user: UserRow; isSelf: boolean; compact?: boolean }) {
@@ -56,54 +62,36 @@ function SignIn({ user }: { user: UserRow }) {
   )
 }
 
-// Editar, restablecer contraseña y desactivar / reactivar. Nadie se gestiona a sí mismo aquí
-// (para eso está Mi perfil); sin rol, solo se puede editar (para asignarle uno).
-function Actions({
+// Menú de tres puntos: editar (o asignar rol), restablecer contraseña y desactivar / reactivar.
+// Nadie se gestiona a sí mismo aquí: en la fila propia el menú solo lleva a Mi perfil. Sin rol,
+// solo se puede asignar uno.
+function UserActions({
   user,
   isSelf,
   onEdit,
   onToggleActive,
   onResetPassword,
-}: Handlers & { user: UserRow; isSelf: boolean }) {
-  if (isSelf) return <span className="text-xs text-on-surface-variant">Use Mi perfil</span>
-  const name = displayName(user)
+  className,
+}: Handlers & { user: UserRow; isSelf: boolean; className?: string }) {
+  const navigate = useNavigate()
   const hasRole = Boolean(user.role_id)
-  const toggleLabel = user.active ? `Desactivar a ${name}` : `Reactivar a ${name}`
+  const items: ActionMenuItem[] = isSelf
+    ? [{ label: 'Ir a Mi perfil', icon: icons.profile, onSelect: () => navigate(PROFILE_LINK.to) }]
+    : [
+        { label: hasRole ? 'Editar' : 'Asignar rol', icon: icons.pencil, onSelect: () => onEdit(user) },
+        ...(hasRole
+          ? [
+              { label: 'Restablecer contraseña', icon: icons.key, onSelect: () => onResetPassword(user) },
+              {
+                label: user.active ? 'Desactivar' : 'Reactivar',
+                icon: user.active ? icons.lock : icons.unlock,
+                onSelect: () => onToggleActive(user),
+              },
+            ]
+          : []),
+      ]
 
-  return (
-    <div className="flex items-center justify-end gap-2">
-      <Button variant="secondary" size="sm" onClick={() => onEdit(user)} aria-haspopup="dialog">
-        {hasRole ? 'Editar' : 'Asignar rol'}
-        <span className="sr-only"> a {name}</span>
-      </Button>
-      {hasRole && (
-        <>
-          <Tooltip label="Restablecer contraseña" align="end">
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={() => onResetPassword(user)}
-              aria-label={`Restablecer la contraseña de ${name}`}
-              aria-haspopup="dialog"
-            >
-              <Icon paths={icons.key} />
-            </Button>
-          </Tooltip>
-          <Tooltip label={user.active ? 'Desactivar' : 'Reactivar'} align="end">
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={() => onToggleActive(user)}
-              aria-label={toggleLabel}
-              aria-haspopup="dialog"
-            >
-              <Icon paths={user.active ? icons.lock : icons.unlock} />
-            </Button>
-          </Tooltip>
-        </>
-      )}
-    </div>
-  )
+  return <ActionMenu label={`Opciones de ${displayName(user)}`} items={items} className={className} />
 }
 
 // Escritorio: tabla ("Último ingreso" desde 2xl, por espacio). Celular: tarjetas con todos los
@@ -149,7 +137,7 @@ export default function UsersTable({
               Último ingreso
             </th>
             {canManage && (
-              <th scope="col" className={cn(headerCell, 'text-right')}>
+              <th scope="col" className={cn(headerCell, 'w-px')}>
                 <span className="sr-only">Acciones</span>
               </th>
             )}
@@ -174,8 +162,13 @@ export default function UsersTable({
                 <SignIn user={user} />
               </td>
               {canManage && (
-                <td className={bodyCell}>
-                  <Actions user={user} isSelf={user.id === currentUserId} {...handlers} />
+                <td className={cn(bodyCell, 'py-2.5')}>
+                  <UserActions
+                    user={user}
+                    isSelf={user.id === currentUserId}
+                    className="flex justify-end"
+                    {...handlers}
+                  />
                 </td>
               )}
             </tr>
@@ -194,7 +187,12 @@ export default function UsersTable({
               <div className="min-w-0">
                 <NameCell user={user} isSelf={user.id === currentUserId} />
               </div>
-              <StatusBadge user={user} />
+              <div className="flex shrink-0 items-start gap-1">
+                <StatusBadge user={user} className="mt-2" />
+                {canManage && (
+                  <UserActions user={user} isSelf={user.id === currentUserId} className="-mt-1 -mr-2" {...handlers} />
+                )}
+              </div>
             </div>
             <dl className="grid grid-cols-2 gap-2 text-sm">
               <div>
@@ -212,7 +210,6 @@ export default function UsersTable({
                 </dd>
               </div>
             </dl>
-            {canManage && <Actions user={user} isSelf={user.id === currentUserId} {...handlers} />}
           </li>
         ))}
       </ul>

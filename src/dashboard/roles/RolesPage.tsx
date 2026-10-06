@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Alert, Badge, Button, ButtonLink, EmptyState, Spinner, Tooltip } from '../../components/ui'
+import { Alert, Badge, ButtonLink, EmptyState, Spinner } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
-import { ConfirmDialog, Icon, icons } from '../ui'
+import { ActionMenu, ConfirmDialog, Icon, icons } from '../ui'
 import { deleteRole, fetchRoles } from './api'
 import { ROLES_PATH, scopeLabel } from './data'
 import type { RoleRow, RolesFlash } from './types'
@@ -94,7 +94,7 @@ export default function RolesPage() {
       ) : roles.length === 0 ? (
         <EmptyState title="Todavía no hay roles" />
       ) : (
-        <ul className="grid gap-4 lg:grid-cols-2">
+        <ul className="grid gap-4">
           {roles.map((role) => {
             const blocker = deleteBlocker(role)
             return (
@@ -110,9 +110,35 @@ export default function RolesPage() {
                     <h2 className="text-lg font-bold">{role.name}</h2>
                     <code className="block font-mono text-xs text-on-surface-variant">{role.code}</code>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {role.is_system && <Badge variant="primary">Sistema</Badge>}
-                    <Badge>{scopeLabel(role.scope)}</Badge>
+                  <div className="flex items-start gap-1">
+                    <div className="mt-2 flex flex-wrap justify-end gap-2">
+                      {role.is_system && <Badge variant="primary">Sistema</Badge>}
+                      <Badge>{scopeLabel(role.scope)}</Badge>
+                    </div>
+                    <ActionMenu
+                      label={`Opciones del rol ${role.name}`}
+                      className="-mt-1 -mr-2"
+                      items={[
+                        canManage && !role.is_system
+                          ? {
+                              label: 'Editar',
+                              icon: icons.pencil,
+                              onSelect: () => navigate(`${ROLES_PATH}/${role.id}`),
+                            }
+                          : { label: 'Ver', icon: icons.eye, onSelect: () => navigate(`${ROLES_PATH}/${role.id}`) },
+                        ...(canManage && !role.is_system
+                          ? [
+                              {
+                                label: 'Borrar',
+                                icon: icons.trash,
+                                danger: true,
+                                disabledReason: blocker ?? undefined,
+                                onSelect: () => setToDelete(role),
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
                   </div>
                 </div>
                 {role.description && <p className="text-sm text-on-surface-variant">{role.description}</p>}
@@ -120,31 +146,6 @@ export default function RolesPage() {
                   {plural(role.user_count, 'usuario', 'usuarios')} ·{' '}
                   {role.is_system ? 'Todos los permisos' : plural(role.permission_count, 'permiso', 'permisos')}
                 </p>
-                <div className="mt-auto flex flex-wrap items-center gap-2">
-                  <ButtonLink to={`${ROLES_PATH}/${role.id}`} variant="secondary" size="sm">
-                    {canManage && !role.is_system ? 'Editar' : 'Ver'}
-                    <span className="sr-only"> el rol {role.name}</span>
-                  </ButtonLink>
-                  {canManage && !role.is_system && (
-                    <Tooltip label={blocker ?? 'Borrar rol'}>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                          if (!blocker) setToDelete(role)
-                        }}
-                        aria-disabled={blocker ? true : undefined}
-                        className={cn(blocker && 'cursor-not-allowed opacity-60 hover:bg-transparent')}
-                        aria-label={
-                          blocker ? `No se puede borrar ${role.name}: ${blocker}` : `Borrar el rol ${role.name}`
-                        }
-                        aria-haspopup={blocker ? undefined : 'dialog'}
-                      >
-                        Borrar
-                      </Button>
-                    </Tooltip>
-                  )}
-                </div>
               </li>
             )
           })}
