@@ -8,6 +8,10 @@ export const OFFICE_NAME =
 export const SITE_NAME = 'OECCB Virtual'
 
 export const CONTACT_EMAIL = 'ofejccbuc@cendoj.ramajudicial.gov.co'
+
+// Remitente de los correos automáticos de PQRS (Resend). No es un buzón judicial: solo para el
+// trámite de PQRS. Si cambia, cambiarlo también en supabase/functions/_shared/office.ts.
+export const NOTIFICATIONS_EMAIL = 'notificaciones@oeccbvirtual.app'
 export const CONTACT_ADDRESS = 'Carrera 12 No. 31-08'
 export const CONTACT_CITY = 'Bucaramanga'
 export const CONTACT_DEPARTMENT = 'Santander'

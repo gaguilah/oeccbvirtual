@@ -12,7 +12,7 @@ import { requestSchema, stepFields, validateFields, type FieldErrors, type Reque
 
 const STEP_TITLES = ['¿Qué tipo de solicitud desea presentar?', '¿Cómo podemos contactarle?', 'Cuéntenos su caso']
 
-const EMPTY_DRAFT: RequestDraft = { type: null, name: '', email: '', summary: '' }
+const EMPTY_DRAFT: RequestDraft = { type: null, name: '', email: '', summary: '', acceptedTerms: false }
 
 // Formulario de PQRS en 3 pasos. Cada paso valida solo sus campos; el envío final
 // revalida todo con el esquema completo y exige el token de Turnstile.
@@ -23,7 +23,7 @@ export default function PqrsForm() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [sentTo, setSentTo] = useState<string | null>(null)
+  const [sent, setSent] = useState<{ email: string; requestNumber: string; emailSent: boolean } | null>(null)
 
   const formRef = useRef<HTMLFormElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -76,18 +76,18 @@ export default function PqrsForm() {
     }
 
     setSubmitting(true)
-    const error = await submitRequest(result.data, captchaToken)
+    const outcome = await submitRequest(result.data, captchaToken)
     setSubmitting(false)
 
-    if (error) {
+    if (!outcome.ok) {
       // Cada token de Turnstile se puede verificar una sola vez: pedimos uno nuevo.
       captchaRef.current?.reset()
       setCaptchaToken(null)
-      setSubmitError(error)
+      setSubmitError(outcome.error)
       return
     }
 
-    setSentTo(result.data.email)
+    setSent({ email: result.data.email, requestNumber: outcome.requestNumber, emailSent: outcome.emailSent })
   }
 
   function reset() {
@@ -95,15 +95,15 @@ export default function PqrsForm() {
     setErrors({})
     setCaptchaToken(null)
     setSubmitError(null)
-    setSentTo(null)
+    setSent(null)
     setStep(0)
   }
 
-  if (sentTo) {
+  if (sent) {
     return (
       <Card>
         <CardBody className="sm:p-8">
-          <RequestSent email={sentTo} onReset={reset} />
+          <RequestSent {...sent} onReset={reset} />
         </CardBody>
       </Card>
     )
@@ -132,6 +132,9 @@ export default function PqrsForm() {
                 summary={draft.summary}
                 onChange={(value) => update('summary', value)}
                 error={errors.summary}
+                acceptedTerms={draft.acceptedTerms}
+                onAcceptedTermsChange={(value) => update('acceptedTerms', value)}
+                termsError={errors.acceptedTerms}
                 captchaRef={captchaRef}
                 onCaptchaToken={setCaptchaToken}
                 onCaptchaError={() =>

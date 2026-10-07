@@ -10,17 +10,23 @@ export const requestSchema = z.object({
     .trim()
     .min(10, 'El mensaje es muy corto (mínimo 10 caracteres).')
     .max(SUMMARY_MAX_CHARS, `El mensaje es muy largo (máximo ${SUMMARY_MAX_CHARS} caracteres).`),
+  // Autorización de tratamiento de datos (terms.ts). submit-request la vuelve a exigir y guarda la fecha.
+  acceptedTerms: z.literal(true, { error: 'Debe aceptar los términos y condiciones para enviar su solicitud.' }),
 })
 
 export type RequestInput = z.infer<typeof requestSchema>
 
-// Estado del formulario mientras se diligencia (el tipo aún puede no estar elegido).
-export type RequestDraft = Omit<RequestInput, 'type'> & { type: RequestInput['type'] | null }
+// Estado del formulario mientras se diligencia (el tipo aún puede no estar elegido y los términos
+// aún pueden no estar aceptados).
+export type RequestDraft = Omit<RequestInput, 'type' | 'acceptedTerms'> & {
+  type: RequestInput['type'] | null
+  acceptedTerms: boolean
+}
 
 export type FieldErrors = Partial<Record<keyof RequestInput, string>>
 
 // Campos que se validan en cada paso del flujo.
-export const stepFields: (keyof RequestInput)[][] = [['type'], ['name', 'email'], ['summary']]
+export const stepFields: (keyof RequestInput)[][] = [['type'], ['name', 'email'], ['summary', 'acceptedTerms']]
 
 // Valida solo los campos indicados y devuelve el primer error de cada uno.
 export function validateFields(draft: RequestDraft, fields: (keyof RequestInput)[]): FieldErrors {
