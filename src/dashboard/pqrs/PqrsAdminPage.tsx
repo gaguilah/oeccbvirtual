@@ -67,7 +67,6 @@ export default function PqrsAdminPage() {
       <Card aria-busy={loading} className={cn('overflow-visible transition-opacity', loading && 'opacity-60')}>
         <RequestsTable
           rows={data.rows}
-          now={now}
           caption={caption}
           onSetInProgress={(row) => setDialog({ action: 'en_tramite', row })}
           onClose={(row) => setDialog({ action: 'cerrar', row })}

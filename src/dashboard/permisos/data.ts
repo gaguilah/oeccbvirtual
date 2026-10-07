@@ -10,6 +10,7 @@ const MODULE_LABELS: Record<string, string> = {
   audiencias: 'Audiencias',
   pqrs: 'PQRS',
   encuestas: 'Encuestas',
+  calendario: 'Calendario',
 }
 
 export function moduleLabel(module: string): string {

@@ -112,6 +112,17 @@ export const dashboardLinks: DashboardLink[] = [
     ready: true,
   },
   {
+    to: `${DASHBOARD_HOME}/dias-no-habiles`,
+    permission: 'calendario.ver',
+    label: 'Días no hábiles',
+    description: 'Festivos y cierres que no cuentan en los plazos.',
+    icon: [
+      'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-6.75-6-4.5 4.5m0-4.5 4.5 4.5',
+    ],
+    group: 'admin',
+    ready: true,
+  },
+  {
     to: `${DASHBOARD_HOME}/perfil`,
     label: 'Mi perfil',
     description: 'Nombre y contraseña de su cuenta.',
