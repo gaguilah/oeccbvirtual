@@ -6,6 +6,7 @@ import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
 import { PermissionsPage } from './permisos'
 import { ProfileProvider } from './profile'
+import { PqrsAdminPage, RequestDetailPage } from './pqrs'
 import { FoldersPage, RematesAdminPage } from './remates'
 import { RoleEditorPage, RolesPage } from './roles'
 import { UsersPage } from './usuarios'
@@ -45,6 +46,22 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="remates.carpetas">
               <FoldersPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="pqrs"
+          element={
+            <RequirePermission permission="pqrs.ver">
+              <PqrsAdminPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="pqrs/:id"
+          element={
+            <RequirePermission permission="pqrs.ver">
+              <RequestDetailPage />
             </RequirePermission>
           }
         />
