@@ -2,23 +2,31 @@ import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import type { Ref } from 'react'
 import { CaptchaField, Textarea } from '../ui'
 import { SUMMARY_MAX_CHARS, requestTypes, type RequestTypeId } from './data'
+import TermsField from './TermsField'
 
 type SummaryStepProps = {
   type: RequestTypeId | null
   summary: string
   onChange: (value: string) => void
   error?: string
+  acceptedTerms: boolean
+  onAcceptedTermsChange: (accepted: boolean) => void
+  termsError?: string
   captchaRef: Ref<TurnstileInstance>
   onCaptchaToken: (token: string | null) => void
   onCaptchaError: () => void
 }
 
-// Paso 3: descripción del caso y verificación de seguridad.
+// Paso 3: descripción del caso, aceptación de los términos y verificación de seguridad. Términos y
+// captcha: uno debajo del otro en celular y lado a lado desde tablet (md).
 export default function SummaryStep({
   type,
   summary,
   onChange,
   error,
+  acceptedTerms,
+  onAcceptedTermsChange,
+  termsError,
   captchaRef,
   onCaptchaToken,
   onCaptchaError,
@@ -37,9 +45,12 @@ export default function SummaryStep({
         rows={8}
         required
       />
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-on-surface-variant">Verificación de seguridad</p>
-        <CaptchaField ref={captchaRef} onToken={onCaptchaToken} onError={onCaptchaError} />
+      <div className="grid gap-6 md:grid-cols-2">
+        <TermsField checked={acceptedTerms} onChange={onAcceptedTermsChange} error={termsError} />
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-on-surface-variant">Verificación de seguridad</p>
+          <CaptchaField ref={captchaRef} onToken={onCaptchaToken} onError={onCaptchaError} />
+        </div>
       </div>
     </div>
   )

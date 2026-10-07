@@ -28,11 +28,16 @@ export default function ContactStep({ name, email, onChange, errors }: ContactSt
         value={email}
         onChange={(e) => onChange('email', e.target.value)}
         error={errors.email}
-        hint="Allí recibirá la respuesta a su solicitud."
+        hint="Allí recibirá la copia con el número de radicado y la respuesta a su solicitud."
         autoComplete="email"
         inputMode="email"
         required
       />
+      {/* Aviso de tratamiento de datos (Ley 1581 de 2012). */}
+      <p className="text-xs text-on-surface-variant">
+        Usaremos su nombre y correo solo para tramitar y responder esta solicitud, conforme a la Ley 1581 de 2012 de
+        protección de datos personales.
+      </p>
     </div>
   )
 }

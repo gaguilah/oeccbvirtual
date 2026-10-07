@@ -47,6 +47,20 @@ Después de insertar la PQRS (sin cambiar lo que ya hace):
 - Aviso de tratamiento de datos en el paso de contacto.
 - `RequestSent` muestra el número de radicado (lo devuelve la función).
 
+### Resultado de la fase 1 (2026-10-07, rama `correos-pqrs`)
+
+- Migración `20261007120000_pqrs_request_number_email_log.sql`: `customer_requests.request_number` (`PQRS-<año>-<6 dígitos>`, consecutivo por año en hora de Colombia, con `request_counters` y el trigger `customer_requests_assign_number`; numera también las PQRS existentes) y `email_log`.
+- Edge Functions: `_shared/email.ts` (`sendEmail`, `logEmail`, `sendAndLog`: nunca lanzan), `_shared/office.ts` (datos de la oficina, repetidos de `src/lib/contact.ts`), `_shared/emails/layout.ts` (marca, pie con el aviso del buzón y `escapeHtml` para todo texto del usuario) y `_shared/emails/pqrs.ts` (acuse y aviso a la oficina). `submit-request` envía los dos correos después de guardar y devuelve `requestNumber` y `emailSent`.
+- Sitio: `RequestSent` muestra el radicado, si se envió la copia, el plazo (15 días hábiles) y el aviso de que `notificaciones@oeccbvirtual.app` es solo para el trámite de PQRS y no es un buzón judicial (el autorizado es `CONTACT_EMAIL`); el paso de contacto muestra el aviso de la Ley 1581 de 2012. `NOTIFICATIONS_EMAIL` en `src/lib/contact.ts`.
+- Decisiones: el buzón de la oficina recibe cada PQRS nueva (`CONTACT_EMAIL`), con `reply_to` al ciudadano; el acuse lleva `reply_to` a la oficina.
+- Prueba real (2026-10-07): el acuse llega bien. El aviso a la oficina sale de Resend como entregado, pero no aparece en el buzón institucional (`cendoj.ramajudicial.gov.co`): probablemente lo retiene el filtro de correo de la Rama Judicial por ser un dominio nuevo. Por eso el aviso quedó **apagado** detrás del secreto `PQRS_OFFICE_NOTICE` (se envía solo con `on`). Para reactivarlo, cuando TI permita el remitente: `supabase secrets set PQRS_OFFICE_NOTICE=on` (sin volver a desplegar).
+
+### Ajustes (2026-10-07)
+
+- `notificaciones@oeccbvirtual.app` solo envía: el acuse no lleva `reply_to` y su pie dice "Este es un mensaje automático. Por favor, no conteste. Estamos disponibles en nuestros canales de atención (→ /contacto). Gracias."
+- La pantalla de confirmación ya no muestra la advertencia del canal judicial; conserva el aviso de datos.
+- Términos y condiciones de tratamiento de datos (`docs/terminos-tratamiento-datos.md`): casilla obligatoria en el último paso, junto al captcha (uno debajo del otro en celular, lado a lado desde `md`), con el texto en un modal. El servidor exige la aceptación y guarda `terms_accepted_at` (migración `20261007130000_pqrs_terms_accepted.sql`).
+
 ## Fase 2: respuesta de la PQRS (con la sección PQRS del dashboard)
 
 La sección PQRS del dashboard tendrá su propio plan; aquí solo la parte del correo.

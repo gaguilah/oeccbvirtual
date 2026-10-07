@@ -4,21 +4,25 @@ import type { RequestInput } from './schema'
 
 const GENERIC_ERROR = 'Ocurrió un error al enviar su solicitud. Intente de nuevo.'
 
-// Envía la PQRS a la Edge Function `submit-request`, que verifica el token de Turnstile
-// en el servidor antes de guardar. Devuelve un mensaje de error, o null si todo salió bien.
-export async function submitRequest(data: RequestInput, captchaToken: string): Promise<string | null> {
+export type SubmitResult = { ok: true; requestNumber: string; emailSent: boolean } | { ok: false; error: string }
+
+// Envía la PQRS a la Edge Function `submit-request`, que verifica el token de Turnstile en el
+// servidor, la guarda (la base asigna el número de radicado) y envía el acuse por correo.
+export async function submitRequest(data: RequestInput, captchaToken: string): Promise<SubmitResult> {
   try {
-    const { error } = await supabase.functions.invoke('submit-request', {
+    const { data: body, error } = await supabase.functions.invoke('submit-request', {
       body: { ...data, captchaToken },
     })
-    if (!error) return null
+    if (!error) {
+      return { ok: true, requestNumber: String(body?.requestNumber ?? ''), emailSent: body?.emailSent !== false }
+    }
 
     if (error instanceof FunctionsHttpError) {
-      const body = await error.context.json().catch(() => null)
-      if (body && typeof body.error === 'string') return body.error
+      const errorBody = await error.context.json().catch(() => null)
+      if (errorBody && typeof errorBody.error === 'string') return { ok: false, error: errorBody.error }
     }
-    return GENERIC_ERROR
+    return { ok: false, error: GENERIC_ERROR }
   } catch {
-    return GENERIC_ERROR
+    return { ok: false, error: GENERIC_ERROR }
   }
 }
