@@ -5,7 +5,7 @@ import type { PqrsSummary, RequestAudit, RequestEmail, RequestFilters, RequestRo
 export const PAGE_SIZE = 10
 
 const COLUMNS =
-  'id, request_number, type, name, email, summary, status, response, responded_at, closed_reason, closed_at, created_at, updated_at'
+  'id, request_number, type, name, email, summary, status, response, responded_at, closed_reason, closed_at, created_at, updated_at, due_date, business_days_left'
 
 const RANGE_NOT_SATISFIABLE = 'PGRST103'
 

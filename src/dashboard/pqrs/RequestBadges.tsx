@@ -1,7 +1,7 @@
 import { Badge } from '../../components/ui'
 import { STATUS } from './data'
 import { deadlineFor } from './deadline'
-import type { RequestStatus } from './types'
+import type { RequestRow, RequestStatus } from './types'
 
 export function StatusBadge({ status, className }: { status: RequestStatus; className?: string }) {
   const { label, variant } = STATUS[status]
@@ -17,19 +17,9 @@ function plural(days: number) {
 }
 
 // Plazo de las pendientes: días hábiles que quedan, "Vence hoy" o "Vencida". Nada si ya se respondió
-// o se cerró.
-export function DeadlineBadge({
-  status,
-  createdAt,
-  now,
-  className,
-}: {
-  status: RequestStatus
-  createdAt: string
-  now: Date
-  className?: string
-}) {
-  const deadline = deadlineFor(status, createdAt, now)
+// o se cerró. Los días los calcula la base de datos (con los días no hábiles descontados).
+export function DeadlineBadge({ row, className }: { row: RequestRow; className?: string }) {
+  const deadline = deadlineFor(row)
   if (deadline.kind === 'none') return null
   if (deadline.kind === 'overdue') {
     return (

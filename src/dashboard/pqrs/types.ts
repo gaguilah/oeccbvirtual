@@ -17,6 +17,9 @@ export type RequestRow = {
   closed_at: string | null
   created_at: string
   updated_at: string | null
+  // Columnas calculadas por la base de datos (días no hábiles descontados).
+  due_date: string
+  business_days_left: number
 }
 
 // Pestañas de la lista: pendientes = recibidas + en trámite.

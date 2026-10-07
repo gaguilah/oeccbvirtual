@@ -10,7 +10,6 @@ import { useAccess } from '../access'
 import { ActionMenu, ConfirmDialog, Icon, icons, type ActionMenuItem } from '../ui'
 import { fetchRequest, fetchRequestAudit, fetchRequestEmails, resendResponse, respondRequest } from './api'
 import { EMAIL_KINDS, isPending, PQRS_ADMIN_PATH, RESPONSE_MAX_CHARS, RESPONSE_MIN_CHARS } from './data'
-import { dueDate } from './deadline'
 import { DeadlineBadge, StatusBadge } from './RequestBadges'
 import StatusDialog, { type StatusAction } from './StatusDialog'
 import type { RequestAudit, RequestEmail, RequestRow } from './types'
@@ -176,7 +175,7 @@ export default function RequestDetailPage() {
             <h2 className="font-mono text-2xl font-extrabold">{row.request_number}</h2>
             <div className="flex flex-wrap gap-2">
               <StatusBadge status={row.status} />
-              <DeadlineBadge status={row.status} createdAt={row.created_at} now={loaded.now} />
+              <DeadlineBadge row={row} />
               <Badge>{type}</Badge>
             </div>
           </div>
@@ -207,7 +206,7 @@ export default function RequestDetailPage() {
         </div>
         <div>
           <dt className="text-xs text-on-surface-variant">Plazo de respuesta</dt>
-          <dd className="text-on-surface">{dayLabel(dueDate(row.created_at))} (15 días hábiles)</dd>
+          <dd className="text-on-surface">{dayLabel(row.due_date)} (15 días hábiles, sin días no hábiles)</dd>
         </div>
       </dl>
 

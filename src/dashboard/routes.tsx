@@ -6,6 +6,7 @@ import { dashboardLinks, relativePath } from './navigation'
 import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './pages'
 import { PermissionsPage } from './permisos'
 import { ProfileProvider } from './profile'
+import { CalendarPage } from './calendario'
 import { PqrsAdminPage, RequestDetailPage } from './pqrs'
 import { FoldersPage, RematesAdminPage } from './remates'
 import { RoleEditorPage, RolesPage } from './roles'
@@ -62,6 +63,14 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="pqrs.ver">
               <RequestDetailPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="dias-no-habiles"
+          element={
+            <RequirePermission permission="calendario.ver">
+              <CalendarPage />
             </RequirePermission>
           }
         />

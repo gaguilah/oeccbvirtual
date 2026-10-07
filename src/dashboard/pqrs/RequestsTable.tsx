@@ -16,7 +16,6 @@ export type RequestHandlers = {
 
 type RequestsTableProps = RequestHandlers & {
   rows: RequestRow[]
-  now: Date
   caption: string
   className?: string
 }
@@ -55,7 +54,7 @@ function DateCell({ iso }: { iso: string }) {
 }
 
 // Misma base visual que Avisos de Remate (tableStyles): tabla desde xl, tarjetas por debajo.
-export default function RequestsTable({ rows, now, caption, className, ...handlers }: RequestsTableProps) {
+export default function RequestsTable({ rows, caption, className, ...handlers }: RequestsTableProps) {
   return (
     <div className={className}>
       <table className="hidden w-full text-left xl:table">
@@ -101,7 +100,7 @@ export default function RequestsTable({ rows, now, caption, className, ...handle
               <td className={bodyCell}>
                 <div className="flex flex-col items-start gap-1.5">
                   <StatusBadge status={row.status} />
-                  <DeadlineBadge status={row.status} createdAt={row.created_at} now={now} />
+                  <DeadlineBadge row={row} />
                 </div>
               </td>
               <td className={cn(bodyCell, 'py-2')}>
@@ -131,7 +130,7 @@ export default function RequestsTable({ rows, now, caption, className, ...handle
             </p>
             <div className="flex flex-wrap gap-2">
               <StatusBadge status={row.status} />
-              <DeadlineBadge status={row.status} createdAt={row.created_at} now={now} />
+              <DeadlineBadge row={row} />
             </div>
           </li>
         ))}
