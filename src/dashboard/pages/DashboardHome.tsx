@@ -1,7 +1,10 @@
-import { EmptyState } from '../../components/ui'
+import { useEffect, useState } from 'react'
+import { Badge, EmptyState } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
 import { dashboardLinks } from '../navigation'
+import { fetchPqrsSummary } from '../pqrs/api'
+import type { PqrsSummary } from '../pqrs/types'
 import { useProfile } from '../profile'
 import DashboardSectionCard from './DashboardSectionCard'
 
@@ -13,6 +16,36 @@ export default function DashboardHome() {
   const { displayName, loading } = useProfile()
   const { can } = useAccess()
   const visible = sections.filter((link) => can(link.permission))
+  const canSeePqrs = can('pqrs.ver')
+  const [pqrs, setPqrs] = useState<PqrsSummary | null>(null)
+
+  // Resumen de PQRS para su tarjeta (pendientes y vencidas).
+  useEffect(() => {
+    if (!canSeePqrs) return
+    let active = true
+    fetchPqrsSummary()
+      .then((summary) => {
+        if (active) setPqrs(summary)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [canSeePqrs])
+
+  const extraFor = (to: string) =>
+    to.endsWith('/pqrs') && pqrs ? (
+      <span className="flex flex-wrap gap-2">
+        <Badge variant={pqrs.pending > 0 ? 'primary' : 'neutral'}>
+          {pqrs.pending} {pqrs.pending === 1 ? 'pendiente' : 'pendientes'}
+        </Badge>
+        {pqrs.overdue > 0 && (
+          <Badge variant="danger">
+            {pqrs.overdue} {pqrs.overdue === 1 ? 'vencida' : 'vencidas'}
+          </Badge>
+        )}
+      </span>
+    ) : undefined
 
   return (
     <div className="space-y-8">
@@ -24,7 +57,7 @@ export default function DashboardHome() {
         <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
           {visible.map((link) => (
             <li key={link.to}>
-              <DashboardSectionCard link={link} />
+              <DashboardSectionCard link={link} extra={extraFor(link.to)} />
             </li>
           ))}
         </ul>
