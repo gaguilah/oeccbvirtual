@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { AccessProvider, RequirePermission } from './access'
+import { HearingsPage, HearingTypesPage } from './audiencias'
 import { ProtectedRoute } from './auth'
 import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
@@ -48,6 +49,22 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="remates.carpetas">
               <FoldersPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="audiencias"
+          element={
+            <RequirePermission permission="audiencias.ver">
+              <HearingsPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="audiencias/tipos"
+          element={
+            <RequirePermission permission="audiencias.tipos">
+              <HearingTypesPage />
             </RequirePermission>
           }
         />
