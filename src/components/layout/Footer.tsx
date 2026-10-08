@@ -17,6 +17,7 @@ import FooterGlow from './FooterGlow'
 
 const services = [
   { to: '/avisos-remates', label: 'Avisos de Remate' },
+  { to: '/audiencias', label: 'Audiencias' },
   { to: '/pqrs', label: 'PQRS' },
   { to: '/encuesta', label: 'Encuesta' },
   { to: '/tutoriales', label: 'Tutoriales' },

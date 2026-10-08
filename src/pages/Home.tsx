@@ -30,7 +30,7 @@ export default function Home() {
           >
             Servicios
           </h2>
-          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-5">
             {services.map((service) => (
               <li key={service.to}>
                 <ServiceCard service={service} />

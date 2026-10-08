@@ -6,6 +6,7 @@ import PublicLayout from './layouts/PublicLayout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Remates from './pages/Remates'
+import Audiencias from './pages/Audiencias'
 import Pqrs from './pages/Pqrs'
 import Encuesta from './pages/Encuesta'
 import Tutoriales from './pages/Tutoriales'
@@ -25,6 +26,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/avisos-remates" element={<Remates />} />
         <Route path="/remates" element={<Navigate to="/avisos-remates" replace />} />
+        <Route path="/audiencias" element={<Audiencias />} />
         <Route path="/pqrs" element={<Pqrs />} />
         <Route path="/encuesta" element={<Encuesta />} />
         <Route path="/tutoriales" element={<Tutoriales />} />
