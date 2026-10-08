@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Badge, EmptyState } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
+import { fetchHearingsSummary } from '../audiencias/api'
 import { fetchSurveySummary, type SurveySummary } from '../encuestas/api'
 import { dashboardLinks } from '../navigation'
 import { fetchPqrsSummary } from '../pqrs/api'
@@ -20,6 +21,8 @@ export default function DashboardHome() {
   const canSeePqrs = can('pqrs.ver')
   const [pqrs, setPqrs] = useState<PqrsSummary | null>(null)
   const canSeeSurveys = can('encuestas.ver')
+  const canSeeHearings = can('audiencias.ver')
+  const [hearings, setHearings] = useState<{ today: number; pendingClose: number } | null>(null)
   const [survey, setSurvey] = useState<SurveySummary | null>(null)
 
   // Resumen de PQRS para su tarjeta (pendientes y vencidas).
@@ -50,8 +53,27 @@ export default function DashboardHome() {
     }
   }, [canSeeSurveys])
 
+  // Audiencias de hoy y por cerrar, para su tarjeta (según el alcance del usuario).
+  useEffect(() => {
+    if (!canSeeHearings) return
+    let active = true
+    fetchHearingsSummary()
+      .then((summary) => {
+        if (active) setHearings(summary)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [canSeeHearings])
+
   const extraFor = (to: string) =>
-    to.endsWith('/encuestas') && survey ? (
+    to.endsWith('/audiencias') && hearings ? (
+      <span className="flex flex-wrap gap-2">
+        <Badge variant={hearings.today > 0 ? 'primary' : 'neutral'}>{hearings.today} hoy</Badge>
+        {hearings.pendingClose > 0 && <Badge variant="warning">{hearings.pendingClose} por cerrar</Badge>}
+      </span>
+    ) : to.endsWith('/encuestas') && survey ? (
       <Badge variant={survey.responses > 0 ? 'primary' : 'neutral'} className="self-start">
         {survey.responses.toLocaleString('es-CO')} {survey.responses === 1 ? 'respuesta' : 'respuestas'} en{' '}
         {survey.year}
