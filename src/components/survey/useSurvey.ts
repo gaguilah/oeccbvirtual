@@ -8,8 +8,9 @@ type UseSurveyResult = {
   error: string | null
 }
 
-// Carga una encuesta activa por su `code`, con sus preguntas ordenadas por `position`.
-export function useSurvey(code: string): UseSurveyResult {
+// Carga la encuesta activa (solo puede haber una: surveys_single_active_idx) con sus preguntas
+// ordenadas por `position`. La activa se elige en el dashboard (Encuestas).
+export function useSurvey(): UseSurveyResult {
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,7 +30,6 @@ export function useSurvey(code: string): UseSurveyResult {
           )
         `,
         )
-        .eq('code', code)
         .eq('is_active', true)
         .order('position', { referencedTable: 'survey_questions' })
         .maybeSingle<Survey>()
@@ -45,7 +45,7 @@ export function useSurvey(code: string): UseSurveyResult {
     return () => {
       cancelled = true
     }
-  }, [code])
+  }, [])
 
   return { survey, loading, error }
 }
