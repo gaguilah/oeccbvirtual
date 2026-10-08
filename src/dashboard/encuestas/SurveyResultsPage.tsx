@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom'
-import { Alert, Badge, ButtonLink, EmptyState, Spinner } from '../../components/ui'
+import { Alert, Badge, Button, ButtonLink, EmptyState, Spinner } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
 import { Icon, icons } from '../ui'
+import { buildCsv, csvFileName, downloadCsv } from './csv'
 import { surveyPath } from './data'
 import { availableYears, periodError, periodLabel, periodPhrase, periodRange } from './period'
 import PeriodFilters from './PeriodFilters'
@@ -12,6 +13,10 @@ import SurveyNotFound, { BackLink } from './SurveyNotFound'
 import type { SurveyDetail } from './types'
 import { usePeriodFilters } from './usePeriodFilters'
 import { useSurveyDetail, useSurveyStats } from './useSurveyData'
+
+const downloadIcon = [
+  'M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3',
+]
 
 // Resultados de una encuesta (/dashboard/encuestas/:id): solo conteos del periodo elegido.
 export default function SurveyResultsPage() {
@@ -93,9 +98,24 @@ function Results({ survey }: { survey: SurveyDetail }) {
             aria-busy={loading}
             className={loading ? 'space-y-6 opacity-60 transition-opacity' : 'space-y-6 transition-opacity'}
           >
-            <h2 id="results-title" className="text-lg font-bold">
-              {periodLabel(period)}
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="results-title" className="text-lg font-bold">
+                {periodLabel(period)}
+              </h2>
+              {stats.total > 0 && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={loading}
+                  onClick={() =>
+                    downloadCsv(csvFileName(survey, period), buildCsv(survey, period, stats.total, results))
+                  }
+                >
+                  <Icon paths={downloadIcon} className="size-4" />
+                  Descargar CSV
+                </Button>
+              )}
+            </div>
             {stats.total === 0 ? (
               <EmptyState
                 icon={<Icon paths={icons.question} />}
