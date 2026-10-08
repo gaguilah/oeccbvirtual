@@ -7,6 +7,7 @@ import { DashboardHome, ProfilePage, SectionNotFound, SectionPending } from './p
 import { PermissionsPage } from './permisos'
 import { ProfileProvider } from './profile'
 import { CalendarPage } from './calendario'
+import { SurveyEditorPage, SurveyQuestionsPage, SurveyResultsPage, SurveysPage } from './encuestas'
 import { PqrsAdminPage, RequestDetailPage } from './pqrs'
 import { FoldersPage, RematesAdminPage } from './remates'
 import { RoleEditorPage, RolesPage } from './roles'
@@ -63,6 +64,46 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="pqrs.ver">
               <RequestDetailPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="encuestas"
+          element={
+            <RequirePermission permission="encuestas.ver">
+              <SurveysPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="encuestas/nueva"
+          element={
+            <RequirePermission permission="encuestas.gestionar">
+              <SurveyEditorPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="encuestas/:id"
+          element={
+            <RequirePermission permission="encuestas.ver">
+              <SurveyResultsPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="encuestas/:id/preguntas"
+          element={
+            <RequirePermission permission="encuestas.ver">
+              <SurveyQuestionsPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="encuestas/:id/editar"
+          element={
+            <RequirePermission permission="encuestas.gestionar">
+              <SurveyEditorPage />
             </RequirePermission>
           }
         />

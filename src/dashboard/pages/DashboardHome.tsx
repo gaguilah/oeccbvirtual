@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Badge, EmptyState } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
+import { fetchSurveySummary, type SurveySummary } from '../encuestas/api'
 import { dashboardLinks } from '../navigation'
 import { fetchPqrsSummary } from '../pqrs/api'
 import type { PqrsSummary } from '../pqrs/types'
@@ -18,6 +19,8 @@ export default function DashboardHome() {
   const visible = sections.filter((link) => can(link.permission))
   const canSeePqrs = can('pqrs.ver')
   const [pqrs, setPqrs] = useState<PqrsSummary | null>(null)
+  const canSeeSurveys = can('encuestas.ver')
+  const [survey, setSurvey] = useState<SurveySummary | null>(null)
 
   // Resumen de PQRS para su tarjeta (pendientes y vencidas).
   useEffect(() => {
@@ -33,8 +36,27 @@ export default function DashboardHome() {
     }
   }, [canSeePqrs])
 
+  // Respuestas del año en curso de la encuesta activa, para su tarjeta.
+  useEffect(() => {
+    if (!canSeeSurveys) return
+    let active = true
+    fetchSurveySummary()
+      .then((summary) => {
+        if (active) setSurvey(summary)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [canSeeSurveys])
+
   const extraFor = (to: string) =>
-    to.endsWith('/pqrs') && pqrs ? (
+    to.endsWith('/encuestas') && survey ? (
+      <Badge variant={survey.responses > 0 ? 'primary' : 'neutral'} className="self-start">
+        {survey.responses.toLocaleString('es-CO')} {survey.responses === 1 ? 'respuesta' : 'respuestas'} en{' '}
+        {survey.year}
+      </Badge>
+    ) : to.endsWith('/pqrs') && pqrs ? (
       <span className="flex flex-wrap gap-2">
         <Badge variant={pqrs.pending > 0 ? 'primary' : 'neutral'}>
           {pqrs.pending} {pqrs.pending === 1 ? 'pendiente' : 'pendientes'}
