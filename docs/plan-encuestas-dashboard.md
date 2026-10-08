@@ -220,7 +220,7 @@ La tarjeta de Encuestas (solo con `encuestas.ver`) muestra un dato sencillo: **"
 
 ## Fases
 
-Fases 1 y 2 construidas en la rama `encuestas-dashboard`; la 3 queda pendiente.
+Fases 1 y 2 construidas en la rama `encuestas-dashboard`; la 3 (botón "Descargar CSV") en `encuestas-csv`.
 
 1. **Resultados**: permiso `encuestas.ver`, funciones de estadísticas, lista, preguntas en solo lectura, gráficos, filtros y tarjeta de Inicio.
 2. **Gestión**: `encuestas.gestionar`, crear, editar, duplicar, activar y eliminar; reglas de edición; `/encuesta` carga la activa.
