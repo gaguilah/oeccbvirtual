@@ -169,3 +169,104 @@ export function hearingsWeeklyEmail(hearings: HearingEmailData[], period: string
   })
   return { to, subject, html, text }
 }
+
+// Juzgados (repiten src/lib/courts.ts: si cambian allá, cambiarlos aquí).
+export const COURT_NAMES: Record<number, { short: string; name: string }> = {
+  1: { short: 'Juzgado 1', name: 'Juzgado 1 Civil del Circuito de Ejecución de Sentencias de Bucaramanga' },
+  2: { short: 'Juzgado 2', name: 'Juzgado 2 Civil del Circuito de Ejecución de Sentencias de Bucaramanga' },
+}
+
+// Fila de hearing_notifications.before / after (public.hearing_snapshot).
+export type HearingSnapshot = {
+  scheduled_at: string
+  type: string
+  requires_link: boolean
+  case_number: string
+  court_id: number
+  connection_url: string | null
+}
+
+export function fromSnapshot(id: string, s: HearingSnapshot): HearingEmailData {
+  const court = COURT_NAMES[s.court_id] ?? { short: `Juzgado ${s.court_id}`, name: `Juzgado ${s.court_id}` }
+  return {
+    id,
+    scheduledAt: s.scheduled_at,
+    type: s.type,
+    caseNumber: s.case_number,
+    courtName: court.name,
+    courtShort: court.short,
+    connectionUrl: s.connection_url,
+    requiresLink: s.requires_link,
+  }
+}
+
+export type ChangeKind = 'nueva' | 'cambio' | 'retirada'
+
+const when = (h: HearingEmailData) => `${hearingDay(h.scheduledAt)}, ${hearingTime(h.scheduledAt)}`
+const linkLabel = (h: HearingEmailData) => h.connectionUrl ?? (h.requiresLink ? 'Sin enlace' : 'Presencial')
+
+// Aviso de un cambio en las audiencias de la semana, después de enviado el listado.
+export function hearingChangeEmail(
+  kind: ChangeKind,
+  before: HearingEmailData | null,
+  after: HearingEmailData | null,
+  to: string,
+) {
+  const current = (after ?? before)!
+  const short = `${current.type} · ${hearingTime(current.scheduledAt)} · ${current.courtShort}`
+  const moved = kind === 'retirada' && after !== null
+  const subject =
+    kind === 'nueva'
+      ? `Nueva audiencia esta semana: ${short}`
+      : kind === 'cambio'
+        ? `Cambio en audiencia de esta semana: ${short}`
+        : `Audiencia retirada de esta semana: ${current.type} · ${current.courtShort}`
+  const title =
+    kind === 'nueva' ? 'Nueva audiencia esta semana' : kind === 'cambio' ? 'Cambió una audiencia' : 'Audiencia retirada'
+  const intro =
+    kind === 'nueva'
+      ? `Se agregó a las audiencias de esta semana la audiencia del radicado ${formatCaseNumber(current.caseNumber)}.`
+      : kind === 'cambio'
+        ? `Cambiaron datos de la audiencia del radicado ${formatCaseNumber(current.caseNumber)}.`
+        : moved
+          ? `La audiencia del radicado ${formatCaseNumber(current.caseNumber)} ya no es esta semana: se reprogramó para el ${when(after!)}.`
+          : `La audiencia del radicado ${formatCaseNumber(before!.caseNumber)} se eliminó y ya no está programada.`
+
+  let bodyHtml = `<p style="margin:0 0 8px;">${escapeHtml(intro)}</p>`
+  let bodyText = intro
+  if (kind === 'cambio' && before && after) {
+    const fields: [string, string, string][] = [
+      ['Fecha y hora', when(before), when(after)],
+      ['Audiencia', before.type, after.type],
+      ['Radicado', formatCaseNumber(before.caseNumber), formatCaseNumber(after.caseNumber)],
+      ['Juzgado', before.courtShort, after.courtShort],
+      ['Enlace', linkLabel(before), linkLabel(after)],
+    ]
+    const changed = fields.filter(([, a, b]) => a !== b)
+    bodyHtml += `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:16px 0;">
+<tr><td></td><td style="padding:6px 12px;font-size:12px;color:#64748b;">Antes</td><td style="padding:6px 12px;font-size:12px;color:#64748b;">Ahora</td></tr>
+${changed
+  .map(
+    ([label, a, b]) =>
+      `<tr><td style="padding:8px 12px;background:#f1f5f9;color:#475569;font-size:13px;vertical-align:top;">${escapeHtml(label)}</td>` +
+      `<td style="padding:8px 12px;background:#f8fafc;color:#64748b;font-size:14px;text-decoration:line-through;vertical-align:top;overflow-wrap:anywhere;">${escapeHtml(a)}</td>` +
+      `<td style="padding:8px 12px;background:#f8fafc;color:#1e293b;font-size:14px;font-weight:600;vertical-align:top;overflow-wrap:anywhere;">${escapeHtml(b)}</td></tr>`,
+  )
+  .join('')}
+</table>`
+    bodyText += '\n\n' + changed.map(([label, a, b]) => `${label}: ${a} → ${b}`).join('\n')
+  }
+  const shown = kind === 'retirada' ? before! : after!
+  bodyHtml += rowsHtml(hearingRows(shown))
+  bodyText += '\n\n' + rowsText(hearingRows(shown))
+  if (kind !== 'retirada' && shown.connectionUrl) {
+    bodyHtml += buttonHtml(shown.connectionUrl, 'Conectarse a la audiencia')
+    bodyText += `\n\nEnlace de conexión: ${shown.connectionUrl}`
+  }
+  const dashboardUrl = `${SITE_URL}/dashboard/audiencias?vista=semana`
+  bodyHtml += `<p style="margin:16px 0 0;font-size:13px;">Véala en el <a href="${dashboardUrl}" style="color:#193cb8;">calendario de audiencias</a>.</p>`
+  bodyText += `\n\nCalendario de audiencias: ${dashboardUrl}`
+
+  const { html, text } = layout({ preview: intro, title, bodyHtml, bodyText })
+  return { to, subject, html, text }
+}

@@ -240,7 +240,7 @@ En el dashboard, la fila muestra "Sin enlace de conexión: no se comunicará".
 
 ## Fases
 
-Se ejecutan una a una: cada fase en su propia rama, con su prueba y su commit antes de pasar a la siguiente. Fase 1 construida en la rama `audiencias` (migración `20261008150000_hearings.sql`); fase 2 en `audiencias-publica` (migración `20261008170000_public_hearings.sql`: función `list_public_hearings`, pestañas Próximas / Anteriores y una sola columna "Enlaces"); fase 3 en `audiencias-remates` (migración `20261009120000_hearings_auction_notices.sql`).
+Se ejecutan una a una: cada fase en su propia rama, con su prueba y su commit antes de pasar a la siguiente. Fase 1 construida en la rama `audiencias` (migración `20261008150000_hearings.sql`); fase 2 en `audiencias-publica` (migración `20261008170000_public_hearings.sql`: función `list_public_hearings`, pestañas Próximas / Anteriores y una sola columna "Enlaces"); fase 3 en `audiencias-remates` (migración `20261009120000_hearings_auction_notices.sql`); fase 4 en la misma rama (migración `20261009150000_hearings_emails.sql`, función `hearings-mailer` y dos tareas de pg_cron que se programan con un SQL aparte que lleva la clave y no va al repositorio).
 
 1. **Base y dashboard:** tablas, reglas, permisos, tipos para el superadmin, lista en tabla y calendario (semana y mes), formulario, cierre, eliminación y tarjeta de Inicio.
 2. **Página pública** `/audiencias` con su vista segura e ilustración.
