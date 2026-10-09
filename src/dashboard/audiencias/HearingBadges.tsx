@@ -19,6 +19,11 @@ export function StatusBadge({ hearing, now, className }: { hearing: Hearing; now
   )
 }
 
+// La audiencia nació de un aviso de remate que ya se eliminó.
+export function DeletedNoticeNote({ className }: { className?: string }) {
+  return <p className={cn('text-xs font-medium text-on-surface-variant', className)}>Aviso de remate eliminado</p>
+}
+
 // El tipo requiere enlace y no lo tiene: no se comunicará hasta que se agregue.
 export function MissingLinkNote({ className }: { className?: string }) {
   return (

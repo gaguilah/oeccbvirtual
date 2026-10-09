@@ -4,7 +4,7 @@ import { addDays, startOfDay } from './dates'
 import type { Court, Hearing, HearingAudit, HearingFilters, HearingType, NonBusinessDay } from './types'
 
 const COLUMNS =
-  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, created_at, updated_at'
+  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, auction_notice_id, auction_notice_deleted, created_at, updated_at'
 
 const RANGE_NOT_SATISFIABLE = 'PGRST103'
 
@@ -23,6 +23,8 @@ export function hearingError(error: { message?: string; code?: string } | null):
     ['hearing_close_with_changes', 'Al cerrar la audiencia no se pueden cambiar su fecha ni sus datos.'],
     ['hearing_too_early_to_close', 'Solo se puede marcar realizada desde una hora después de la hora programada.'],
     ['hearing_too_early_to_cancel', 'Solo se puede cancelar desde la hora programada. Para cambiar la fecha, edítela.'],
+    ['remate_type_missing', 'No existe el tipo activo "Audiencia de Remate": pida al administrador que lo active.'],
+    ['link_mismatch', 'No se pudo vincular la audiencia con el aviso.'],
     ['hearing_not_deletable', 'Solo se elimina una audiencia programada, futura, sin enlace de conexión ni grabación.'],
   ]
   const match = known.find(([code]) => message.includes(code))
@@ -112,6 +114,17 @@ export async function fetchNonBusinessDays(from: string, to: string): Promise<No
 
 export async function fetchHearing(id: string): Promise<Hearing | null> {
   const { data, error } = await supabase.from('hearings').select(COLUMNS).eq('id', id).maybeSingle()
+  if (error) throw hearingError(error)
+  return data as Hearing | null
+}
+
+// Audiencia vinculada a un aviso de remate (null si no tiene o el usuario no puede verla).
+export async function fetchHearingByNotice(noticeId: string): Promise<Hearing | null> {
+  const { data, error } = await supabase
+    .from('hearings')
+    .select(COLUMNS)
+    .eq('auction_notice_id', noticeId)
+    .maybeSingle()
   if (error) throw hearingError(error)
   return data as Hearing | null
 }

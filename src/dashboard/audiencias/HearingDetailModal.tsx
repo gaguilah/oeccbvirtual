@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { COURTS, formatDate, formatTime } from '../../components/remates'
 import { Button, Modal } from '../../components/ui'
 import { useAccess } from '../access'
@@ -109,6 +110,20 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
         {hearing.recording_url && (
           <Row label="Grabación">
             <ExternalLink href={hearing.recording_url}>Ver grabación</ExternalLink>
+          </Row>
+        )}
+        {(hearing.auction_notice_id || hearing.auction_notice_deleted) && (
+          <Row label="Aviso de remate">
+            {hearing.auction_notice_id ? (
+              <Link
+                to={`/dashboard/avisos-remates?periodo=todos&q=${hearing.case_number}`}
+                className="font-medium text-primary hover:underline"
+              >
+                Ver aviso de remate
+              </Link>
+            ) : (
+              <span className="text-on-surface-variant">Eliminado</span>
+            )}
           </Row>
         )}
         {hearing.notes && (

@@ -1,8 +1,12 @@
-import { useId, useState, type FormEvent } from 'react'
+import { useEffect, useId, useState, type FormEvent } from 'react'
 import { COURTS, type Court } from '../../components/remates'
 import { Alert, Button, Input, Modal, Select } from '../../components/ui'
 import { useAccess } from '../access'
-import { createNotice, updateNotice } from './api'
+import { fetchHearingByNotice } from '../audiencias/api'
+import { scheduleProblem } from '../audiencias/schedule'
+import type { Hearing } from '../audiencias/types'
+import { useNonBusinessMonth } from '../audiencias/useHearingsData'
+import { createNotice, createNoticeWithHearing, updateNotice } from './api'
 import { bogotaParts, toScheduledAt, todayInBogota } from './datetime'
 import { folderFor, previewPdfUrl } from './pdfUrl'
 import { noticeSchema, pdfUrlSchema, type NoticeFields } from './schema'
@@ -57,6 +61,28 @@ export default function NoticeFormModal({ notice, folders, forcedCourt, onClose,
   const court = draft.court ? (Number(draft.court) as Court) : null
   const canPublish = court ? can('remates.publicar', court) : false
 
+  // Audiencia de Remate (docs/plan-audiencias.md, fase 3): al crear, casilla para crearla junto con
+  // el aviso; al editar, la vinculada se mueve con el aviso mientras siga Programada.
+  const [createHearing, setCreateHearing] = useState(true)
+  const [linked, setLinked] = useState<Hearing | null>(null)
+  const [openedAt] = useState(() => Date.now())
+  const canCreateHearing = !notice && court !== null && can('audiencias.crear', court)
+  useEffect(() => {
+    if (!notice || !can('audiencias.ver', notice.court)) return
+    let active = true
+    fetchHearingByNotice(notice.id)
+      .then((hearing) => {
+        if (active) setLinked(hearing)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [notice, can])
+  const linkedOpen = linked?.status_id === 1 ? linked : null
+  const checkHearing = canCreateHearing || Boolean(linkedOpen)
+  const nonBusiness = useNonBusinessMonth(checkHearing && draft.date ? draft.date : null)
+
   function update<K extends keyof NoticeDraft>(field: K, value: NoticeDraft[K]) {
     setDraft((current) => ({ ...current, [field]: value }))
     setErrors((current) => ({ ...current, [field]: undefined }))
@@ -78,9 +104,20 @@ export default function NoticeFormModal({ notice, folders, forcedCourt, onClose,
       ? previewPdfUrl(folder, parsed.data.caseNumber, Number(parsed.data.court), scheduledAt)
       : null
 
+  // La audiencia vinculada solo se mueve si cambian la fecha o la hora; entonces vale la regla de
+  // audiencias (con la misma referencia de "ahora" que el formulario).
+  const scheduleMoved = Boolean(notice && scheduledAt && scheduledAt !== new Date(notice.scheduled_at).toISOString())
+  const hearingProblem = checkHearing ? scheduleProblem(draft.date, draft.time, nonBusiness, openedAt) : null
+  const linkedChanged =
+    linkedOpen &&
+    parsed.success &&
+    (scheduleMoved || parsed.data.caseNumber !== notice?.case_number || Number(parsed.data.court) !== notice?.court)
+  const blockMove = Boolean(linkedOpen && scheduleMoved && hearingProblem)
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setServerError(null)
+    if (blockMove) return setServerError(`La audiencia vinculada no se puede mover: ${hearingProblem}`)
     const next: Partial<Record<NoticeFields, string>> = {}
     if (!parsed.success) {
       for (const issue of parsed.error.issues) next[issue.path[0] as NoticeFields] ??= issue.message
@@ -105,9 +142,14 @@ export default function NoticeFormModal({ notice, folders, forcedCourt, onClose,
         })
         onSaved(notice.id, `Aviso del radicado ${data.case_number} actualizado.`)
       } else {
-        const id = await createNotice({ ...data, is_published: canPublish && draft.isPublished })
+        const withHearing = canCreateHearing && createHearing && !hearingProblem
+        const input = { ...data, is_published: canPublish && draft.isPublished }
+        const id = withHearing ? await createNoticeWithHearing(input) : await createNotice(input)
         const published = canPublish && draft.isPublished
-        onSaved(id, `Aviso del radicado ${data.case_number} creado${published ? ' y publicado' : ' (oculto)'}.`)
+        onSaved(
+          id,
+          `Aviso del radicado ${data.case_number} creado${published ? ' y publicado' : ' (oculto)'}${withHearing ? ', con su audiencia de remate programada' : ''}.`,
+        )
       }
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'No se pudo guardar el aviso.')
@@ -238,6 +280,40 @@ export default function NoticeFormModal({ notice, folders, forcedCourt, onClose,
             </label>
           )}
         </div>
+
+        {canCreateHearing && (
+          <label
+            className={`flex items-start gap-3 rounded-lg bg-surface-container-low p-4 ${hearingProblem ? 'opacity-70' : 'cursor-pointer'}`}
+          >
+            <input
+              type="checkbox"
+              checked={createHearing && !hearingProblem}
+              disabled={Boolean(hearingProblem)}
+              onChange={(e) => setCreateHearing(e.target.checked)}
+              className="mt-0.5 size-4 accent-primary"
+            />
+            <span>
+              <span className="block text-sm font-semibold text-on-surface">Crear también la audiencia de remate</span>
+              <span className="block text-xs text-on-surface-variant">
+                {hearingProblem
+                  ? `No se puede crear la audiencia: ${hearingProblem} El aviso sí se puede guardar.`
+                  : 'Se programa en Audiencias con el mismo juzgado, radicado, fecha y hora. El enlace de conexión se agrega después.'}
+              </span>
+            </span>
+          </label>
+        )}
+
+        {linkedChanged && !blockMove && (
+          <Alert variant="info" live={false}>
+            La audiencia de remate vinculada se actualizará con los nuevos datos.
+          </Alert>
+        )}
+        {blockMove && (
+          <Alert variant="warning" live={false}>
+            La audiencia vinculada no se puede mover a esa fecha y hora: {hearingProblem} Elija otra o cancele la
+            audiencia en Audiencias.
+          </Alert>
+        )}
 
         {serverError && <Alert variant="error">{serverError}</Alert>}
       </form>

@@ -3,7 +3,8 @@ import { COURTS, formatTime } from '../../components/remates'
 import { Alert, Button, Input, Modal, Select, Textarea } from '../../components/ui'
 import { createHearing, fetchOverlaps, updateHearing } from './api'
 import { TIME_OPTIONS, typeName } from './data'
-import { bogotaParts, isWeekend, todayInBogota, toScheduledAt } from './dates'
+import { bogotaParts, todayInBogota, toScheduledAt } from './dates'
+import { scheduleProblem } from './schedule'
 import { hearingSchema, type HearingField } from './schema'
 import type { Court, Hearing, HearingDraft, HearingType } from './types'
 import { useNonBusinessMonth } from './useHearingsData'
@@ -66,14 +67,7 @@ export default function HearingFormModal({ hearing, types, forcedCourt, onClose,
   const scheduledAt = draft.date && draft.time ? toScheduledAt(draft.date, draft.time) : null
 
   // Fecha: futura y hábil (solo si cambió: una audiencia por cerrar se puede editar sin moverla).
-  let scheduleError: string | null = null
-  if (scheduleChanged && draft.date) {
-    const reason = nonBusiness?.find((day) => day.day === draft.date)?.reason
-    if (isWeekend(draft.date)) scheduleError = 'Los sábados y domingos no son días hábiles.'
-    else if (reason) scheduleError = `No es día hábil: ${reason}.`
-    else if (scheduledAt && new Date(scheduledAt).getTime() <= openedAt)
-      scheduleError = 'La fecha y hora deben ser futuras.'
-  }
+  const scheduleError = scheduleChanged ? scheduleProblem(draft.date, draft.time, nonBusiness, openedAt) : null
 
   // Cruce de horario: otra audiencia programada del juzgado en esa hora (solo aviso).
   const court = draft.court ? (Number(draft.court) as Court) : null

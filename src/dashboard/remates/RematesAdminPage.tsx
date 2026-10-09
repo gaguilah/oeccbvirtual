@@ -226,6 +226,10 @@ export default function RematesAdminPage() {
             {formatTime(dialog.notice.scheduled_at)}
             {dialog.notice.is_published && ', que hoy está publicado en el sitio'}.
           </p>
+          <p>
+            Si tiene audiencia de remate vinculada, se elimina también cuando aún es futura, está programada y no tiene
+            enlace ni grabación; si no, se conserva en Audiencias.
+          </p>
           <p className="font-semibold text-on-surface">Esta acción no se puede deshacer.</p>
         </ConfirmDialog>
       )}

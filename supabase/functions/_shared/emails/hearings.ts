@@ -81,10 +81,91 @@ export function hearingReminderEmail(data: HearingEmailData, to: string) {
       '',
       rowsText(hearingRows(data)),
       '',
-      data.connectionUrl ? `Enlace de conexión: ${data.connectionUrl}` : 'Audiencia presencial: no tiene enlace de conexión.',
+      data.connectionUrl
+        ? `Enlace de conexión: ${data.connectionUrl}`
+        : 'Audiencia presencial: no tiene enlace de conexión.',
       '',
       `Calendario de audiencias: ${dashboardUrl}`,
     ].join('\n'),
+  })
+  return { to, subject, html, text }
+}
+
+const weekdayFormatter = new Intl.DateTimeFormat('es-CO', {
+  timeZone: 'America/Bogota',
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+})
+const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' })
+
+const capitalize = (text: string) => text.charAt(0).toLocaleUpperCase('es') + text.slice(1)
+
+function linkCell(data: HearingEmailData): { html: string; text: string } {
+  if (data.connectionUrl)
+    return {
+      html: `<a href="${escapeHtml(data.connectionUrl)}" style="display:inline-block;padding:6px 12px;background:#193cb8;color:#ffffff;font-size:13px;font-weight:bold;text-decoration:none;border-radius:6px;white-space:nowrap;">Conectarse</a>`,
+      text: `Enlace: ${data.connectionUrl}`,
+    }
+  return {
+    html: `<span style="font-size:13px;color:#64748b;white-space:nowrap;">Presencial</span>`,
+    text: 'Presencial',
+  }
+}
+
+// Listado semanal (lunes o siguiente día hábil): audiencias de la semana agrupadas por día.
+// `period`: "del lunes 5 al viernes 9 de octubre de 2026"; `scope`: "los Juzgados 1 y 2".
+export function hearingsWeeklyEmail(hearings: HearingEmailData[], period: string, scope: string, to: string) {
+  const count = hearings.length
+  const subject = `Audiencias de la semana: ${count} ${count === 1 ? 'programada' : 'programadas'} (${period})`
+  const title = 'Audiencias de la semana'
+  const intro = `${capitalize(period)} hay ${count} ${count === 1 ? 'audiencia programada' : 'audiencias programadas'} en ${scope}.`
+
+  const days = new Map<string, HearingEmailData[]>()
+  for (const h of hearings) {
+    const key = dayKey.format(new Date(h.scheduledAt))
+    days.set(key, [...(days.get(key) ?? []), h])
+  }
+
+  const htmlDays = [...days.values()]
+    .map((items) => {
+      const heading = capitalize(weekdayFormatter.format(new Date(items[0].scheduledAt)))
+      const rows = items
+        .map((h) => {
+          const link = linkCell(h)
+          return `<tr>
+<td style="padding:10px 12px;background:#f8fafc;font-size:14px;font-weight:bold;color:#0f172a;white-space:nowrap;vertical-align:top;width:1%;">${escapeHtml(hearingTime(h.scheduledAt))}</td>
+<td style="padding:10px 12px;background:#f8fafc;font-size:14px;color:#1e293b;vertical-align:top;"><strong>${escapeHtml(h.type)}</strong><br><span style="font-size:13px;color:#475569;">${escapeHtml(formatCaseNumber(h.caseNumber))} · ${escapeHtml(h.courtShort)}</span></td>
+<td style="padding:10px 12px;background:#f8fafc;vertical-align:middle;text-align:right;width:1%;">${link.html}</td>
+</tr>`
+        })
+        .join('<tr><td colspan="3" style="height:4px;line-height:4px;font-size:0;">&nbsp;</td></tr>')
+      return `<h2 style="margin:24px 0 8px;font-size:15px;color:#193cb8;">${escapeHtml(heading)}</h2>
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;">${rows}</table>`
+    })
+    .join('')
+
+  const textDays = [...days.values()]
+    .map((items) =>
+      [
+        capitalize(weekdayFormatter.format(new Date(items[0].scheduledAt))),
+        ...items.map(
+          (h) =>
+            `  ${hearingTime(h.scheduledAt)} · ${h.type} · ${formatCaseNumber(h.caseNumber)} · ${h.courtShort} · ${linkCell(h).text}`,
+        ),
+      ].join('\n'),
+    )
+    .join('\n\n')
+
+  const dashboardUrl = `${SITE_URL}/dashboard/audiencias?vista=semana`
+  const { html, text } = layout({
+    preview: intro,
+    title,
+    bodyHtml:
+      `<p style="margin:0;">${escapeHtml(intro)}</p>` +
+      htmlDays +
+      `<p style="margin:24px 0 0;font-size:13px;">Si hay cambios durante la semana, le llegará un aviso de cada uno. Vea todo en el <a href="${dashboardUrl}" style="color:#193cb8;">calendario de audiencias</a>.</p>`,
+    bodyText: [intro, '', textDays, '', `Calendario de audiencias: ${dashboardUrl}`].join('\n'),
   })
   return { to, subject, html, text }
 }
