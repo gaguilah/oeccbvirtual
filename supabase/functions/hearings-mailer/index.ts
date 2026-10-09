@@ -89,8 +89,17 @@ async function deliver(
   })
 }
 
-// deno-lint-ignore no-explicit-any
-function toEmailData(row: any): HearingEmailData {
+// Fila de hearings con su tipo (HEARING_COLUMNS).
+type HearingRow = {
+  id: string
+  scheduled_at: string
+  case_number: string
+  court_id: number
+  connection_url: string | null
+  hearing_types: { description: string; requires_link: boolean }
+}
+
+function toEmailData(row: HearingRow): HearingEmailData {
   const court = COURT_NAMES[row.court_id]
   return {
     id: row.id,
@@ -148,8 +157,8 @@ async function weekly(admin: SupabaseClient, force: boolean, date?: string) {
     .lt('scheduled_at', startOfDay(addDays(friday, 1)).toISOString())
     .order('scheduled_at')
   if (error) throw error
-  const rows = (data ?? [])
-    .map((row) => ({ court: row.court_id as number, hearing: toEmailData(row) }))
+  const rows = ((data ?? []) as unknown as HearingRow[])
+    .map((row) => ({ court: row.court_id, hearing: toEmailData(row) }))
     .filter((x) => communicable(x.hearing))
   const hearings = rows.map((x) => x.hearing)
 
@@ -263,7 +272,7 @@ async function reminders(admin: SupabaseClient) {
     .lt('scheduled_at', new Date(now + 20 * 60_000).toISOString())
   if (error) throw error
   let sent = 0
-  for (const row of data ?? []) {
+  for (const row of (data ?? []) as unknown as HearingRow[]) {
     const hearing = toEmailData(row)
     if (!communicable(hearing)) continue
     const { data: claimed } = await admin
