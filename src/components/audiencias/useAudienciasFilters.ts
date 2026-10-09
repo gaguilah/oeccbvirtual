@@ -3,11 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import { sanitizeQuery } from '../remates'
 import type { AudienciasFilters, Court } from './types'
 
-// /audiencias?periodo=anteriores&juzgado=1&tipo=4&desde=2026-10-01&hasta=2026-10-31&q=6800&pagina=2
+// /audiencias?periodo=anteriores&juzgado=1&desde=2026-10-01&hasta=2026-10-31&q=6800&pagina=2
 const PARAM = {
   period: 'periodo',
   court: 'juzgado',
-  type: 'tipo',
   from: 'desde',
   to: 'hasta',
   query: 'q',
@@ -19,12 +18,10 @@ const day = (value: string | null) => (value && DAY.test(value) ? value : null)
 
 function parse(params: URLSearchParams): AudienciasFilters {
   const court = params.get(PARAM.court)
-  const type = Number.parseInt(params.get(PARAM.type) ?? '', 10)
   const page = Number.parseInt(params.get(PARAM.page) ?? '', 10)
   return {
     period: params.get(PARAM.period) === 'anteriores' ? 'anteriores' : 'proximas',
     court: court === '1' || court === '2' ? (Number(court) as Court) : null,
-    type: Number.isInteger(type) && type > 0 ? type : null,
     from: day(params.get(PARAM.from)),
     to: day(params.get(PARAM.to)),
     query: sanitizeQuery(params.get(PARAM.query) ?? ''),
@@ -36,7 +33,6 @@ function serialize(filters: AudienciasFilters) {
   const params = new URLSearchParams()
   if (filters.period === 'anteriores') params.set(PARAM.period, 'anteriores')
   if (filters.court) params.set(PARAM.court, String(filters.court))
-  if (filters.type) params.set(PARAM.type, String(filters.type))
   if (filters.from) params.set(PARAM.from, filters.from)
   if (filters.to) params.set(PARAM.to, filters.to)
   if (filters.query) params.set(PARAM.query, filters.query)

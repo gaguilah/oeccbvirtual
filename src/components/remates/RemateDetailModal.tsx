@@ -1,7 +1,8 @@
 import { Alert, Button, ButtonAnchor, Modal, Spinner } from '../ui'
 import { pdfDownloadUrl } from './api'
 import { COURTS } from './constants'
-import { dateParts, formatLongDate, formatTime, isRealizado } from './dates'
+import { formatLongDate, formatTime, isRealizado } from './dates'
+import { CaseNumberBox, DetailHeader, DetailList } from './DetailParts'
 import RemateStatusBadge from './RemateStatusBadge'
 import type { AuctionNotice, NoticeSelection } from './types'
 import { useAuctionNotice } from './useAuctionNotice'
@@ -51,52 +52,22 @@ function DownloadIcon() {
 }
 
 function NoticeDetail({ notice, now }: { notice: AuctionNotice; now: Date }) {
-  const court = COURTS[notice.court]
-  const { day, month, year } = dateParts(notice.scheduled_at)
-  const time = formatTime(notice.scheduled_at)
-
   return (
     <div className="space-y-6">
-      {/* Juzgado + bloque de calendario con la fecha y la hora. */}
-      <div className="flex items-center gap-4 sm:gap-6">
-        <div
-          aria-hidden="true"
-          className="flex w-20 shrink-0 flex-col items-center rounded-lg bg-primary-container py-3 text-primary sm:w-24"
-        >
-          <span className="font-display text-3xl font-extrabold leading-none sm:text-4xl">{day}</span>
-          <span className="mt-1 text-xs font-semibold tracking-widest">{month}</span>
-          <span className="text-xs opacity-80">{year}</span>
-        </div>
-        <div className="min-w-0 space-y-1">
-          <p className="font-display text-xl font-bold text-on-surface">{court.short}</p>
-          <p className="text-sm text-on-surface-variant">{court.detail}</p>
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-sm font-semibold text-on-surface">{time}</span>
-            <RemateStatusBadge realizado={isRealizado(notice.scheduled_at, now)} />
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-lg bg-surface-container-low p-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Radicado</p>
-        <p className="mt-1 break-all font-display text-lg font-bold tabular-nums text-on-surface sm:text-xl">
-          {notice.case_number}
-        </p>
-      </div>
-
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
-          Información del remate
-        </h3>
-        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-          <dt className="text-on-surface-variant">Fecha</dt>
-          <dd className="font-medium text-on-surface">{formatLongDate(notice.scheduled_at)}</dd>
-          <dt className="text-on-surface-variant">Hora</dt>
-          <dd className="font-medium text-on-surface">{time}</dd>
-          <dt className="text-on-surface-variant">Juzgado</dt>
-          <dd className="font-medium text-on-surface">{court.name}</dd>
-        </dl>
-      </div>
+      <DetailHeader
+        scheduledAt={notice.scheduled_at}
+        court={notice.court}
+        status={<RemateStatusBadge realizado={isRealizado(notice.scheduled_at, now)} />}
+      />
+      <CaseNumberBox caseNumber={notice.case_number} />
+      <DetailList
+        title="Información del remate"
+        items={[
+          ['Fecha', formatLongDate(notice.scheduled_at)],
+          ['Hora', formatTime(notice.scheduled_at)],
+          ['Juzgado', COURTS[notice.court].name],
+        ]}
+      />
     </div>
   )
 }
