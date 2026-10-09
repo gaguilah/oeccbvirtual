@@ -151,21 +151,21 @@ export default function SurveysPage() {
                   <h2 className="text-lg font-bold">{survey.title}</h2>
                   <code className="block font-mono text-xs text-on-surface-variant">{survey.code}</code>
                 </div>
-                <div className="flex items-start gap-1">
-                  <Badge variant={survey.is_active ? 'success' : 'neutral'} className="mt-2">
-                    {survey.is_active ? 'Activa' : 'Inactiva'}
-                  </Badge>
-                  <ActionMenu
-                    label={`Opciones de la encuesta ${survey.title}`}
-                    className="-mt-1 -mr-2"
-                    items={itemsFor(survey)}
-                  />
-                </div>
+                <ActionMenu
+                  label={`Opciones de la encuesta ${survey.title}`}
+                  className="-mt-1 -mr-2 shrink-0"
+                  items={itemsFor(survey)}
+                />
               </div>
               <p className="text-sm text-on-surface">
                 {plural(survey.question_count, 'pregunta', 'preguntas')} ·{' '}
                 {plural(survey.response_count, 'respuesta', 'respuestas')} · creada el {formatDate(survey.created_at)}
               </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant={survey.is_active ? 'success' : 'neutral'}>
+                  {survey.is_active ? 'Activa' : 'Inactiva'}
+                </Badge>
+              </div>
             </li>
           ))}
         </ul>

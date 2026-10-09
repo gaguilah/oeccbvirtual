@@ -86,30 +86,29 @@ export default function PermissionsPage() {
               {group.permissions.map((permission) => {
                 const assigned = roles[permission.code] ?? []
                 return (
-                  <li
-                    key={permission.code}
-                    className="flex flex-col gap-3 rounded-lg bg-surface-container-low p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
-                  >
-                    <div className="min-w-0 space-y-1">
-                      <p className="text-sm font-semibold text-on-surface">{permission.name}</p>
-                      {permission.description && (
-                        <p className="text-sm text-on-surface-variant">{permission.description}</p>
+                  <li key={permission.code} className="space-y-3 rounded-lg bg-surface-container-low p-4 sm:p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-sm font-semibold text-on-surface">{permission.name}</p>
+                        {permission.description && (
+                          <p className="text-sm text-on-surface-variant">{permission.description}</p>
+                        )}
+                        <code className="block font-mono text-xs text-on-surface-variant/80">{permission.code}</code>
+                      </div>
+                      {canManage && (
+                        <ActionMenu
+                          label={`Opciones del permiso ${permission.name}`}
+                          className="-mt-1 -mr-2 shrink-0"
+                          items={[{ label: 'Editar', icon: icons.pencil, onSelect: () => setEditing(permission) }]}
+                        />
                       )}
-                      <code className="block font-mono text-xs text-on-surface-variant/80">{permission.code}</code>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                      <span className="sr-only">Roles con este permiso:</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-on-surface-variant">Roles:</span>
                       {assigned.length > 0 ? (
                         assigned.map((name) => <Badge key={name}>{name}</Badge>)
                       ) : (
                         <span className="text-xs text-on-surface-variant">Solo Superadmin</span>
-                      )}
-                      {canManage && (
-                        <ActionMenu
-                          label={`Opciones del permiso ${permission.name}`}
-                          className="sm:ml-1"
-                          items={[{ label: 'Editar', icon: icons.pencil, onSelect: () => setEditing(permission) }]}
-                        />
                       )}
                     </div>
                   </li>

@@ -34,12 +34,23 @@ function StatusBadge({ user, className }: { user: UserRow; className?: string })
   )
 }
 
-function NameCell({ user, isSelf, compact }: { user: UserRow; isSelf: boolean; compact?: boolean }) {
+// `hideSelf`: en las tarjetas "Usted" va en la fila de etiquetas, no junto al nombre.
+function NameCell({
+  user,
+  isSelf,
+  compact,
+  hideSelf,
+}: {
+  user: UserRow
+  isSelf: boolean
+  compact?: boolean
+  hideSelf?: boolean
+}) {
   return (
     <>
       <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-on-surface">
         {displayName(user)}
-        {isSelf && <Badge variant="primary">Usted</Badge>}
+        {isSelf && !hideSelf && <Badge variant="primary">Usted</Badge>}
       </span>
       {/* Tabla: una línea, recortada (el correo completo en title). Tarjetas: puede partirse. */}
       <span
@@ -117,7 +128,7 @@ export default function UsersTable({
 
   return (
     <div className={className}>
-      <table className="hidden w-full text-left md:table">
+      <table className="hidden w-full text-left xl:table">
         <caption className="sr-only">Usuarios del dashboard</caption>
         <thead className="bg-surface-container-low">
           <tr>
@@ -176,7 +187,7 @@ export default function UsersTable({
         </tbody>
       </table>
 
-      <ul className="space-y-3 md:hidden">
+      <ul className="space-y-3 xl:hidden">
         {users.map((user) => (
           <li
             key={user.id}
@@ -185,16 +196,18 @@ export default function UsersTable({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <NameCell user={user} isSelf={user.id === currentUserId} />
+                <NameCell user={user} isSelf={user.id === currentUserId} hideSelf />
               </div>
-              <div className="flex shrink-0 items-start gap-1">
-                <StatusBadge user={user} className="mt-2" />
-                {canManage && (
-                  <UserActions user={user} isSelf={user.id === currentUserId} className="-mt-1 -mr-2" {...handlers} />
-                )}
-              </div>
+              {canManage && (
+                <UserActions
+                  user={user}
+                  isSelf={user.id === currentUserId}
+                  className="-mt-1 -mr-2 shrink-0"
+                  {...handlers}
+                />
+              )}
             </div>
-            <dl className="grid grid-cols-2 gap-2 text-sm">
+            <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
               <div>
                 <dt className="text-xs text-on-surface-variant">Rol</dt>
                 <dd>{user.role_name ?? '—'}</dd>
@@ -203,13 +216,18 @@ export default function UsersTable({
                 <dt className="text-xs text-on-surface-variant">Dependencia</dt>
                 <dd>{dependencyLabel(user)}</dd>
               </div>
-              <div className="col-span-2">
+              {/* Celular: el último ingreso ocupa las dos columnas; desde sm, una de tres. */}
+              <div className="col-span-2 sm:col-span-1">
                 <dt className="text-xs text-on-surface-variant">Último ingreso</dt>
                 <dd>
                   <SignIn user={user} />
                 </dd>
               </div>
             </dl>
+            <div className="flex flex-wrap gap-2">
+              {user.id === currentUserId && <Badge variant="primary">Usted</Badge>}
+              <StatusBadge user={user} />
+            </div>
           </li>
         ))}
       </ul>

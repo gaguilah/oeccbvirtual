@@ -4,7 +4,7 @@ import { Alert, Button, ButtonLink, Card, EmptyState, Pagination, Spinner } from
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
-import { ConfirmDialog, Icon, icons } from '../ui'
+import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import AdminRematesFilters from './AdminRematesFilters'
 import AdminRematesTable from './AdminRematesTable'
 import { deleteNotice, fetchFolders, updateNotice } from './api'
@@ -137,28 +137,12 @@ export default function RematesAdminPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <p className="max-w-xl text-sm text-on-surface-variant">
-          {forcedCourt
-            ? `Avisos de remate del ${COURTS[forcedCourt].short}, publicados y ocultos.`
-            : 'Avisos de remate de los dos juzgados, publicados y ocultos.'}{' '}
-          Solo los publicados aparecen en el sitio público.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {can('remates.carpetas') && (
-            <ButtonLink to={`${REMATES_ADMIN_PATH}/carpetas`} variant="secondary">
-              <Icon paths={icons.folder} className="size-4" />
-              Carpetas
-            </ButtonLink>
-          )}
-          {canCreate && (
-            <Button onClick={() => setDialog({ kind: 'form', notice: null, key: Date.now() })} aria-haspopup="dialog">
-              <Icon paths={icons.plus} className="size-4" />
-              Crear aviso
-            </Button>
-          )}
-        </div>
-      </div>
+      <p className="max-w-xl text-sm text-on-surface-variant">
+        {forcedCourt
+          ? `Avisos de remate del ${COURTS[forcedCourt].short}, publicados y ocultos.`
+          : 'Avisos de remate de los dos juzgados, publicados y ocultos.'}{' '}
+        Solo los publicados aparecen en el sitio público.
+      </p>
 
       {flash && (
         <Alert variant={flash.error ? 'error' : 'success'} onClose={() => setFlash(null)}>
@@ -166,9 +150,30 @@ export default function RematesAdminPage() {
         </Alert>
       )}
 
-      <AdminRematesFilters filters={filters} showCourt={!forcedCourt} onChange={updateFilters} />
+      <AdminRematesFilters
+        filters={filters}
+        showCourt={!forcedCourt}
+        onChange={updateFilters}
+        className={stickyFilters}
+        actions={
+          <>
+            {can('remates.carpetas') && (
+              <ButtonLink to={`${REMATES_ADMIN_PATH}/carpetas`} variant="secondary">
+                <Icon paths={icons.folder} className="size-4" />
+                Carpetas
+              </ButtonLink>
+            )}
+            {canCreate && (
+              <Button onClick={() => setDialog({ kind: 'form', notice: null, key: Date.now() })} aria-haspopup="dialog">
+                <Icon paths={icons.plus} className="size-4" />
+                Crear aviso
+              </Button>
+            )}
+          </>
+        }
+      />
 
-      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3">
+      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3 xl:scroll-mt-60">
         <p aria-live="polite" className="sr-only">
           {!loading && data ? `${total} ${total === 1 ? 'aviso encontrado' : 'avisos encontrados'}` : ''}
         </p>

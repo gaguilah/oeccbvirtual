@@ -4,7 +4,7 @@ import { Alert, Button, ButtonLink, Card, EmptyState, Input, Pagination, Spinner
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
-import { ConfirmDialog, Icon, icons } from '../ui'
+import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import type { HearingAction } from './actions'
 import { deleteHearing, updateHearing } from './api'
 import { HEARING_TYPES_PATH, PAGE_SIZE, TABS, typeName, VIEWS } from './data'
@@ -165,30 +165,10 @@ export default function HearingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <p className="max-w-xl text-sm text-on-surface-variant">
-          {forcedCourt ? `Audiencias del ${COURTS[forcedCourt].short}.` : 'Audiencias de los dos juzgados.'} Se
-          programan en días hábiles y, después de la fecha, se cierran como realizadas (con la grabación) o canceladas.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {can('audiencias.tipos') && (
-            <ButtonLink to={HEARING_TYPES_PATH} variant="secondary">
-              <Icon paths={tagIcon} className="size-4" />
-              Tipos de audiencia
-            </ButtonLink>
-          )}
-          {canCreate && (
-            <Button
-              onClick={() => setDialog({ kind: 'form', hearing: null, key: Date.now() })}
-              disabled={!types}
-              aria-haspopup="dialog"
-            >
-              <Icon paths={icons.plus} className="size-4" />
-              Programar audiencia
-            </Button>
-          )}
-        </div>
-      </div>
+      <p className="max-w-xl text-sm text-on-surface-variant">
+        {forcedCourt ? `Audiencias del ${COURTS[forcedCourt].short}.` : 'Audiencias de los dos juzgados.'} Se programan
+        en días hábiles y, después de la fecha, se cierran como realizadas (con la grabación) o canceladas.
+      </p>
 
       {flash && (
         <Alert variant={flash.error ? 'error' : 'success'} onClose={() => setFlash(null)}>
@@ -197,34 +177,60 @@ export default function HearingsPage() {
       )}
       {typesError && <Alert variant="error">{typesError}</Alert>}
 
-      <div className="inline-flex gap-1 rounded-lg bg-surface-container p-1" role="group" aria-label="Vista">
-        {VIEWS.map((view) => (
-          <button
-            key={view.value}
-            type="button"
-            aria-pressed={filters.view === view.value}
-            onClick={() => updateFilters({ view: view.value })}
-            className={cn(
-              'rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary',
-              filters.view === view.value
-                ? 'bg-surface-container-lowest text-primary shadow-ambient'
-                : 'text-on-surface-variant hover:text-on-surface',
-            )}
-          >
-            {view.label}
-          </button>
-        ))}
-      </div>
-
       <HearingsFilters
         filters={filters}
         types={types ?? []}
         showCourt={!forcedCourt}
         pendingClose={table.pending}
         onChange={updateFilters}
+        className={isTable ? stickyFilters : undefined}
+        toolbar={
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="inline-flex gap-1 rounded-lg bg-surface-container p-1" role="group" aria-label="Vista">
+              {VIEWS.map((view) => (
+                <button
+                  key={view.value}
+                  type="button"
+                  aria-pressed={filters.view === view.value}
+                  onClick={() => updateFilters({ view: view.value })}
+                  className={cn(
+                    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary',
+                    filters.view === view.value
+                      ? 'bg-surface-container-lowest text-primary shadow-ambient'
+                      : 'text-on-surface-variant hover:text-on-surface',
+                  )}
+                >
+                  {view.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {can('audiencias.tipos') && (
+                <ButtonLink to={HEARING_TYPES_PATH} variant="secondary">
+                  <Icon paths={tagIcon} className="size-4" />
+                  Tipos de audiencia
+                </ButtonLink>
+              )}
+              {canCreate && (
+                <Button
+                  onClick={() => setDialog({ kind: 'form', hearing: null, key: Date.now() })}
+                  disabled={!types}
+                  aria-haspopup="dialog"
+                >
+                  <Icon paths={icons.plus} className="size-4" />
+                  Programar audiencia
+                </Button>
+              )}
+            </div>
+          </div>
+        }
       />
 
-      <section ref={resultsRef} aria-label={isTable ? caption : 'Calendario de audiencias'} className="scroll-mt-20">
+      <section
+        ref={resultsRef}
+        aria-label={isTable ? caption : 'Calendario de audiencias'}
+        className="scroll-mt-20 xl:scroll-mt-72"
+      >
         <p aria-live="polite" className="sr-only">
           {isTable && !table.loading && table.data
             ? `${table.data.total} ${table.data.total === 1 ? 'audiencia encontrada' : 'audiencias encontradas'}`

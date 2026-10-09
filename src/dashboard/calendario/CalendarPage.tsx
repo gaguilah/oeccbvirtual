@@ -116,28 +116,30 @@ export default function CalendarPage() {
             {days.map((day) => (
               <li
                 key={day.day}
-                className="flex items-center justify-between gap-3 rounded-lg bg-surface-container-low px-4 py-3"
+                className="flex items-start justify-between gap-3 rounded-lg bg-surface-container-low px-4 py-3"
               >
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-on-surface first-letter:uppercase">{longDay(day.day)}</p>
-                  <p className="text-xs text-on-surface-variant">{day.reason}</p>
+                <div className="min-w-0 space-y-2">
+                  <div>
+                    <p className="text-sm font-semibold text-on-surface first-letter:uppercase">{longDay(day.day)}</p>
+                    <p className="text-xs text-on-surface-variant">{day.reason}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant={KINDS[day.kind].variant}>{KINDS[day.kind].label}</Badge>
+                  </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <Badge variant={KINDS[day.kind].variant}>{KINDS[day.kind].label}</Badge>
-                  {canManage && (
-                    <ActionMenu
-                      label={`Opciones del ${longDay(day.day)}`}
-                      items={[
-                        {
-                          label: 'Eliminar',
-                          icon: icons.trash,
-                          danger: true,
-                          onSelect: () => setDialog({ delete: day }),
-                        },
-                      ]}
-                    />
-                  )}
-                </div>
+                {canManage && (
+                  <ActionMenu
+                    label={`Opciones del ${longDay(day.day)}`}
+                    items={[
+                      {
+                        label: 'Eliminar',
+                        icon: icons.trash,
+                        danger: true,
+                        onSelect: () => setDialog({ delete: day }),
+                      },
+                    ]}
+                  />
+                )}
               </li>
             ))}
           </ul>

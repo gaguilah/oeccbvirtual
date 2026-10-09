@@ -87,12 +87,12 @@ export default function HearingsTable({ rows, types, now, caption, highlightId, 
               <HearingActions hearing={hearing} now={now} onAction={onAction} className="-mt-1 -mr-2 shrink-0" />
             </div>
             <p className="text-sm font-semibold text-on-surface">{typeName(types, hearing.hearing_type_id)}</p>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <MobileCaseNumber caseNumber={hearing.case_number} />
-              <StatusBadge hearing={hearing} now={now} />
-            </div>
+            <MobileCaseNumber caseNumber={hearing.case_number} />
             {missingLink(hearing, type(hearing)) && <MissingLinkNote />}
             {hearing.auction_notice_deleted && <DeletedNoticeNote />}
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge hearing={hearing} now={now} />
+            </div>
           </li>
         ))}
       </ul>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Alert, Button, Card, EmptyState, Pagination, Spinner } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
+import { stickyFilters } from '../ui'
 import { PAGE_SIZE } from './api'
 import { TABS } from './data'
 import RequestsFilters from './RequestsFilters'
@@ -106,9 +107,9 @@ export default function PqrsAdminPage() {
         </Alert>
       )}
 
-      <RequestsFilters filters={filters} onChange={updateFilters} />
+      <RequestsFilters filters={filters} onChange={updateFilters} className={stickyFilters} />
 
-      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3">
+      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3 xl:scroll-mt-60">
         <p aria-live="polite" className="sr-only">
           {!loading && data ? `${total} PQRS` : ''}
         </p>
