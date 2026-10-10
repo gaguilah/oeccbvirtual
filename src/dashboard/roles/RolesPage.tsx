@@ -105,47 +105,45 @@ export default function RolesPage() {
                   flash?.highlightId === role.id && 'bg-primary-container/50',
                 )}
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">
                     <h2 className="text-lg font-bold">{role.name}</h2>
                     <code className="block font-mono text-xs text-on-surface-variant">{role.code}</code>
                   </div>
-                  <div className="flex items-start gap-1">
-                    <div className="mt-2 flex flex-wrap justify-end gap-2">
-                      {role.is_system && <Badge variant="primary">Sistema</Badge>}
-                      <Badge>{scopeLabel(role.scope)}</Badge>
-                    </div>
-                    <ActionMenu
-                      label={`Opciones del rol ${role.name}`}
-                      className="-mt-1 -mr-2"
-                      items={[
-                        canManage && !role.is_system
-                          ? {
-                              label: 'Editar',
-                              icon: icons.pencil,
-                              onSelect: () => navigate(`${ROLES_PATH}/${role.id}`),
-                            }
-                          : { label: 'Ver', icon: icons.eye, onSelect: () => navigate(`${ROLES_PATH}/${role.id}`) },
-                        ...(canManage && !role.is_system
-                          ? [
-                              {
-                                label: 'Borrar',
-                                icon: icons.trash,
-                                danger: true,
-                                disabledReason: blocker ?? undefined,
-                                onSelect: () => setToDelete(role),
-                              },
-                            ]
-                          : []),
-                      ]}
-                    />
-                  </div>
+                  <ActionMenu
+                    label={`Opciones del rol ${role.name}`}
+                    className="-mt-1 -mr-2 shrink-0"
+                    items={[
+                      canManage && !role.is_system
+                        ? {
+                            label: 'Editar',
+                            icon: icons.pencil,
+                            onSelect: () => navigate(`${ROLES_PATH}/${role.id}`),
+                          }
+                        : { label: 'Ver', icon: icons.eye, onSelect: () => navigate(`${ROLES_PATH}/${role.id}`) },
+                      ...(canManage && !role.is_system
+                        ? [
+                            {
+                              label: 'Borrar',
+                              icon: icons.trash,
+                              danger: true,
+                              disabledReason: blocker ?? undefined,
+                              onSelect: () => setToDelete(role),
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
                 </div>
                 {role.description && <p className="text-sm text-on-surface-variant">{role.description}</p>}
                 <p className="text-sm text-on-surface">
                   {plural(role.user_count, 'usuario', 'usuarios')} ·{' '}
                   {role.is_system ? 'Todos los permisos' : plural(role.permission_count, 'permiso', 'permisos')}
                 </p>
+                <div className="flex flex-wrap gap-2">
+                  {role.is_system && <Badge variant="primary">Sistema</Badge>}
+                  <Badge>{scopeLabel(role.scope)}</Badge>
+                </div>
               </li>
             )
           })}

@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { COURTS, formatDate, formatTime, pdfDownloadUrl } from '../../components/remates'
 import { ButtonAnchor, Modal, Spinner } from '../../components/ui'
+import { useAccess } from '../access'
+import { fetchHearingByNotice } from '../audiencias/api'
+import { HEARINGS_PATH, STATUS } from '../audiencias/data'
+import { dayOf } from '../audiencias/dates'
+import type { Hearing } from '../audiencias/types'
 import { fetchAudit, fetchNotice } from './api'
 import PublicationBadge from './PublicationBadge'
 import type { AdminNotice, NoticeAudit } from './types'
@@ -12,6 +18,25 @@ type Loaded = { notice: AdminNotice | null; audit: NoticeAudit | null }
 export default function NoticeDetailModal({ notice: initial, onClose }: { notice: AdminNotice; onClose: () => void }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const { can } = useAccess()
+  const canSeeHearings = can('audiencias.ver', initial.court)
+  const [hearing, setHearing] = useState<Hearing | null | undefined>(undefined)
+
+  // Audiencia de remate vinculada (docs/plan-audiencias.md, fase 3).
+  useEffect(() => {
+    if (!canSeeHearings) return
+    let active = true
+    fetchHearingByNotice(initial.id)
+      .then((row) => {
+        if (active) setHearing(row)
+      })
+      .catch(() => {
+        if (active) setHearing(null)
+      })
+    return () => {
+      active = false
+    }
+  }, [initial.id, canSeeHearings])
 
   useEffect(() => {
     let active = true
@@ -66,6 +91,23 @@ export default function NoticeDetailModal({ notice: initial, onClose }: { notice
             </ButtonAnchor>
           </div>
           <p className="text-xs break-all text-on-surface-variant">{notice.pdf_url}</p>
+          {canSeeHearings && hearing !== undefined && (
+            <div className="rounded-md bg-surface-container-low px-4 py-3 text-sm">
+              {hearing ? (
+                <p className="text-on-surface">
+                  Audiencia de remate vinculada: <strong>{STATUS[hearing.status_id].label}</strong> ·{' '}
+                  <Link
+                    to={`${HEARINGS_PATH}?vista=semana&fecha=${dayOf(hearing.scheduled_at)}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    Ver en Audiencias
+                  </Link>
+                </p>
+              ) : (
+                <p className="text-on-surface-variant">Este aviso no tiene audiencia de remate vinculada.</p>
+              )}
+            </div>
+          )}
           <div className="rounded-md bg-surface-container-low px-4 py-3 text-xs text-on-surface-variant">
             {loaded ? (
               <p>

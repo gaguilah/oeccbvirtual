@@ -146,7 +146,7 @@ export default function HearingTypesPage() {
             <li
               key={type.id}
               className={cn(
-                'flex items-center justify-between gap-3 rounded-lg bg-surface-container-low py-3 pr-2 pl-4',
+                'flex items-start justify-between gap-3 rounded-lg bg-surface-container-low py-3 pr-2 pl-4',
                 flash?.highlightId === type.id && 'bg-primary-container/50',
                 !type.is_active && 'opacity-70',
               )}

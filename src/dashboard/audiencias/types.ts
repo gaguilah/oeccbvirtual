@@ -24,6 +24,9 @@ export type Hearing = {
   recording_url: string | null
   status_id: HearingStatus
   notes: string | null
+  // Aviso de remate del que nació (fase 3) y si ese aviso se eliminó.
+  auction_notice_id: string | null
+  auction_notice_deleted: boolean
   created_at: string
   updated_at: string | null
 }

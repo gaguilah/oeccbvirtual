@@ -126,8 +126,8 @@ export default function AdminRematesTable({
               <MobileSchedule scheduledAt={notice.scheduled_at} court={notice.court} />
               <NoticeActions notice={notice} className="-mt-1 -mr-2 shrink-0" {...handlers} />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <MobileCaseNumber caseNumber={notice.case_number} />
+            <MobileCaseNumber caseNumber={notice.case_number} />
+            <div className="flex flex-wrap gap-2">
               <PublicationBadge published={notice.is_published} />
             </div>
           </li>

@@ -10,47 +10,15 @@ import {
   mobileItem,
   ScheduleCell,
 } from '../remates'
-import { Badge, ExternalLinkIcon } from '../ui'
+import { Badge, Button } from '../ui'
 import { STATUS } from './constants'
 import type { PublicHearing } from './types'
 
-type Props = { rows: PublicHearing[]; caption: string }
-
-const linkClass =
-  'inline-flex items-center gap-1 text-sm font-medium whitespace-nowrap text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
-
-function NewTab() {
-  return <span className="sr-only"> (se abre en una pestaña nueva)</span>
-}
-
-// Enlaces de la audiencia: "Conectarse" mientras está programada (o "Presencial" en los tipos sin
-// enlace) y "Ver grabación" cuando ya se realizó. Sin nada que mostrar: una raya.
-function Links({ hearing }: { hearing: PublicHearing }) {
-  const connect = hearing.status_id === 1 && hearing.connection_url
-  const presencial = hearing.status_id === 1 && !hearing.requires_link
-  if (!connect && !presencial && !hearing.recording_url)
-    return <span className="text-sm text-on-surface-variant">—</span>
-  return (
-    <span className="flex flex-wrap gap-x-5 gap-y-1">
-      {connect && (
-        <a href={hearing.connection_url!} target="_blank" rel="noopener noreferrer" className={linkClass}>
-          Conectarse
-          <ExternalLinkIcon className="size-3.5" />
-          <span className="sr-only"> a la audiencia del radicado {hearing.case_number}</span>
-          <NewTab />
-        </a>
-      )}
-      {presencial && <span className="text-sm text-on-surface-variant">Presencial</span>}
-      {hearing.recording_url && (
-        <a href={hearing.recording_url} target="_blank" rel="noopener noreferrer" className={linkClass}>
-          Ver grabación
-          <ExternalLinkIcon className="size-3.5" />
-          <span className="sr-only"> de la audiencia del radicado {hearing.case_number}</span>
-          <NewTab />
-        </a>
-      )}
-    </span>
-  )
+type Props = {
+  rows: PublicHearing[]
+  caption: string
+  // Abre el detalle de la audiencia.
+  onSelect: (hearing: PublicHearing) => void
 }
 
 function StatusBadge({ hearing, className }: { hearing: PublicHearing; className?: string }) {
@@ -62,19 +30,40 @@ function StatusBadge({ hearing, className }: { hearing: PublicHearing; className
   )
 }
 
-// Desde xl: tabla con las mismas celdas que Avisos de Remate. Antes: tarjetas apiladas.
-export default function AudienciasTable({ rows, caption }: Props) {
+function DetailButton({ hearing, onSelect }: { hearing: PublicHearing; onSelect: (hearing: PublicHearing) => void }) {
+  return (
+    <Button variant="secondary" size="sm" onClick={() => onSelect(hearing)} aria-haspopup="dialog">
+      <svg
+        className="size-4 shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+        />
+      </svg>
+      Ver audiencia
+      <span className="sr-only"> del radicado {hearing.case_number}</span>
+    </Button>
+  )
+}
+
+// Como la tabla de Avisos de Remate: fecha y hora, radicado, juzgado, estado y "Ver audiencia",
+// que abre el detalle. Escritorio: tabla. Celular: tarjetas con los mismos datos.
+export default function AudienciasTable({ rows, caption, onSelect }: Props) {
   return (
     <div>
-      <table className="hidden w-full text-left xl:table">
+      <table className="hidden w-full text-left md:table">
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-surface-container-low">
           <tr>
             <th scope="col" className={headerCell}>
               Fecha y hora
-            </th>
-            <th scope="col" className={headerCell}>
-              Audiencia
             </th>
             <th scope="col" className={headerCell}>
               Radicado
@@ -85,8 +74,8 @@ export default function AudienciasTable({ rows, caption }: Props) {
             <th scope="col" className={headerCell}>
               Estado
             </th>
-            <th scope="col" className={headerCell}>
-              Enlaces
+            <th scope="col" className={cn(headerCell, 'text-right')}>
+              <span className="sr-only">Audiencia</span>
             </th>
           </tr>
         </thead>
@@ -94,30 +83,28 @@ export default function AudienciasTable({ rows, caption }: Props) {
           {rows.map((hearing) => (
             <tr key={hearing.id} className={bodyRow}>
               <ScheduleCell scheduledAt={hearing.scheduled_at} />
-              <td className={cn(bodyCell, 'text-sm text-on-surface')}>{hearing.type_name}</td>
               <CaseNumberCell caseNumber={hearing.case_number} />
               <CourtCell court={hearing.court_id} />
               <td className={bodyCell}>
                 <StatusBadge hearing={hearing} />
               </td>
-              <td className={bodyCell}>
-                <Links hearing={hearing} />
+              <td className={cn(bodyCell, 'text-right')}>
+                <DetailButton hearing={hearing} onSelect={onSelect} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <ul aria-label={caption} className="xl:hidden">
+      <ul aria-label={caption} className="md:hidden">
         {rows.map((hearing) => (
           <li key={hearing.id} className={mobileItem}>
             <div className="flex items-start justify-between gap-3">
               <MobileSchedule scheduledAt={hearing.scheduled_at} court={hearing.court_id} />
               <StatusBadge hearing={hearing} className="shrink-0" />
             </div>
-            <p className="text-sm font-semibold text-on-surface">{hearing.type_name}</p>
             <MobileCaseNumber caseNumber={hearing.case_number} />
-            <Links hearing={hearing} />
+            <DetailButton hearing={hearing} onSelect={onSelect} />
           </li>
         ))}
       </ul>

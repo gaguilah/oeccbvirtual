@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 import { CASE_NUMBER_LENGTH, COURTS, sanitizeQuery } from '../remates'
-import { Input, Select } from '../ui'
-import type { AudienciasFilters as Filters, Court, HearingPeriod, HearingTypeOption } from './types'
+import { Input } from '../ui'
+import type { AudienciasFilters as Filters, Court, HearingPeriod } from './types'
 
 const SEARCH_DELAY_MS = 300
 
@@ -86,51 +86,48 @@ function SearchField({ query, onSearch }: { query: string; onSearch: (query: str
 
 type Props = {
   filters: Filters
-  types: HearingTypeOption[]
   onChange: (changes: Partial<Filters>, options?: { replace?: boolean }) => void
   className?: string
 }
 
-// Periodo (próximas o anteriores), juzgado, tipo, rango de fechas y radicado.
-export default function AudienciasFilters({ filters, types, onChange, className }: Props) {
+// Como Avisos de Remate: pestañas (próximas o anteriores), juzgado y buscador por radicado en una
+// fila; debajo, el rango de fechas. Devuelve las dos filas sueltas (sin envoltura) para que la
+// primera pueda quedar fija respecto al contenedor de la página; `className` va en la primera.
+export default function AudienciasFilters({ filters, onChange, className }: Props) {
   const handleSearch = useCallback((query: string) => onChange({ query }, { replace: true }), [onChange])
 
   return (
-    <div className={cn('space-y-5', className)}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-8">
-        <div role="group" aria-label="Periodo" className="flex gap-6">
-          {periods.map((period) => (
-            <PeriodButton
-              key={period.value}
-              active={filters.period === period.value}
-              onClick={() => onChange({ period: period.value })}
-            >
-              {period.label}
-            </PeriodButton>
-          ))}
+    <>
+      <div className={cn('flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between', className)}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-8">
+          <div role="group" aria-label="Periodo" className="flex gap-6">
+            {periods.map((period) => (
+              <PeriodButton
+                key={period.value}
+                active={filters.period === period.value}
+                onClick={() => onChange({ period: period.value })}
+              >
+                {period.label}
+              </PeriodButton>
+            ))}
+          </div>
+          <div role="group" aria-label="Juzgado" className="flex rounded-md bg-surface-container-low p-1">
+            {courts.map((court) => (
+              <CourtButton
+                key={court.label}
+                active={filters.court === court.value}
+                onClick={() => onChange({ court: court.value })}
+              >
+                {court.label}
+              </CourtButton>
+            ))}
+          </div>
         </div>
-        <div role="group" aria-label="Juzgado" className="flex rounded-md bg-surface-container-low p-1">
-          {courts.map((court) => (
-            <CourtButton
-              key={court.label}
-              active={filters.court === court.value}
-              onClick={() => onChange({ court: court.value })}
-            >
-              {court.label}
-            </CourtButton>
-          ))}
+        <div className="w-full lg:w-72">
+          <SearchField query={filters.query} onSearch={handleSearch} />
         </div>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Select
-          label="Tipo de audiencia"
-          value={filters.type ? String(filters.type) : ''}
-          onChange={(e) => onChange({ type: e.target.value ? Number(e.target.value) : null })}
-          options={[
-            { value: '', label: 'Todos' },
-            ...types.map((t) => ({ value: String(t.id), label: t.description })),
-          ]}
-        />
+      <div className="grid gap-3 sm:grid-cols-2 lg:max-w-xl">
         <Input
           label="Desde"
           type="date"
@@ -145,8 +142,7 @@ export default function AudienciasFilters({ filters, types, onChange, className 
           min={filters.from ?? undefined}
           onChange={(e) => onChange({ to: e.target.value || null })}
         />
-        <SearchField query={filters.query} onSearch={handleSearch} />
       </div>
-    </div>
+    </>
   )
 }

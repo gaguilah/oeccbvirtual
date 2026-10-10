@@ -7,6 +7,7 @@ import {
   RematesFilters,
   RematesIllustration,
   RematesTable,
+  stickyFilters,
   useAuctionNotices,
   useRematesFilters,
   type NoticeSelection,
@@ -109,14 +110,22 @@ export default function Remates() {
         />
         <RematesIllustration className="mx-auto hidden w-[90%] max-w-lg md:block lg:mx-0 lg:w-full lg:max-w-none" />
       </div>
-      <RematesFilters filters={filters} onChange={updateFilters} className="pt-4 md:pt-8" />
-      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3">
-        {/* Anuncia el total a lectores de pantalla cuando cambian los filtros. */}
-        <p aria-live="polite" className="sr-only">
-          {!loading && data ? `${total} ${total === 1 ? 'aviso encontrado' : 'avisos encontrados'}` : ''}
-        </p>
-        {renderResults()}
-      </section>
+      {/* Filtros y resultados juntos: la fila de filtros queda fija (desde tableta) solo mientras
+          se ve la tabla. */}
+      <div className="space-y-8 pt-4 md:pt-8">
+        <RematesFilters filters={filters} onChange={updateFilters} className={stickyFilters} />
+        <section
+          ref={resultsRef}
+          aria-label={caption}
+          className="scroll-mt-20 space-y-3 md:scroll-mt-60 lg:scroll-mt-40"
+        >
+          {/* Anuncia el total a lectores de pantalla cuando cambian los filtros. */}
+          <p aria-live="polite" className="sr-only">
+            {!loading && data ? `${total} ${total === 1 ? 'aviso encontrado' : 'avisos encontrados'}` : ''}
+          </p>
+          {renderResults()}
+        </section>
+      </div>
       <RemateDetailModal selection={selection} onClose={() => setSelection(null)} />
     </Container>
   )

@@ -42,12 +42,21 @@ type AdminRematesFiltersProps = {
   // Sin selector de juzgado: el usuario solo ve el suyo.
   showCourt: boolean
   onChange: (changes: Partial<AdminFilters>, options?: { replace?: boolean }) => void
+  // Botones de la página (Carpetas, Crear aviso): a la derecha de las pestañas.
+  actions?: ReactNode
+  // Clases del bloque de filtros (p. ej. stickyFilters: queda fijo entero).
   className?: string
 }
 
 // Periodo (Próximos, Pasados, Todos), juzgado, publicación y radicado. La búsqueda espera a que
 // se deje de escribir y no llena el historial.
-export default function AdminRematesFilters({ filters, showCourt, onChange, className }: AdminRematesFiltersProps) {
+export default function AdminRematesFilters({
+  filters,
+  showCourt,
+  onChange,
+  actions,
+  className,
+}: AdminRematesFiltersProps) {
   const [query, setQuery] = useState(filters.query)
   const [syncedQuery, setSyncedQuery] = useState(filters.query)
 
@@ -65,16 +74,19 @@ export default function AdminRematesFilters({ filters, showCourt, onChange, clas
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="flex flex-wrap gap-6" role="group" aria-label="Periodo">
-        {periods.map((period) => (
-          <PeriodButton
-            key={period.value}
-            active={filters.period === period.value}
-            onClick={() => onChange({ period: period.value })}
-          >
-            {period.label}
-          </PeriodButton>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-6" role="group" aria-label="Periodo">
+          {periods.map((period) => (
+            <PeriodButton
+              key={period.value}
+              active={filters.period === period.value}
+              onClick={() => onChange({ period: period.value })}
+            >
+              {period.label}
+            </PeriodButton>
+          ))}
+        </div>
+        {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
       <div className={cn('grid gap-3 sm:grid-cols-2', showCourt ? 'lg:grid-cols-3' : 'lg:grid-cols-2')}>
         {showCourt && (

@@ -103,31 +103,35 @@ export default function FoldersPage() {
             return (
               <li
                 key={folder.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-surface-container-low p-4"
+                className="flex items-start justify-between gap-3 rounded-lg bg-surface-container-low p-4"
               >
-                <div>
-                  <p className="font-mono text-sm text-on-surface">
-                    {folder.group_id} / {folder.folder_id}
-                  </p>
-                  <p className="text-xs text-on-surface-variant">Desde el {longDate(folder.valid_from)}</p>
+                <div className="min-w-0 space-y-2">
+                  <div>
+                    <p className="font-mono text-sm text-on-surface">
+                      {folder.group_id} / {folder.folder_id}
+                    </p>
+                    <p className="text-xs text-on-surface-variant">Desde el {longDate(folder.valid_from)}</p>
+                  </div>
+                  {(folder.id === current?.id || future) && (
+                    <div className="flex flex-wrap gap-2">
+                      {folder.id === current?.id && <Badge variant="success">Vigente</Badge>}
+                      {future && <Badge variant="primary">Próxima</Badge>}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  {folder.id === current?.id && <Badge variant="success">Vigente</Badge>}
-                  {future && <Badge variant="primary">Próxima</Badge>}
-                  <ActionMenu
-                    label={`Opciones de la carpeta ${folder.group_id} / ${folder.folder_id}`}
-                    items={[
-                      {
-                        label: 'Borrar',
-                        icon: icons.trash,
-                        danger: true,
-                        // Solo las futuras: una vigente o pasada ya la usan avisos creados.
-                        disabledReason: future ? undefined : 'Ya rige: la usan avisos creados',
-                        onSelect: () => setToDelete(folder),
-                      },
-                    ]}
-                  />
-                </div>
+                <ActionMenu
+                  label={`Opciones de la carpeta ${folder.group_id} / ${folder.folder_id}`}
+                  items={[
+                    {
+                      label: 'Borrar',
+                      icon: icons.trash,
+                      danger: true,
+                      // Solo las futuras: una vigente o pasada ya la usan avisos creados.
+                      disabledReason: future ? undefined : 'Ya rige: la usan avisos creados',
+                      onSelect: () => setToDelete(folder),
+                    },
+                  ]}
+                />
               </li>
             )
           })}

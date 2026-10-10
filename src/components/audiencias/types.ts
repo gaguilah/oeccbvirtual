@@ -19,12 +19,9 @@ export type PublicHearing = {
   total_count: number
 }
 
-export type HearingTypeOption = { id: number; description: string }
-
 export type AudienciasFilters = {
   period: HearingPeriod
   court: Court | null
-  type: number | null
   from: string | null
   to: string | null
   query: string

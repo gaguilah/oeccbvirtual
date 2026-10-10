@@ -1,15 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
+  AudienciaDetailModal,
   AudienciasFilters,
   AudienciasIllustration,
   AudienciasTable,
   PAGE_SIZE,
   useAudiencias,
   useAudienciasFilters,
-  useHearingTypeOptions,
+  type PublicHearing,
 } from '../components/audiencias'
 import { Container, PageHeader } from '../components/layout'
-import { COURTS } from '../components/remates'
+import { COURTS, stickyFilters } from '../components/remates'
 import { Alert, Button, Card, EmptyState, Pagination, Spinner } from '../components/ui'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
@@ -19,7 +20,7 @@ export default function Audiencias() {
   useDocumentMeta({ title: 'Audiencias' })
   const { filters, updateFilters } = useAudienciasFilters()
   const { data, loading, error, retry } = useAudiencias(filters)
-  const types = useHearingTypeOptions()
+  const [selected, setSelected] = useState<PublicHearing | null>(null)
   const resultsRef = useRef<HTMLElement>(null)
 
   // Enlace a una página que ya no existe: ir a la primera.
@@ -64,7 +65,7 @@ export default function Audiencias() {
       )
     return (
       <Card aria-busy={loading} className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
-        <AudienciasTable rows={data.rows} caption={caption} />
+        <AudienciasTable rows={data.rows} caption={caption} onSelect={setSelected} />
         <div className="flex flex-col items-center justify-between gap-4 bg-surface-container-low px-4 py-4 sm:flex-row lg:px-6">
           <p className="text-sm text-on-surface-variant">
             Mostrando{' '}
@@ -99,16 +100,25 @@ export default function Audiencias() {
         />
         <AudienciasIllustration className="mx-auto hidden w-[90%] max-w-lg md:block lg:mx-0 lg:w-full lg:max-w-none" />
       </div>
-      <AudienciasFilters filters={filters} types={types} onChange={updateFilters} className="pt-4 md:pt-8" />
-      <section ref={resultsRef} aria-label={caption} className="scroll-mt-20 space-y-3">
-        <p aria-live="polite" className="sr-only">
-          {!loading && data ? `${total} ${total === 1 ? 'audiencia encontrada' : 'audiencias encontradas'}` : ''}
-        </p>
-        {renderResults()}
-        <p className="text-xs text-on-surface-variant">
-          Se muestran las audiencias de los últimos 3 meses y todas las programadas. Hora de Colombia.
-        </p>
-      </section>
+      {/* Filtros y resultados juntos: la primera fila de filtros queda fija (desde tableta) solo
+          mientras se ve la tabla; las fechas se desplazan con la página. */}
+      <div className="space-y-5 pt-4 md:pt-8">
+        <AudienciasFilters filters={filters} onChange={updateFilters} className={stickyFilters} />
+        <section
+          ref={resultsRef}
+          aria-label={caption}
+          className="scroll-mt-20 space-y-3 pt-3 md:scroll-mt-60 lg:scroll-mt-40"
+        >
+          <p aria-live="polite" className="sr-only">
+            {!loading && data ? `${total} ${total === 1 ? 'audiencia encontrada' : 'audiencias encontradas'}` : ''}
+          </p>
+          {renderResults()}
+          <p className="text-xs text-on-surface-variant">
+            Se muestran las audiencias de los últimos 3 meses y todas las programadas. Hora de Colombia.
+          </p>
+        </section>
+      </div>
+      <AudienciaDetailModal hearing={selected} onClose={() => setSelected(null)} />
     </Container>
   )
 }

@@ -3,7 +3,7 @@ import { Alert, Button, EmptyState, Spinner } from '../../components/ui'
 import { useAuth } from '../../context/auth'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { SUPERADMIN, useAccess } from '../access'
-import { ConfirmDialog, Icon, icons } from '../ui'
+import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import { manageUsers } from './api'
 import { displayName, EMPTY_FILTERS, filterUsers } from './data'
 import PasswordNoticeCard from './PasswordNoticeCard'
@@ -54,7 +54,22 @@ export default function UsersPage() {
 
       {notice && <PasswordNoticeCard notice={notice} onClose={() => setNotice(null)} />}
 
-      <UsersFilters filters={filters} roles={roles} onChange={setFilters} />
+      {/* Total y "Actualizar" encima de los filtros. */}
+      {!loading && users.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm text-on-surface-variant" aria-live="polite">
+            {visible.length === users.length
+              ? `${users.length} ${users.length === 1 ? 'usuario' : 'usuarios'}`
+              : `${visible.length} de ${users.length} usuarios`}
+          </p>
+          <Button variant="tertiary" size="sm" onClick={reload} loading={refreshing}>
+            {!refreshing && <Icon paths={icons.refresh} className="size-4" />}
+            Actualizar
+          </Button>
+        </div>
+      )}
+
+      <UsersFilters filters={filters} roles={roles} onChange={setFilters} className={stickyFilters} />
 
       {error && (
         <Alert variant="error" title={error}>
@@ -80,28 +95,15 @@ export default function UsersPage() {
           }
         />
       ) : (
-        <>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm text-on-surface-variant" aria-live="polite">
-              {visible.length === users.length
-                ? `${users.length} ${users.length === 1 ? 'usuario' : 'usuarios'}`
-                : `${visible.length} de ${users.length} usuarios`}
-            </p>
-            <Button variant="tertiary" size="sm" onClick={reload} loading={refreshing}>
-              {!refreshing && <Icon paths={icons.refresh} className="size-4" />}
-              Actualizar
-            </Button>
-          </div>
-          <UsersTable
-            users={visible}
-            currentUserId={session?.user.id ?? null}
-            highlightId={highlightId}
-            canManage={canManage}
-            onEdit={(user) => setDialog({ kind: 'form', user, key: Date.now() })}
-            onToggleActive={(user) => setDialog({ kind: 'toggle', user })}
-            onResetPassword={(user) => setDialog({ kind: 'reset', user })}
-          />
-        </>
+        <UsersTable
+          users={visible}
+          currentUserId={session?.user.id ?? null}
+          highlightId={highlightId}
+          canManage={canManage}
+          onEdit={(user) => setDialog({ kind: 'form', user, key: Date.now() })}
+          onToggleActive={(user) => setDialog({ kind: 'toggle', user })}
+          onResetPassword={(user) => setDialog({ kind: 'reset', user })}
+        />
       )}
 
       {dialog?.kind === 'form' && (

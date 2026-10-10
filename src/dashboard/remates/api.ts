@@ -1,5 +1,6 @@
 import { PAGE_SIZE, realizadoCutoff, type Court } from '../../components/remates'
 import { supabase } from '../../lib/supabase'
+import { hearingError } from '../audiencias/api'
 import type { AdminFilters, AdminNotice, NoticeAudit, PdfFolder } from './types'
 
 const COLUMNS = 'id, case_number, court, scheduled_at, pdf_url, is_published, created_at, updated_at'
@@ -10,6 +11,11 @@ const RANGE_NOT_SATISFIABLE = 'PGRST103'
 // Errores de la base de datos (restricciones, triggers, políticas) → mensajes en español.
 export function noticeError(error: { message?: string; code?: string } | null): Error {
   const message = error?.message ?? ''
+  // Errores de la audiencia vinculada (crear o mover la audiencia junto con el aviso).
+  if (/hearing_|remate_type_missing|link_mismatch/.test(message)) {
+    const reason = hearingError(error)
+    return new Error(`Audiencia vinculada: ${reason.message}`)
+  }
   if (message.includes('no_pdf_folder'))
     return new Error('No hay carpeta de publicación vigente para hoy. Pida que agreguen una en Carpetas.')
   if (message.includes('remates_editar_required'))
@@ -62,6 +68,18 @@ export async function createNotice(input: NoticeInput): Promise<string> {
   const { data, error } = await supabase.from('auction_notices').insert(input).select('id').single()
   if (error) throw noticeError(error)
   return data.id as string
+}
+
+// Crea el aviso y su "Audiencia de Remate" en una sola transacción (o los dos o ninguno).
+export async function createNoticeWithHearing(input: NoticeInput): Promise<string> {
+  const { data, error } = await supabase.rpc('create_auction_notice_with_hearing', {
+    p_case_number: input.case_number,
+    p_court: input.court,
+    p_scheduled_at: input.scheduled_at,
+    p_is_published: input.is_published ?? false,
+  })
+  if (error) throw noticeError(error)
+  return data as string
 }
 
 export async function updateNotice(

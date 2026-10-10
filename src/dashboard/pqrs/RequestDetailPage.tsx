@@ -299,7 +299,7 @@ export default function RequestDetailPage() {
             {loaded.emails.map((email) => (
               <li
                 key={`${email.kind}-${email.created_at}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-container-low px-4 py-3 text-sm"
+                className="space-y-2 rounded-lg bg-surface-container-low px-4 py-3 text-sm"
               >
                 <div className="min-w-0">
                   <p className="font-medium text-on-surface">{EMAIL_KINDS[email.kind] ?? email.kind}</p>
@@ -308,9 +308,11 @@ export default function RequestDetailPage() {
                   </p>
                   {email.error && <p className="text-xs text-red-700 dark:text-red-400">{email.error}</p>}
                 </div>
-                <Badge variant={email.status === 'sent' ? 'success' : 'danger'}>
-                  {email.status === 'sent' ? 'Enviado' : 'Falló'}
-                </Badge>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant={email.status === 'sent' ? 'success' : 'danger'}>
+                    {email.status === 'sent' ? 'Enviado' : 'Falló'}
+                  </Badge>
+                </div>
               </li>
             ))}
           </ul>

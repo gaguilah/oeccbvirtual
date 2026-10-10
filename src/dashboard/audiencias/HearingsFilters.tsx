@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { CASE_NUMBER_LENGTH, COURTS, sanitizeQuery } from '../../components/remates'
 import { Input, Select } from '../../components/ui'
 import { cn } from '../../lib/cn'
@@ -13,11 +13,24 @@ type Props = {
   showCourt: boolean
   pendingClose: number | undefined
   onChange: (changes: Partial<HearingFilters>, options?: { replace?: boolean }) => void
+  // Fila de la vista (Tabla, Semana, Mes) y los botones de la página, encima de las pestañas.
+  toolbar?: ReactNode
+  // Clases de todo el bloque, p. ej. stickyFilters en la vista Tabla.
+  className?: string
 }
 
-// Pestañas (solo en la tabla), juzgado, tipo, fechas (solo en la tabla) y radicado. La búsqueda
-// espera a que se deje de escribir y no llena el historial.
-export default function HearingsFilters({ filters, types, showCourt, pendingClose, onChange }: Props) {
+// Barra (vista y botones), pestañas (solo en la tabla) y debajo juzgado, tipo, fechas (solo en la
+// tabla) y radicado; `className` va en todo el bloque (p. ej. stickyFilters: queda fijo entero).
+// La búsqueda espera a que se deje de escribir y no llena el historial.
+export default function HearingsFilters({
+  filters,
+  types,
+  showCourt,
+  pendingClose,
+  onChange,
+  toolbar,
+  className,
+}: Props) {
   const [query, setQuery] = useState(filters.query)
   const [syncedQuery, setSyncedQuery] = useState(filters.query)
   const table = filters.view === 'tabla'
@@ -36,32 +49,35 @@ export default function HearingsFilters({ filters, types, showCourt, pendingClos
   const columns = 2 + (showCourt ? 1 : 0) + (table ? 2 : 0)
 
   return (
-    <div className="space-y-4">
-      {table && (
-        <div className="flex flex-wrap gap-6" role="group" aria-label="Estado">
-          {TABS.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => onChange({ tab: tab.value })}
-              aria-pressed={filters.tab === tab.value}
-              className={cn(
-                'inline-flex min-h-10 items-center gap-2 border-b-2 px-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                filters.tab === tab.value
-                  ? 'border-primary font-semibold text-on-surface'
-                  : 'border-transparent font-medium text-on-surface-variant hover:text-on-surface',
-              )}
-            >
-              {tab.label}
-              {tab.value === 'por-cerrar' && pendingClose !== undefined && pendingClose > 0 && (
-                <span className="rounded-full bg-amber-500/15 px-2 text-xs font-semibold text-amber-800 dark:text-amber-300">
-                  {pendingClose}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+    <div className={cn('space-y-4', className)}>
+      <div className="space-y-4">
+        {toolbar}
+        {table && (
+          <div className="flex flex-wrap gap-6" role="group" aria-label="Estado">
+            {TABS.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => onChange({ tab: tab.value })}
+                aria-pressed={filters.tab === tab.value}
+                className={cn(
+                  'inline-flex min-h-10 items-center gap-2 border-b-2 px-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                  filters.tab === tab.value
+                    ? 'border-primary font-semibold text-on-surface'
+                    : 'border-transparent font-medium text-on-surface-variant hover:text-on-surface',
+                )}
+              >
+                {tab.label}
+                {tab.value === 'por-cerrar' && pendingClose !== undefined && pendingClose > 0 && (
+                  <span className="rounded-full bg-amber-500/15 px-2 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                    {pendingClose}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <div
         className={cn(
           'grid gap-3 sm:grid-cols-2',

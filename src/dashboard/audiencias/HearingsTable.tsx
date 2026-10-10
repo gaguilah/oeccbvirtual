@@ -13,7 +13,7 @@ import { cn } from '../../lib/cn'
 import type { HearingAction } from './actions'
 import { missingLink, typeName } from './data'
 import HearingActions from './HearingActions'
-import { MissingLinkNote, StatusBadge } from './HearingBadges'
+import { DeletedNoticeNote, MissingLinkNote, StatusBadge } from './HearingBadges'
 import type { Hearing, HearingType } from './types'
 
 type Props = {
@@ -64,6 +64,7 @@ export default function HearingsTable({ rows, types, now, caption, highlightId, 
               <td className={cn(bodyCell, 'text-sm text-on-surface')}>
                 {typeName(types, hearing.hearing_type_id)}
                 {missingLink(hearing, type(hearing)) && <MissingLinkNote className="mt-1" />}
+                {hearing.auction_notice_deleted && <DeletedNoticeNote className="mt-1" />}
               </td>
               <CaseNumberCell caseNumber={hearing.case_number} />
               <CourtCell court={hearing.court_id} />
@@ -86,11 +87,12 @@ export default function HearingsTable({ rows, types, now, caption, highlightId, 
               <HearingActions hearing={hearing} now={now} onAction={onAction} className="-mt-1 -mr-2 shrink-0" />
             </div>
             <p className="text-sm font-semibold text-on-surface">{typeName(types, hearing.hearing_type_id)}</p>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <MobileCaseNumber caseNumber={hearing.case_number} />
+            <MobileCaseNumber caseNumber={hearing.case_number} />
+            {missingLink(hearing, type(hearing)) && <MissingLinkNote />}
+            {hearing.auction_notice_deleted && <DeletedNoticeNote />}
+            <div className="flex flex-wrap gap-2">
               <StatusBadge hearing={hearing} now={now} />
             </div>
-            {missingLink(hearing, type(hearing)) && <MissingLinkNote />}
           </li>
         ))}
       </ul>
