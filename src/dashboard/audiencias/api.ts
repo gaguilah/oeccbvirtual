@@ -4,7 +4,7 @@ import { addDays, startOfDay } from './dates'
 import type { Court, Hearing, HearingAudit, HearingFilters, HearingType, NonBusinessDay } from './types'
 
 const COLUMNS =
-  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, auction_notice_id, auction_notice_deleted, created_at, updated_at'
+  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, auction_notice_id, auction_notice_deleted, recording_set_at, recording_set_by_name, recording_set_by_position, created_at, updated_at'
 
 const RANGE_NOT_SATISFIABLE = 'PGRST103'
 

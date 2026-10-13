@@ -7,6 +7,7 @@ import { useAccess } from '../access'
 import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import type { HearingAction } from './actions'
 import { deleteHearing, updateHearing } from './api'
+import { downloadHearingFormat } from './formato'
 import { HEARING_TYPES_PATH, PAGE_SIZE, TABS, typeName, VIEWS } from './data'
 import HearingDetailModal from './HearingDetailModal'
 import HearingFormModal from './HearingFormModal'
@@ -20,7 +21,7 @@ import { useHearingsCalendar, useHearingsTable, useHearingTypes } from './useHea
 
 type Dialog =
   | { kind: 'form'; hearing: Hearing | null; key: number }
-  | { kind: Exclude<HearingAction, 'edit'>; hearing: Hearing }
+  | { kind: Exclude<HearingAction, 'edit' | 'format'>; hearing: Hearing }
   | null
 
 const tagIcon = [
@@ -63,7 +64,20 @@ export default function HearingsPage() {
     reload()
   }
 
+  // Descarga del formato (desde el menú ⋮): no abre ningún diálogo; si falla, lo avisa arriba.
+  const downloadFormat = async (hearing: Hearing) => {
+    try {
+      await downloadHearingFormat(hearing, typeName(types ?? [], hearing.hearing_type_id))
+    } catch (error) {
+      setFlash({ message: (error as Error).message, highlightId: hearing.id, error: true })
+    }
+  }
+
   const onAction = (action: HearingAction, hearing: Hearing) => {
+    if (action === 'format') {
+      void downloadFormat(hearing)
+      return
+    }
     setRecording(action === 'recording' ? (hearing.recording_url ?? '') : '')
     setNotes(hearing.notes ?? '')
     if (action === 'edit') setDialog({ kind: 'form', hearing, key: Date.now() })

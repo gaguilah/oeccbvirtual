@@ -27,6 +27,11 @@ export type Hearing = {
   // Aviso de remate del que nació (fase 3) y si ese aviso se eliminó.
   auction_notice_id: string | null
   auction_notice_deleted: boolean
+  // Quién registró (o corrigió por última vez) la grabación y cuándo, con copia de su nombre y cargo
+  // en ese momento (trigger hearings_recording_author). Los usa el formato de referencia cruzada.
+  recording_set_at: string | null
+  recording_set_by_name: string | null
+  recording_set_by_position: string | null
   created_at: string
   updated_at: string | null
 }

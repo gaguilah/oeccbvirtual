@@ -8,7 +8,14 @@ const EMPTY: PasswordFields = { current: '', password: '', confirm: '' }
 
 // Cambio de contraseña del usuario en sesión: pide la actual, la nueva y su confirmación.
 // onChanged se llama tras un cambio exitoso (p. ej. para quitar el aviso de contraseña temporal).
-export default function PasswordForm({ onChanged }: { onChanged?: () => Promise<void> | void }) {
+// blockedReason: el formulario queda deshabilitado con ese motivo (p. ej. falta elegir el cargo).
+export default function PasswordForm({
+  onChanged,
+  blockedReason,
+}: {
+  onChanged?: () => Promise<void> | void
+  blockedReason?: string
+}) {
   const { email } = useProfile()
   const [fields, setFields] = useState<PasswordFields>(EMPTY)
   const [errors, setErrors] = useState<Partial<Record<keyof PasswordFields, string>>>({})
@@ -86,9 +93,18 @@ export default function PasswordForm({ onChanged }: { onChanged?: () => Promise<
               {message.text}
             </Alert>
           )}
+          {blockedReason && (
+            <Alert variant="info" live={false}>
+              {blockedReason}
+            </Alert>
+          )}
         </CardBody>
         <CardFooter className="flex justify-end">
-          <Button type="submit" loading={saving} disabled={!fields.current && !fields.password && !fields.confirm}>
+          <Button
+            type="submit"
+            loading={saving}
+            disabled={Boolean(blockedReason) || (!fields.current && !fields.password && !fields.confirm)}
+          >
             Cambiar contraseña
           </Button>
         </CardFooter>

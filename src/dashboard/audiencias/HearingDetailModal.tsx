@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { COURTS, formatDate, formatTime } from '../../components/remates'
-import { Button, Modal } from '../../components/ui'
+import { Alert, Button, Modal } from '../../components/ui'
 import { useAccess } from '../access'
-import { hearingActionItems, type HearingAction } from './actions'
+import { FORMAT_LABEL, hearingActionItems, type HearingAction } from './actions'
 import { fetchAudit } from './api'
 import { missingLink, typeName } from './data'
+import { downloadHearingFormat, hasFormat } from './formato'
 import { MissingLinkNote, StatusBadge } from './HearingBadges'
 import type { Hearing, HearingAudit, HearingType } from './types'
 
@@ -45,8 +46,23 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
   const [audit, setAudit] = useState<HearingAudit | null>(null)
   const type = types.find((t) => t.id === hearing.hearing_type_id)
   const actions = hearingActionItems(hearing, now, can, onAction, { includeView: false }).filter(
-    (item) => !item.disabledReason,
+    (item) => !item.disabledReason && item.label !== FORMAT_LABEL,
   )
+  // El formato se genera aquí mismo, sin cerrar el modal.
+  const [downloading, setDownloading] = useState(false)
+  const [formatError, setFormatError] = useState<string | null>(null)
+
+  async function handleFormat() {
+    setFormatError(null)
+    setDownloading(true)
+    try {
+      await downloadHearingFormat(hearing, typeName(types, hearing.hearing_type_id))
+    } catch (error) {
+      setFormatError((error as Error).message)
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   useEffect(() => {
     let active = true
@@ -71,6 +87,11 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
           <Button variant="secondary" onClick={onClose}>
             Cerrar
           </Button>
+          {hasFormat(hearing) && (
+            <Button variant="secondary" loading={downloading} onClick={handleFormat}>
+              {FORMAT_LABEL}
+            </Button>
+          )}
           {actions.map((item) => (
             <Button
               key={item.label}
@@ -110,6 +131,12 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
         {hearing.recording_url && (
           <Row label="Grabación">
             <ExternalLink href={hearing.recording_url}>Ver grabación</ExternalLink>
+            {hearing.recording_set_at && (
+              <span className="mt-1 block text-xs text-on-surface-variant">
+                Registrada el {formatDate(hearing.recording_set_at)}
+                {hearing.recording_set_by_name && ` por ${hearing.recording_set_by_name}`}
+              </span>
+            )}
           </Row>
         )}
         {(hearing.auction_notice_id || hearing.auction_notice_deleted) && (
@@ -144,6 +171,11 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
           </span>
         </Row>
       </dl>
+      {formatError && (
+        <Alert variant="error" className="mt-4" onClose={() => setFormatError(null)}>
+          {formatError}
+        </Alert>
+      )}
     </Modal>
   )
 }
