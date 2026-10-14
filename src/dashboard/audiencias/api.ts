@@ -4,7 +4,7 @@ import { addDays, startOfDay } from './dates'
 import type { Court, Hearing, HearingAudit, HearingFilters, HearingType, NonBusinessDay } from './types'
 
 const COLUMNS =
-  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, auction_notice_id, auction_notice_deleted, recording_set_at, recording_set_by_name, recording_set_by_position, created_at, updated_at'
+  'id, scheduled_at, hearing_type_id, case_number, court_id, connection_url, recording_url, status_id, notes, auction_notice_id, auction_notice_deleted, recording_set_at, recording_set_by_name, recording_set_by_position, filed_at, filed_by_name, created_at, updated_at'
 
 const RANGE_NOT_SATISFIABLE = 'PGRST103'
 
@@ -25,6 +25,7 @@ export function hearingError(error: { message?: string; code?: string } | null):
     ['hearing_too_early_to_cancel', 'Solo se puede cancelar desde la hora programada. Para cambiar la fecha, edítela.'],
     ['remate_type_missing', 'No existe el tipo activo "Audiencia de Remate": pida al administrador que lo active.'],
     ['link_mismatch', 'No se pudo vincular la audiencia con el aviso.'],
+    ['hearing_filed_not_realizada', 'Solo se marca como cargada al expediente una audiencia realizada.'],
     ['hearing_not_deletable', 'Solo se elimina una audiencia programada, futura, sin enlace de conexión ni grabación.'],
   ]
   const match = known.find(([code]) => message.includes(code))
@@ -176,17 +177,34 @@ export async function updateHearing(
   if (!data.length) throw new Error('La audiencia ya no existe o no tiene permiso para editarla.')
 }
 
+// Marca o desmarca el formato como cargado al expediente. La fecha y el usuario los pone el trigger
+// hearings_filed_rules; aquí solo se envía si está cargado o no. Devuelve los datos guardados.
+export async function setHearingFiled(
+  id: string,
+  filed: boolean,
+): Promise<{ filed_at: string | null; filed_by_name: string | null }> {
+  const { data, error } = await supabase
+    .from('hearings')
+    .update({ filed_at: filed ? new Date().toISOString() : null })
+    .eq('id', id)
+    .select('filed_at, filed_by_name')
+  if (error) throw hearingError(error)
+  if (!data.length) throw new Error('La audiencia ya no existe o no tiene permiso para editarla.')
+  return data[0]
+}
+
 export async function deleteHearing(id: string): Promise<void> {
   const { data, error } = await supabase.from('hearings').delete().eq('id', id).select('id')
   if (error) throw hearingError(error)
   if (!data.length) throw new Error('La audiencia ya no existe o no tiene permiso para eliminarla.')
 }
 
-// Tarjeta de Inicio: audiencias programadas para hoy y por cerrar (según el alcance del usuario).
-export async function fetchHearingsSummary(): Promise<{ today: number; pendingClose: number }> {
+// Tarjeta de Inicio: audiencias programadas para hoy, por cerrar y realizadas pendientes de cargar al
+// expediente (según el alcance del usuario).
+export async function fetchHearingsSummary(): Promise<{ today: number; pendingClose: number; pendingFile: number }> {
   const now = new Date()
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(now)
-  const [todayResult, pendingResult] = await Promise.all([
+  const [todayResult, pendingResult, fileResult] = await Promise.all([
     supabase
       .from('hearings')
       .select('id', { count: 'exact', head: true })
@@ -198,10 +216,12 @@ export async function fetchHearingsSummary(): Promise<{ today: number; pendingCl
       .select('id', { count: 'exact', head: true })
       .eq('status_id', 1)
       .lte('scheduled_at', now.toISOString()),
+    supabase.from('hearings').select('id', { count: 'exact', head: true }).eq('status_id', 2).is('filed_at', null),
   ])
   if (todayResult.error) throw hearingError(todayResult.error)
   if (pendingResult.error) throw hearingError(pendingResult.error)
-  return { today: todayResult.count ?? 0, pendingClose: pendingResult.count ?? 0 }
+  if (fileResult.error) throw hearingError(fileResult.error)
+  return { today: todayResult.count ?? 0, pendingClose: pendingResult.count ?? 0, pendingFile: fileResult.count ?? 0 }
 }
 
 // Tipos de audiencia (todos; el formulario ofrece solo los activos).

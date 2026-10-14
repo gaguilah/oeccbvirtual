@@ -32,6 +32,10 @@ export type Hearing = {
   recording_set_at: string | null
   recording_set_by_name: string | null
   recording_set_by_position: string | null
+  // Formato cargado al expediente (docs/plan-audiencias-expediente.md): null = pendiente. Lo fija el
+  // trigger hearings_filed_rules (hora del servidor y usuario).
+  filed_at: string | null
+  filed_by_name: string | null
   created_at: string
   updated_at: string | null
 }

@@ -6,7 +6,7 @@ import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
 import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import type { HearingAction } from './actions'
-import { deleteHearing, updateHearing } from './api'
+import { deleteHearing, setHearingFiled, updateHearing } from './api'
 import { downloadHearingFormat } from './formato'
 import { HEARING_TYPES_PATH, PAGE_SIZE, TABS, typeName, VIEWS } from './data'
 import HearingDetailModal from './HearingDetailModal'
@@ -21,7 +21,7 @@ import { useHearingsCalendar, useHearingsTable, useHearingTypes } from './useHea
 
 type Dialog =
   | { kind: 'form'; hearing: Hearing | null; key: number }
-  | { kind: Exclude<HearingAction, 'edit' | 'format'>; hearing: Hearing }
+  | { kind: Exclude<HearingAction, 'edit' | 'format' | 'file'>; hearing: Hearing }
   | null
 
 const tagIcon = [
@@ -73,9 +73,23 @@ export default function HearingsPage() {
     }
   }
 
+  // Marcar cargado al expediente (desde el menú ⋮): sin confirmación. Desmarcar sí la pide.
+  const fileHearing = async (hearing: Hearing) => {
+    try {
+      await setHearingFiled(hearing.id, true)
+      done(`Audiencia del radicado ${hearing.case_number} marcada como cargada al expediente.`, hearing.id)
+    } catch (error) {
+      setFlash({ message: (error as Error).message, highlightId: hearing.id, error: true })
+    }
+  }
+
   const onAction = (action: HearingAction, hearing: Hearing) => {
     if (action === 'format') {
       void downloadFormat(hearing)
+      return
+    }
+    if (action === 'file') {
+      void fileHearing(hearing)
       return
     }
     setRecording(action === 'recording' ? (hearing.recording_url ?? '') : '')
@@ -271,6 +285,7 @@ export default function HearingsPage() {
           now={now}
           onClose={() => setDialog(null)}
           onAction={onAction}
+          onChanged={reload}
         />
       )}
 
@@ -340,6 +355,9 @@ export default function HearingsPage() {
             done(`Grabación de la audiencia del radicado ${dialog.hearing.case_number} actualizada.`, dialog.hearing.id)
           }}
         >
+          {dialog.hearing.filed_at && (
+            <p>El formato cambiará y la audiencia quedará como pendiente de cargar al expediente.</p>
+          )}
           <Input
             label="Enlace de la grabación"
             type="url"
@@ -348,6 +366,24 @@ export default function HearingsPage() {
             placeholder="https://"
             className="text-left"
           />
+        </ConfirmDialog>
+      )}
+
+      {dialog?.kind === 'unfile' && (
+        <ConfirmDialog
+          open
+          title="¿Desmarcar como cargado al expediente?"
+          confirmLabel="Desmarcar"
+          onClose={() => setDialog(null)}
+          onConfirm={async () => {
+            await setHearingFiled(dialog.hearing.id, false)
+            done(
+              `Audiencia del radicado ${dialog.hearing.case_number} pendiente de cargar al expediente.`,
+              dialog.hearing.id,
+            )
+          }}
+        >
+          <p>La audiencia del {label(dialog.hearing)} volverá a quedar pendiente de cargar al expediente.</p>
         </ConfirmDialog>
       )}
 

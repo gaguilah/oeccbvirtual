@@ -25,7 +25,11 @@ export default function Modal({ open, onClose, title, children, footer, classNam
   return (
     <dialog
       ref={ref}
-      onClose={onClose}
+      onClose={(e) => {
+        // React propaga el `close` de un <dialog> anidado (p. ej. una confirmación) por el árbol:
+        // solo cuenta el cierre de este diálogo.
+        if (e.target === e.currentTarget) onClose()
+      }}
       onClick={(e) => {
         // Cierra al hacer clic en el fondo (fuera del contenido).
         if (e.target === e.currentTarget) onClose()

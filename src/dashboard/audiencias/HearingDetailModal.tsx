@@ -1,10 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { COURTS, formatDate, formatTime } from '../../components/remates'
-import { Alert, Button, Modal } from '../../components/ui'
+import { Alert, Button, Modal, Switch } from '../../components/ui'
 import { useAccess } from '../access'
-import { FORMAT_LABEL, hearingActionItems, type HearingAction } from './actions'
-import { fetchAudit } from './api'
+import { ConfirmDialog } from '../ui'
+import { FILE_LABEL, FORMAT_LABEL, hearingActionItems, UNFILE_LABEL, type HearingAction } from './actions'
+import { fetchAudit, setHearingFiled } from './api'
 import { missingLink, typeName } from './data'
 import { downloadHearingFormat, hasFormat } from './formato'
 import { MissingLinkNote, StatusBadge } from './HearingBadges'
@@ -16,6 +17,8 @@ type Props = {
   now: Date
   onClose: () => void
   onAction: (action: HearingAction, hearing: Hearing) => void
+  // Tras marcar o desmarcar el expediente desde aquí (para recargar la lista).
+  onChanged?: () => void
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -41,13 +44,45 @@ function ExternalLink({ href, children }: { href: string; children: ReactNode })
 }
 
 // Detalle de una audiencia (desde la tabla o el calendario), con sus acciones disponibles abajo.
-export default function HearingDetailModal({ hearing, types, now, onClose, onAction }: Props) {
+export default function HearingDetailModal({ hearing, types, now, onClose, onAction, onChanged }: Props) {
   const { can } = useAccess()
   const [audit, setAudit] = useState<HearingAudit | null>(null)
   const type = types.find((t) => t.id === hearing.hearing_type_id)
   const actions = hearingActionItems(hearing, now, can, onAction, { includeView: false }).filter(
-    (item) => !item.disabledReason && item.label !== FORMAT_LABEL,
+    (item) => !item.disabledReason && ![FORMAT_LABEL, FILE_LABEL, UNFILE_LABEL].includes(item.label),
   )
+  // Cargado al expediente: interruptor que guarda al instante; desmarcar pide confirmación.
+  const canEdit = can('audiencias.editar', hearing.court_id)
+  const [filed, setFiled] = useState({ at: hearing.filed_at, by: hearing.filed_by_name })
+  const [filing, setFiling] = useState(false)
+  const [confirmUnfile, setConfirmUnfile] = useState(false)
+  const [fileError, setFileError] = useState<string | null>(null)
+
+  async function saveFiled(value: boolean) {
+    const saved = await setHearingFiled(hearing.id, value)
+    setFiled({ at: saved.filed_at, by: saved.filed_by_name })
+    onChanged?.()
+  }
+
+  async function handleFiledChange(value: boolean) {
+    setFileError(null)
+    if (!value) {
+      setConfirmUnfile(true)
+      return
+    }
+    setFiling(true)
+    try {
+      await saveFiled(true)
+    } catch (error) {
+      setFileError((error as Error).message)
+    } finally {
+      setFiling(false)
+    }
+  }
+
+  const filedText = filed.at
+    ? `Cargado el ${formatDate(filed.at)}${filed.by ? ` por ${filed.by}` : ''}`
+    : 'Pendiente de cargar'
   // El formato se genera aquí mismo, sin cerrar el modal.
   const [downloading, setDownloading] = useState(false)
   const [formatError, setFormatError] = useState<string | null>(null)
@@ -139,6 +174,22 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
             )}
           </Row>
         )}
+        {hearing.status_id === 2 && (
+          <Row label="Expediente">
+            {canEdit ? (
+              <Switch
+                checked={Boolean(filed.at)}
+                onChange={handleFiledChange}
+                busy={filing}
+                label="Cargado al expediente"
+                description={filedText}
+              />
+            ) : (
+              <span className={filed.at ? undefined : 'text-on-surface-variant'}>{filedText}</span>
+            )}
+            {fileError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{fileError}</p>}
+          </Row>
+        )}
         {(hearing.auction_notice_id || hearing.auction_notice_deleted) && (
           <Row label="Aviso de remate">
             {hearing.auction_notice_id ? (
@@ -171,6 +222,20 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
           </span>
         </Row>
       </dl>
+      {hearing.status_id === 2 && canEdit && (
+        <ConfirmDialog
+          open={confirmUnfile}
+          title="¿Desmarcar como cargado al expediente?"
+          confirmLabel="Desmarcar"
+          onClose={() => setConfirmUnfile(false)}
+          onConfirm={async () => {
+            await saveFiled(false)
+            setConfirmUnfile(false)
+          }}
+        >
+          <p>La audiencia volverá a quedar pendiente de cargar al expediente.</p>
+        </ConfirmDialog>
+      )}
       {formatError && (
         <Alert variant="error" className="mt-4" onClose={() => setFormatError(null)}>
           {formatError}

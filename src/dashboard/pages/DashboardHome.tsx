@@ -22,7 +22,7 @@ export default function DashboardHome() {
   const [pqrs, setPqrs] = useState<PqrsSummary | null>(null)
   const canSeeSurveys = can('encuestas.ver')
   const canSeeHearings = can('audiencias.ver')
-  const [hearings, setHearings] = useState<{ today: number; pendingClose: number } | null>(null)
+  const [hearings, setHearings] = useState<{ today: number; pendingClose: number; pendingFile: number } | null>(null)
   const [survey, setSurvey] = useState<SurveySummary | null>(null)
 
   // Resumen de PQRS para su tarjeta (pendientes y vencidas).
@@ -72,6 +72,7 @@ export default function DashboardHome() {
       <span className="flex flex-wrap gap-2">
         <Badge variant={hearings.today > 0 ? 'primary' : 'neutral'}>{hearings.today} hoy</Badge>
         {hearings.pendingClose > 0 && <Badge variant="warning">{hearings.pendingClose} por cerrar</Badge>}
+        {hearings.pendingFile > 0 && <Badge variant="warning">{hearings.pendingFile} por cargar al expediente</Badge>}
       </span>
     ) : to.endsWith('/encuestas') && survey ? (
       <Badge variant={survey.responses > 0 ? 'primary' : 'neutral'} className="self-start">
