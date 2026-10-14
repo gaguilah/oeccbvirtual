@@ -1,6 +1,6 @@
 import { CaseNumberBox, COURTS, DetailHeader, DetailList, formatLongDate, formatTime } from '../remates'
 import { Badge, Button, ButtonAnchor, Modal } from '../ui'
-import { STATUS } from './constants'
+import { publicStatus } from './constants'
 import type { PublicHearing } from './types'
 
 const videoIcon = [
@@ -29,7 +29,7 @@ function Icon({ paths }: { paths: string[] }) {
 }
 
 function HearingDetail({ hearing }: { hearing: PublicHearing }) {
-  const status = STATUS[hearing.status_id]
+  const status = publicStatus(hearing)
   return (
     <div className="space-y-6">
       <DetailHeader
@@ -48,11 +48,14 @@ function HearingDetail({ hearing }: { hearing: PublicHearing }) {
           ['Modalidad', hearing.requires_link ? 'Virtual (Microsoft Teams)' : 'Presencial'],
         ]}
       >
-        {hearing.status_id === 1 && hearing.requires_link && !hearing.connection_url && (
-          <p className="mt-3 text-sm text-on-surface-variant">
-            El enlace de conexión se publicará antes de la audiencia.
-          </p>
-        )}
+        {hearing.status_id === 1 &&
+          !hearing.pending_confirmation &&
+          hearing.requires_link &&
+          !hearing.connection_url && (
+            <p className="mt-3 text-sm text-on-surface-variant">
+              El enlace de conexión se publicará antes de la audiencia.
+            </p>
+          )}
       </DetailList>
     </div>
   )
@@ -65,7 +68,8 @@ type Props = {
 }
 
 // Detalle de una audiencia (como el de Avisos de Remate): datos y, abajo, "Conectarse" mientras
-// está programada y "Ver grabación" cuando ya se realizó. Se cierra con la X, Escape o clic fuera.
+// está programada (también "Por confirmar": hasta que el juzgado la cierre) y "Ver grabación" cuando
+// ya se realizó. Se cierra con la X, Escape o clic fuera.
 export default function AudienciaDetailModal({ hearing, onClose }: Props) {
   const connect = hearing?.status_id === 1 ? hearing.connection_url : null
   const recording = hearing?.recording_url ?? null

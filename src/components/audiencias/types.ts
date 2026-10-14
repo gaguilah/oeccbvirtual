@@ -16,6 +16,8 @@ export type PublicHearing = {
   status_id: 1 | 2 | 3
   connection_url: string | null
   recording_url: string | null
+  // Sigue Programada 60 minutos después de su hora (lo calcula el servidor): "Por confirmar".
+  pending_confirmation: boolean
   total_count: number
 }
 
