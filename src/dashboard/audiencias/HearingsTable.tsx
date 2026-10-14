@@ -13,7 +13,7 @@ import { cn } from '../../lib/cn'
 import type { HearingAction } from './actions'
 import { missingLink, typeName } from './data'
 import HearingActions from './HearingActions'
-import { DeletedNoticeNote, MissingLinkNote, StatusBadge } from './HearingBadges'
+import { DeletedNoticeNote, FiledBadge, MissingLinkNote, StatusBadge } from './HearingBadges'
 import type { Hearing, HearingType } from './types'
 
 type Props = {
@@ -69,7 +69,10 @@ export default function HearingsTable({ rows, types, now, caption, highlightId, 
               <CaseNumberCell caseNumber={hearing.case_number} />
               <CourtCell court={hearing.court_id} />
               <td className={bodyCell}>
-                <StatusBadge hearing={hearing} now={now} />
+                <span className="flex flex-wrap gap-1.5">
+                  <StatusBadge hearing={hearing} now={now} />
+                  <FiledBadge hearing={hearing} />
+                </span>
               </td>
               <td className={cn(bodyCell, 'py-2')}>
                 <HearingActions hearing={hearing} now={now} onAction={onAction} className="flex justify-end" />
@@ -92,6 +95,7 @@ export default function HearingsTable({ rows, types, now, caption, highlightId, 
             {hearing.auction_notice_deleted && <DeletedNoticeNote />}
             <div className="flex flex-wrap gap-2">
               <StatusBadge hearing={hearing} now={now} />
+              <FiledBadge hearing={hearing} />
             </div>
           </li>
         ))}

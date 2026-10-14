@@ -1,26 +1,41 @@
 import { supabase } from '../../lib/supabase'
 
-export type Profile = { full_name: string | null }
+export type Profile = { full_name: string | null; position_id: number | null }
+
+// Cargo del catálogo job_positions (migración 20261013120000).
+export type JobPosition = { id: number; name: string; is_active: boolean }
+
+export type ProfileFields = { fullName: string; positionId: number }
+
+const PROFILE_COLUMNS = 'full_name, position_id'
 
 // Perfil del usuario en sesión. Que no exista la fila es normal (null), no un error.
 export async function fetchProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle()
+  const { data, error } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle()
   if (error) throw error
   return data
 }
 
-// Cambia el nombre propio. RLS solo deja actualizar la fila propia y solo la columna full_name
-// (migración 20261005130000). Sin fila no se actualiza nada: el perfil lo crea un administrador.
-export async function updateFullName(userId: string, fullName: string): Promise<Profile> {
+export async function fetchJobPositions(): Promise<JobPosition[]> {
+  const { data, error } = await supabase.from('job_positions').select('id, name, is_active').order('name')
+  if (error) throw new Error('No se pudo cargar la lista de cargos.')
+  return data ?? []
+}
+
+// Cambia el nombre y el cargo propios. RLS solo deja actualizar la fila propia y solo esas dos
+// columnas (migraciones 20261005130000 y 20261013120000). Sin fila no se actualiza nada: el perfil lo
+// crea un administrador.
+export async function updateProfile(userId: string, fields: ProfileFields): Promise<Profile> {
   const { data, error } = await supabase
     .from('profiles')
-    .update({ full_name: fullName })
+    .update({ full_name: fields.fullName, position_id: fields.positionId })
     .eq('id', userId)
-    .select('full_name')
+    .select(PROFILE_COLUMNS)
     .maybeSingle()
   // 23514: lo rechazó la restricción profiles_full_name_format (alguien se saltó el formulario).
   if (error?.code === '23514') throw new Error('El nombre tiene caracteres no permitidos.')
-  if (error) throw new Error('No se pudo guardar el nombre. Intente de nuevo.')
+  if (error?.code === '23503') throw new Error('Ese cargo ya no existe: elija otro.')
+  if (error) throw new Error('No se pudieron guardar sus datos. Intente de nuevo.')
   if (!data) throw new Error('Su perfil aún no está creado. Pida a un administrador que lo cree.')
   return data
 }

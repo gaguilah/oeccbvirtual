@@ -19,6 +19,20 @@ export function StatusBadge({ hearing, now, className }: { hearing: Hearing; now
   )
 }
 
+// Realizada: si su formato ya se cargó al expediente (docs/plan-audiencias-expediente.md).
+export function FiledBadge({ hearing, className }: { hearing: Hearing; className?: string }) {
+  if (hearing.status_id !== 2) return null
+  return hearing.filed_at ? (
+    <Badge variant="success" className={className}>
+      En expediente
+    </Badge>
+  ) : (
+    <Badge variant="warning" className={className}>
+      Pendiente de cargar
+    </Badge>
+  )
+}
+
 // La audiencia nació de un aviso de remate que ya se eliminó.
 export function DeletedNoticeNote({ className }: { className?: string }) {
   return <p className={cn('text-xs font-medium text-on-surface-variant', className)}>Aviso de remate eliminado</p>

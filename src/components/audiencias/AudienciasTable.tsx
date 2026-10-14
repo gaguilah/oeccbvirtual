@@ -11,7 +11,7 @@ import {
   ScheduleCell,
 } from '../remates'
 import { Badge, Button } from '../ui'
-import { STATUS } from './constants'
+import { publicStatus } from './constants'
 import type { PublicHearing } from './types'
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 }
 
 function StatusBadge({ hearing, className }: { hearing: PublicHearing; className?: string }) {
-  const status = STATUS[hearing.status_id]
+  const status = publicStatus(hearing)
   return (
     <Badge variant={status.variant} className={className}>
       {status.label}

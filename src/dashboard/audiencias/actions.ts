@@ -1,14 +1,30 @@
 import { formatDate, formatTime } from '../../components/remates'
 import { icons, type ActionMenuItem } from '../ui'
 import { canCancelNow, canRealizeNow, deleteBlocker, isClosed, realizeFrom } from './data'
+import { hasFormat } from './formato'
 import type { Hearing } from './types'
 
-export type HearingAction = 'view' | 'edit' | 'realize' | 'cancel' | 'recording' | 'delete'
+export type HearingAction =
+  'view' | 'edit' | 'realize' | 'cancel' | 'recording' | 'format' | 'file' | 'unfile' | 'delete'
+
+// El modal de detalle la muestra como botón propio (con indicador mientras se genera).
+export const FORMAT_LABEL = 'Descargar formato (PDF)'
+// En el modal, la marca de expediente es el interruptor, no un botón.
+export const FILE_LABEL = 'Marcar cargado al expediente'
+export const UNFILE_LABEL = 'Desmarcar cargado al expediente'
 
 const checkIcon = ['m4.5 12.75 6 6 9-13.5']
 const banIcon = ['M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636']
 const videoIcon = [
   'm15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z',
+]
+
+const downloadIcon = [
+  'M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3',
+]
+
+const folderCheckIcon = [
+  'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z',
 ]
 
 const at = (iso: string) => `${formatTime(iso)} del ${formatDate(iso)}`
@@ -49,6 +65,16 @@ export function hearingActionItems(
   }
   if (canEdit && hearing.status_id === 2)
     items.push({ label: 'Corregir grabación', icon: videoIcon, onSelect: () => onAction('recording', hearing) })
+  // Cargado al expediente (docs/plan-audiencias-expediente.md): quien puede editar, solo en Realizada.
+  if (canEdit && hearing.status_id === 2)
+    items.push(
+      hearing.filed_at
+        ? { label: UNFILE_LABEL, icon: folderCheckIcon, onSelect: () => onAction('unfile', hearing) }
+        : { label: FILE_LABEL, icon: folderCheckIcon, onSelect: () => onAction('file', hearing) },
+    )
+  // Formato de referencia cruzada (docs/plan-audiencias-formato.md): quien ve la audiencia.
+  if (hasFormat(hearing))
+    items.push({ label: FORMAT_LABEL, icon: downloadIcon, onSelect: () => onAction('format', hearing) })
   if (can('audiencias.eliminar', hearing.court_id) && !isClosed(hearing)) {
     const blocker = deleteBlocker(hearing, now)
     items.push({

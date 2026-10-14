@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { Profile } from './api'
+import type { Profile, ProfileFields } from './api'
 
 export type ProfileContextType = {
   profile: Profile | null
@@ -9,9 +9,9 @@ export type ProfileContextType = {
   loading: boolean
   // La consulta del perfil falló (distinto de que la fila no exista).
   failed: boolean
-  // Guarda el nombre y actualiza el menú y el saludo sin recargar. Lanza un Error con mensaje en
-  // español si falla.
-  saveFullName: (fullName: string) => Promise<void>
+  // Guarda el nombre y el cargo y actualiza el menú y el saludo sin recargar. Lanza un Error con
+  // mensaje en español si falla.
+  saveProfile: (fields: ProfileFields) => Promise<void>
 }
 
 export const ProfileContext = createContext<ProfileContextType>({
@@ -20,7 +20,7 @@ export const ProfileContext = createContext<ProfileContextType>({
   email: '',
   loading: true,
   failed: false,
-  saveFullName: async () => {},
+  saveProfile: async () => {},
 })
 
 export function useProfile() {

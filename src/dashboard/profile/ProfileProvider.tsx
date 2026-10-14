@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '../../context/auth'
-import { fetchProfile, updateFullName, type Profile } from './api'
+import { fetchProfile, updateProfile, type Profile, type ProfileFields } from './api'
 import { ProfileContext } from './profile'
 
 // Carga el perfil una vez al entrar al dashboard y lo comparte con el menú y las páginas. Si la
@@ -39,10 +39,10 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
     }
   }, [userId])
 
-  const saveFullName = useCallback(
-    async (fullName: string) => {
+  const saveProfile = useCallback(
+    async (fields: ProfileFields) => {
       if (!userId) throw new Error('Su sesión expiró. Inicie sesión de nuevo.')
-      setProfile(await updateFullName(userId, fullName))
+      setProfile(await updateProfile(userId, fields))
     },
     [userId],
   )
@@ -54,9 +54,9 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
       email,
       loading: loadedFor !== userId,
       failed,
-      saveFullName,
+      saveProfile,
     }),
-    [profile, email, loadedFor, userId, failed, saveFullName],
+    [profile, email, loadedFor, userId, failed, saveProfile],
   )
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>

@@ -8,7 +8,8 @@ export const PAGE_SIZE = 10
 export const TIME_ZONE = 'America/Bogota'
 
 // Un remate pasa de Agendado a Realizado (y de Próximos a Pasados) esta cantidad de
-// minutos después de su hora programada.
+// minutos después de su hora programada. Audiencias usa el mismo margen en SQL
+// (list_public_hearings, migración 20261014150000): si cambia uno, cambiar el otro.
 export const REALIZADO_DESPUES_DE_MIN = 60
 
 export const CASE_NUMBER_LENGTH = 23
