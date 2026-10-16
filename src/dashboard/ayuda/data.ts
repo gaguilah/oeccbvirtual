@@ -95,11 +95,23 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
           },
         ],
       },
+      {
+        id: 'cerrar-sesion',
+        title: 'Cerrar sesión',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Use el botón **Cerrar sesión** de la barra superior. El sistema le pide confirmar con **¿Cerrar sesión?** para que no salga por error. Cierre la sesión siempre que use un equipo compartido.',
+          },
+        ],
+      },
     ],
     faq: [
       {
         q: 'Olvidé mi contraseña.',
-        a: 'En **Iniciar sesión**, use **¿Olvidó su contraseña?**: escriba su correo y le llegará un enlace, válido por 1 hora, para crear una contraseña nueva. Al guardarla se cierran las sesiones abiertas en otros equipos y le llega un correo de aviso. Si no recibe el enlace (revise también el correo no deseado), pídale al Administrador de Sistema que restablezca su contraseña.',
+        // Vigencia (panel de Auth) y límite (MIN_INTERVAL_MS / DAILY_LIMIT en la Edge Function
+        // password-reset): docs/modulos/mi-perfil.md.
+        a: 'En **Iniciar sesión**, use **¿Olvidó su contraseña?**: escriba su correo y le llegará un enlace, válido por 1 hora y de un solo uso, para crear una contraseña nueva. Al guardarla se cierran las sesiones abiertas en otros equipos y le llega un correo de aviso. Si no recibe el enlace, revise el correo no deseado; puede pedir otro cada 5 minutos (hasta 5 al día) y solo vale el último. Si aun así no le llega, pídale al Administrador de Sistema que restablezca su contraseña.',
       },
       {
         q: 'Me llegó un correo de cambio de contraseña que yo no pedí.',
@@ -727,7 +739,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             items: [
               '**Crear usuario:** nombre, correo, rol y, si el rol es de juzgado, el juzgado. El sistema genera una **contraseña temporal** que se muestra **una sola vez** arriba de la lista: cópiela y entréguela por un canal seguro. No se guarda en ningún lado.',
               '**Editar / Asignar rol:** cambia nombre, rol o juzgado.',
-              '**Restablecer contraseña:** genera una nueva contraseña temporal, para quien la olvidó.',
+              '**Restablecer contraseña:** genera una nueva contraseña temporal. Quien olvida su contraseña puede recuperarla solo desde **Iniciar sesión**; esta opción queda para quien no recibe el enlace en su correo.',
               '**Desactivar / Reactivar:** desactivar impide iniciar sesión sin borrar la cuenta.',
             ],
           },
@@ -804,6 +816,10 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
       {
         q: 'Creé un usuario y no copié la contraseña temporal.',
         a: 'Use **Restablecer contraseña** para generar otra.',
+      },
+      {
+        q: 'Un usuario olvidó su contraseña.',
+        a: 'Indíquele que use **¿Olvidó su contraseña?** en Iniciar sesión: le llegará un enlace a su correo. Si no le llega (revise que su cuenta esté activa y con rol), use **Restablecer contraseña** y entréguele la contraseña temporal.',
       },
       {
         q: 'Un usuario dice que no ve una sección.',

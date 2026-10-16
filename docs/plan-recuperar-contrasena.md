@@ -1,4 +1,4 @@
-# Plan: recuperar contraseña desde el inicio de sesión (construido el 2026-10-16, pendiente de desplegar)
+# Plan: recuperar contraseña desde el inicio de sesión (desplegado y probado el 2026-10-16)
 
 Hoy, quien olvida su contraseña depende del Administrador de Sistema ("Restablecer contraseña" en
 Usuarios, que genera una temporal). Con este plan, el usuario la recupera solo desde `/login`: pide un
@@ -132,3 +132,10 @@ un usuario de cada juzgado antes de anunciarlo, por si algún filtro lo marca co
    para probar en local).
 3. Confirmar en Authentication que la vigencia del enlace (Email OTP expiration) es 3600 segundos.
 4. Publicar el sitio (las páginas nuevas) y probar con la cuenta de prueba.
+
+## Resultado (2026-10-16)
+
+- `password-reset` creada en el panel de Supabase, sin "Verify JWT" (comprobado: sin token responde
+  con su propio error, no 401). Redirect URLs agregadas.
+- Prueba con `gaguilah@cendoj.ramajudicial.gov.co`: llegó el enlace al buzón institucional, se creó la
+  contraseña nueva y llegó el aviso "Su contraseña se cambió".
