@@ -1,5 +1,7 @@
 # Plan: gestión de Avisos de Remate en el dashboard (construido el 2026-10-05)
 
+> **Histórico.** El comportamiento actual está en [modulos/avisos-remates.md](modulos/avisos-remates.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Primera sección con datos del dashboard. Hoy los avisos se cargan desde el Table Editor de Supabase (`docs/plan-remates.md`); con esta sección se crean, editan, publican y ocultan desde `/dashboard/avisos-remates`, cada juzgado los suyos. La tabla es la misma del sitio público (`components/remates/`), con columnas y acciones de administración. Rama: `avisos-remate`, desde `main`.
 
 ## Punto de partida

@@ -1,5 +1,7 @@
 # Plan: usuarios, roles y permisos (construido el 2026-10-05)
 
+> **Histórico.** El comportamiento actual está en [modulos/usuarios-roles-permisos.md](modulos/usuarios-roles-permisos.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Plan 2 de la hoja de ruta de `docs/plan-dashboard.md`. Va antes de cualquier sección con datos privados: las reglas (RLS) de Avisos de Remate, PQRS, Encuestas y Audiencias se apoyarán en lo que deja listo este plan. Rama: `dashboard` (la misma de la base del dashboard).
 
 ## Decisiones tomadas

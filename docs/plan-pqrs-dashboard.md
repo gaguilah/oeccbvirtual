@@ -1,5 +1,7 @@
 # Plan: gestión de PQRS en el dashboard y respuesta por correo (construido el 2026-10-07)
 
+> **Histórico.** El comportamiento actual está en [modulos/pqrs.md](modulos/pqrs.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Fase 2 de `docs/plan-correos-resend.md`. Hoy las PQRS llegan desde `/pqrs`, se guardan con su radicado y el ciudadano recibe el acuse, pero **nadie puede verlas ni responderlas desde el sitio**: solo en el panel de Supabase. Con esta sección, la oficina las lista, las responde desde `/dashboard/pqrs` y la respuesta le llega al ciudadano por correo. Rama: `pqrs-dashboard`, desde `main`.
 
 ## Punto de partida

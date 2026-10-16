@@ -1,5 +1,7 @@
 # Plan: base del dashboard (construido el 2026-10-05)
 
+> **Histórico.** El comportamiento actual está en [modulos/README.md](modulos/README.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Primer paso del área privada: una rama propia, todo el código en `src/dashboard/` y un layout con menú lateral, encabezado con acciones y área de contenido. Este plan arma el esqueleto con el menú completo; cada sección se construye después con su propio plan (ver "Hoja de ruta").
 
 ## Menú del dashboard

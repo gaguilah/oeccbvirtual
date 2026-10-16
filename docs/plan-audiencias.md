@@ -1,5 +1,7 @@
 # Plan: Audiencias (aprobado el 2026-10-08)
 
+> **Histórico.** El comportamiento actual está en [modulos/audiencias.md](modulos/audiencias.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Gestión de las audiencias de los Juzgados 1 y 2: se crean con los datos básicos en estado **Programada** y, después de la fecha, se cierran como **Realizada** (con el enlace de la grabación) o **Cancelada**. Se ven en el dashboard en tabla o en calendario, se publican en una página pública de solo lectura y se comunican por correo: el listado semanal, el aviso de cada cambio y un recordatorio 15 minutos antes. Al crear un aviso de remate se puede crear también su audiencia.
 
 Rama: `audiencias`. Sección del menú ya prevista en `docs/plan-dashboard.md` (opción "Audiencias", hoy "Pronto").

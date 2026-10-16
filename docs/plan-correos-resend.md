@@ -1,5 +1,7 @@
 # Plan: correos con Resend (propuesta del 2026-10-06)
 
+> **Histórico.** El comportamiento actual está en [modulos/pqrs.md](modulos/pqrs.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Correos automáticos del sitio con [Resend](https://resend.com): acuse de recibo y respuesta de las PQRS (ahora) y, cuando exista la sección Audiencias, el listado semanal y los recordatorios (futuro). Este documento es solo el plan; los pasos para configurar Resend están al final.
 
 ## Correos previstos

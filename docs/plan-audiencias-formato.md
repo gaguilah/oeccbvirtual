@@ -1,5 +1,7 @@
 # Plan: formato "Referencia cruzada" de audiencias realizadas (PDF)
 
+> **Histórico.** El comportamiento actual está en [modulos/audiencias.md](modulos/audiencias.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Estado: **construido** (13 de octubre de 2026), en la rama `audiencias-formato`. Falta correr la migración y el SQL de datos.
 
 ## Objetivo
