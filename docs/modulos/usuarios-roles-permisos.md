@@ -64,8 +64,9 @@ group by r.name, r.scope order by r.name;
 
 - Acciones: `create`, `update`, `set-active`, `reset-password`. Revisa `usuarios.gestionar` con el JWT
   de quien llama y escribe con la service role.
-- No hay registro público ni "olvidé mi contraseña": las cuentas y las contraseñas temporales las da el
-  administrador.
+- No hay registro público: las cuentas y las contraseñas temporales las da el administrador. Quien
+  olvida su contraseña la recupera desde `/login` (ver [mi-perfil.md](mi-perfil.md)); "Restablecer
+  contraseña" queda para quien no tenga acceso a su correo.
 - Contraseña temporal: 14 caracteres aleatorios, se muestra **una vez** en `PasswordNoticeCard` y no se
   guarda. Deja `must_change_password = true`.
 - Desactivar también bloquea el inicio de sesión en Auth (`ban_duration`).

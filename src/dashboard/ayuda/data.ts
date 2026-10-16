@@ -35,6 +35,10 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             type: 'paragraph',
             text: 'Las cuentas las crea el Administrador de Sistema. No hay registro desde la página pública. Al crearla, el administrador le entrega una **contraseña temporal** por un canal seguro.',
           },
+          {
+            type: 'paragraph',
+            text: 'Si olvida su contraseña, la puede recuperar usted mismo desde **Iniciar sesión** con **¿Olvidó su contraseña?** (vea las preguntas frecuentes).',
+          },
         ],
       },
       {
@@ -95,7 +99,11 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
     faq: [
       {
         q: 'Olvidé mi contraseña.',
-        a: 'Pídale al Administrador de Sistema que la restablezca. Le entregará una nueva contraseña temporal y deberá cambiarla al ingresar.',
+        a: 'En **Iniciar sesión**, use **¿Olvidó su contraseña?**: escriba su correo y le llegará un enlace, válido por 1 hora, para crear una contraseña nueva. Al guardarla se cierran las sesiones abiertas en otros equipos y le llega un correo de aviso. Si no recibe el enlace (revise también el correo no deseado), pídale al Administrador de Sistema que restablezca su contraseña.',
+      },
+      {
+        q: 'Me llegó un correo de cambio de contraseña que yo no pedí.',
+        a: 'Si es el aviso **Su contraseña se cambió** y usted no la cambió, avise de inmediato al Administrador de Sistema. Si es un enlace para crear una contraseña nueva que no pidió, ignórelo: su contraseña actual sigue funcionando.',
       },
       { q: 'No puedo cambiar la contraseña en el primer ingreso.', a: 'Primero elija y guarde su cargo.' },
       {

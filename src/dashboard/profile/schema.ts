@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { newPasswordField } from '../../lib/password'
 
 // Letras del español y de nombres latinos (tildes, ñ, ü, ç…), sin × ni ÷.
 const LETTERS = 'A-Za-zÀ-ÖØ-öø-ÿ'
@@ -23,14 +24,11 @@ export const nameSchema = z
       ),
   )
 
-// Mínimo 8 (más estricto que el de Supabase); máximo 72, el límite de bcrypt.
+// Reglas de la contraseña nueva en src/lib/password.ts (las comparte Crear contraseña nueva).
 export const passwordSchema = z
   .object({
     current: z.string().min(1, 'Escriba su contraseña actual'),
-    password: z
-      .string()
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .max(72, 'La contraseña no puede pasar de 72 caracteres'),
+    password: newPasswordField,
     confirm: z.string(),
   })
   .refine((values) => values.password === values.confirm, {

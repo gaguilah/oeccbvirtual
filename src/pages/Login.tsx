@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useLocation, useNavigate, type Location } from 'react-router-dom'
+import { Link, useLocation, useNavigate, type Location } from 'react-router-dom'
 import { z } from 'zod'
+import { RECOVER_PATH } from '../components/account'
 import { supabase } from '../lib/supabase'
 import { Container } from '../components/layout'
 import { Alert, Button, Card, CardBody, Input } from '../components/ui'
@@ -71,6 +72,15 @@ export default function Login() {
               {loading ? 'Procesando...' : 'Entrar'}
             </Button>
           </form>
+
+          <p className="text-center text-sm">
+            <Link
+              to={RECOVER_PATH}
+              className="font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              ¿Olvidó su contraseña?
+            </Link>
+          </p>
 
           {error && <Alert variant="error">{error}</Alert>}
         </CardBody>
