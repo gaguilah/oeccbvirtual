@@ -1,17 +1,27 @@
+import { useLocation } from 'react-router-dom'
 import { Button, ButtonLink, ThemeToggle, Tooltip } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { useSignOut } from '../auth'
-import { PROFILE_LINK } from '../navigation'
+import { guideForPath, helpPath, HELP_PATH } from '../ayuda'
+import { HELP_LINK, PROFILE_LINK } from '../navigation'
 import { Icon, icons } from '../ui'
 
-// Tema, Mi perfil y cerrar sesión. Botones de ícono con aria-label y Tooltip,
-// como el Header público.
+// Tema, Ayuda, Mi perfil y cerrar sesión. Botones de ícono con aria-label y Tooltip,
+// como el Header público. Ayuda abre la guía de la sección actual (docs/plan-ayuda.md).
 export default function TopbarActions({ className }: { className?: string }) {
   const { signOut, signingOut } = useSignOut()
+  const { pathname, search } = useLocation()
+  const onHelp = pathname.replace(/\/+$/, '') === HELP_PATH
+  const helpTo = onHelp ? `${HELP_PATH}${search}` : helpPath(guideForPath(pathname))
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <ThemeToggle variant="compact" />
+      <Tooltip label={HELP_LINK.label} align="end">
+        <ButtonLink to={helpTo} variant="secondary" size="icon" aria-label={HELP_LINK.label}>
+          <Icon paths={icons.question} />
+        </ButtonLink>
+      </Tooltip>
       <Tooltip label={PROFILE_LINK.label} align="end">
         <ButtonLink to={PROFILE_LINK.to} variant="secondary" size="icon" aria-label={PROFILE_LINK.label}>
           <Icon paths={icons.profile} />
