@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { PageLoader } from '../../components/ui'
 import { NoAccess, useAccess } from '../access'
-import { PROFILE_LINK } from '../navigation'
+import { HELP_LINK, PROFILE_LINK } from '../navigation'
 import { cn } from '../../lib/cn'
 import MobileSidebar from './MobileSidebar'
 import Sidebar from './Sidebar'
@@ -17,7 +17,7 @@ const SIDEBAR_ID = 'dashboard-sidebar'
 // el contenido de la opción elegida debajo; solo el área derecha hace scroll. Bajo lg el menú se
 // abre como panel (MobileSidebar) desde el botón de la Topbar. Ver docs/plan-dashboard.md.
 // Antes, el acceso: sin rol o con la cuenta desactivada solo se ve NoAccess; con contraseña temporal
-// pendiente, toda ruta lleva a Mi perfil (docs/plan-usuarios.md).
+// pendiente, toda ruta lleva a Mi perfil (docs/plan-usuarios.md), salvo la Ayuda (docs/plan-ayuda.md).
 export default function DashboardLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { collapsed, toggle } = useSidebarCollapsed()
@@ -27,7 +27,8 @@ export default function DashboardLayout() {
   if (loading) return <PageLoader />
   if (failed) return <NoAccess reason="failed" onRetry={reload} />
   if (!allowed) return <NoAccess reason="blocked" />
-  if (mustChangePassword && pathname !== PROFILE_LINK.to) return <Navigate to={PROFILE_LINK.to} replace />
+  if (mustChangePassword && pathname !== PROFILE_LINK.to && pathname !== HELP_LINK.to)
+    return <Navigate to={PROFILE_LINK.to} replace />
 
   return (
     <div

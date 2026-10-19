@@ -1,5 +1,7 @@
 # Plan: encuestas en el dashboard (construido el 2026-10-07)
 
+> **Histórico.** El comportamiento actual está en [modulos/encuestas.md](modulos/encuestas.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 La encuesta de satisfacción (`/encuesta`) ya recibe respuestas anónimas, pero nadie las puede ver ni administrar desde el sitio. Esta sección tiene dos partes:
 
 1. **Resultados** (solo lectura): solo agregados (conteos, porcentajes y promedios), con filtros por mes, rango de meses o año. Cada pregunta tiene su gráfico: **torta** para las de sí / no y **barras** para las de escala. La ven todos los perfiles de la oficina, no los juzgados.

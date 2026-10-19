@@ -13,6 +13,8 @@ import Tutoriales from './pages/Tutoriales'
 import Tutorial from './pages/Tutorial'
 import Contacto from './pages/Contacto'
 import NotFound from './pages/NotFound'
+import RecuperarContrasena from './pages/RecuperarContrasena'
+import RestablecerContrasena from './pages/RestablecerContrasena'
 import { ScrollToTop } from './components/navigation'
 import { PageLoader } from './components/ui'
 
@@ -38,6 +40,8 @@ function AppRoutes() {
       {/* Mismo encabezado, sin footer. */}
       <Route element={<PublicLayout footer={false} />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+        <Route path="/restablecer-contrasena" element={<RestablecerContrasena />} />
       </Route>
       {/* Área privada: rutas, protección y layout propios en src/dashboard. */}
       <Route

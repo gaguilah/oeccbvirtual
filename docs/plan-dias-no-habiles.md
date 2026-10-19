@@ -1,5 +1,7 @@
 # Plan: días no hábiles (festivos y cierres) para los plazos (decidido el 2026-10-07)
 
+> **Histórico.** El comportamiento actual está en [modulos/dias-no-habiles.md](modulos/dias-no-habiles.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Hoy el plazo de las PQRS (15 días hábiles) cuenta de lunes a viernes y **no descuenta festivos ni días de cierre**. Este plan agrega un **calendario de días no hábiles** que la oficina administra desde el dashboard: los festivos de Colombia y cualquier día adicional que haya que descontar (un cierre extraordinario, una jornada sin atención, la vacancia judicial…). El plazo se recalcula solo.
 
 ## Cómo funciona hoy

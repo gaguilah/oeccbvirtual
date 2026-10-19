@@ -1,5 +1,7 @@
 # Plan: marcar el formato como cargado al expediente (Audiencias)
 
+> **Histórico.** El comportamiento actual está en [modulos/audiencias.md](modulos/audiencias.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Estado: **construido** (14 de octubre de 2026), en la rama `audiencias-formato`. Falta correr la migración `20261014120000_hearings_filed.sql` y el SQL de datos.
 
 ## Objetivo

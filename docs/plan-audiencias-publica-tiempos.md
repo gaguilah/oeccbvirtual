@@ -1,5 +1,7 @@
 # Plan: Próximas / Anteriores por hora en la página pública de Audiencias
 
+> **Histórico.** El comportamiento actual está en [modulos/audiencias.md](modulos/audiencias.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Estado: **construido** (14 de octubre de 2026), en la rama `audiencias-formato`. Falta correr la migración `20261014150000_public_hearings_cutoff.sql`.
 
 ## Problema

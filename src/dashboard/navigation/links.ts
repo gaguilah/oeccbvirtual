@@ -10,8 +10,8 @@ export type DashboardLink = {
   description: string
   // Trazos del icono (Heroicons outline, viewBox 24×24).
   icon: string[]
-  // 'admin' va al final del menú, bajo el título "Administración". 'account' (Mi perfil) no va en
-  // el menú ni en Inicio: se abre desde el botón de perfil de la Topbar.
+  // 'admin' va al final del menú, bajo el título "Administración". 'account' (Mi perfil, Ayuda) no va
+  // en el menú ni en Inicio: se abre desde su botón de la Topbar.
   group: 'main' | 'admin' | 'account'
   // false: el menú muestra "Pronto", Inicio "Próximamente" y la ruta muestra SectionPending.
   ready: boolean
@@ -130,9 +130,20 @@ export const dashboardLinks: DashboardLink[] = [
     group: 'account',
     ready: true,
   },
+  {
+    to: `${DASHBOARD_HOME}/ayuda`,
+    label: 'Ayuda',
+    description: 'Guías de uso del dashboard.',
+    icon: [],
+    group: 'account',
+    ready: true,
+  },
 ]
 
-export const PROFILE_LINK = dashboardLinks.find((link) => link.group === 'account')!
+export const PROFILE_LINK = dashboardLinks.find((link) => link.to === `${DASHBOARD_HOME}/perfil`)!
+
+// Ayuda (docs/plan-ayuda.md): botón de la Topbar; todos la ven, también en el primer ingreso.
+export const HELP_LINK = dashboardLinks.find((link) => link.to === `${DASHBOARD_HOME}/ayuda`)!
 
 // Opción que corresponde a una ruta: Inicio solo con la ruta exacta; las demás también en sus
 // subrutas (p. ej. /dashboard/pqrs/123).

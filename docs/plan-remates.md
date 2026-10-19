@@ -1,5 +1,7 @@
 # Plan: Avisos de Remate
 
+> **Histórico.** El comportamiento actual está en [modulos/avisos-remates.md](modulos/avisos-remates.md). Si este plan y el módulo no coinciden, vale el módulo.
+
 Migración del proyecto `avisos26Mod` (HTML + `data.json` editado a mano) a la sección `/avisos-remates` del sitio (`/remates` redirige ahí), con los datos en Supabase.
 
 Se hace en dos etapas:

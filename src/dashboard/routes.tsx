@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { AccessProvider, RequirePermission } from './access'
 import { HearingsPage, HearingTypesPage } from './audiencias'
+import { HelpPage } from './ayuda'
 import { ProtectedRoute } from './auth'
 import { DashboardLayout } from './layout'
 import { dashboardLinks, relativePath } from './navigation'
@@ -36,6 +37,7 @@ export default function DashboardRoutes() {
       >
         <Route index element={<DashboardHome />} />
         <Route path="perfil" element={<ProfilePage />} />
+        <Route path="ayuda" element={<HelpPage />} />
         <Route
           path="avisos-remates"
           element={

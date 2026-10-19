@@ -1,3 +1,4 @@
+import { passwordErrorMessage } from '../../lib/password'
 import { supabase } from '../../lib/supabase'
 
 export type Profile = { full_name: string | null; position_id: number | null }
@@ -40,18 +41,9 @@ export async function updateProfile(userId: string, fields: ProfileFields): Prom
   return data
 }
 
-// Mensajes en español para los errores de Supabase Auth al cambiar la contraseña.
-const PASSWORD_ERRORS: Record<string, string> = {
-  same_password: 'La nueva contraseña debe ser distinta de la actual.',
-  weak_password: 'La contraseña es muy débil. Use una más larga, con letras, números y símbolos.',
-  reauthentication_needed: 'Por seguridad, cierre sesión e inicie de nuevo antes de cambiar la contraseña.',
-  session_not_found: 'Su sesión expiró. Inicie sesión de nuevo.',
-  invalid_credentials: 'La contraseña actual no es correcta.',
-  over_request_rate_limit: 'Demasiados intentos. Espere unos minutos e intente de nuevo.',
-}
-
+// Mensajes en español de los errores de Supabase Auth: src/lib/password.ts.
 function passwordError(code: string | undefined): Error {
-  return new Error((code && PASSWORD_ERRORS[code]) ?? 'No se pudo cambiar la contraseña. Intente de nuevo.')
+  return new Error(passwordErrorMessage(code))
 }
 
 // Cambia la contraseña del usuario en sesión (Supabase Auth). Primero comprueba la actual
