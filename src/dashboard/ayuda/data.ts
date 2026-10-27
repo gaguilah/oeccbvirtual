@@ -25,7 +25,7 @@ const rolesIntro = 'Lo que puede hacer cada rol en esta sección, tal como está
 
 export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
   'mi-perfil': {
-    summary: 'Su cuenta, el primer ingreso, su perfil y lo que ve en el dashboard.',
+    summary: 'Su cuenta, el primer ingreso, su perfil (con su información personal) y lo que ve en el dashboard.',
     sections: [
       {
         id: 'cuenta',
@@ -50,13 +50,13 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             items: [
               'Entre a **Iniciar sesión** con su correo y la contraseña temporal.',
               'El sistema lo lleva a **Mi perfil**. El menú queda bloqueado hasta terminar estos pasos; esta Ayuda sí se puede abrir.',
-              'Revise su nombre y elija su **cargo** en la lista. Guárdelo.',
+              'En la pestaña **Cuenta**, revise su nombre y elija su **cargo** en la lista. Guárdelo: el sistema pasa solo a la pestaña **Contraseña**.',
               'Cambie la contraseña: escriba la temporal como contraseña actual y luego la nueva dos veces.',
             ],
           },
           {
             type: 'paragraph',
-            text: 'Cuando termine, el menú se habilita y verá las secciones que le corresponden.',
+            text: 'Cuando termine, el menú se habilita y verá las secciones que le corresponden. **Información personal** y **Contacto de emergencia** no son obligatorias: puede llenarlas cuando quiera.',
           },
         ],
       },
@@ -64,15 +64,40 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
         id: 'perfil',
         title: 'Mi perfil',
         blocks: [
-          { type: 'paragraph', text: 'Se abre con el botón **Mi perfil** de la barra superior.' },
+          {
+            type: 'paragraph',
+            text: 'Se abre con el botón **Mi perfil** de la barra superior. Tiene cuatro pestañas; cada una se guarda por separado con su botón **Guardar**, y si cambia de pestaña sin guardar, lo escrito no se pierde. En el celular, toque el botón con el nombre de la pestaña abierta para ver las demás y elegir otra.',
+          },
+          {
+            type: 'table',
+            headers: ['Pestaña', 'Qué tiene'],
+            rows: [
+              // Reglas de profile/schema.ts y de la restricción profiles_full_name_format.
+              [
+                '**Cuenta**',
+                '**Nombre** como quiere que aparezca en el sistema (de 3 a 120 caracteres, solo letras y separadores como espacio o guion). **Cargo**, que se usa en los formatos de referencia cruzada de Audiencias: manténgalo actualizado. **Correo** de la cuenta, que no se puede cambiar desde aquí.',
+              ],
+              [
+                '**Información personal**',
+                'Dirección de residencia, celular, correo personal y EPS. Todo es opcional: registre solo lo que quiera.',
+              ],
+              [
+                '**Contacto de emergencia**',
+                'Nombre, parentesco y celular de la persona a quien la oficina llamará si usted tiene una emergencia en el trabajo. También es opcional.',
+              ],
+              [
+                '**Contraseña**',
+                'Pide la actual. La nueva debe tener al menos 8 caracteres y ser distinta de la actual.',
+              ],
+            ],
+          },
           {
             type: 'list',
             items: [
-              // Reglas de profile/schema.ts y de la restricción profiles_full_name_format.
-              '**Nombre:** como quiere que aparezca en el sistema (de 3 a 120 caracteres, solo letras y separadores como espacio o guion).',
-              '**Cargo:** se usa en los formatos de referencia cruzada de Audiencias. Manténgalo actualizado.',
-              '**Correo:** no se puede cambiar desde aquí.',
-              '**Contraseña:** pide la actual. La nueva debe tener al menos 8 caracteres y ser distinta de la actual.',
+              // profile/personalSchema.ts y las restricciones de profile_personal_info.
+              'Los celulares llevan 10 dígitos y empiezan por 3; puede escribirlos con o sin espacios.',
+              'Su información personal y su contacto de emergencia **solo los puede cambiar usted**. Quienes tienen el permiso **Ver información personal** (hoy, el Director de oficina y el Administrador de Sistema) pueden consultarlos, sin modificarlos.',
+              'Con **Quitar estos datos** borra lo que registró en esa pestaña.',
             ],
           },
         ],
@@ -117,7 +142,22 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
         q: 'Me llegó un correo de cambio de contraseña que yo no pedí.',
         a: 'Si es el aviso **Su contraseña se cambió** y usted no la cambió, avise de inmediato al Administrador de Sistema. Si es un enlace para crear una contraseña nueva que no pidió, ignórelo: su contraseña actual sigue funcionando.',
       },
-      { q: 'No puedo cambiar la contraseña en el primer ingreso.', a: 'Primero elija y guarde su cargo.' },
+      {
+        q: 'No puedo cambiar la contraseña en el primer ingreso.',
+        a: 'Primero elija y guarde su cargo en la pestaña **Cuenta**.',
+      },
+      {
+        q: '¿Tengo que llenar mi información personal y mi contacto de emergencia?',
+        a: 'No. Son opcionales y puede registrar solo algunos datos. Sirven para que la oficina pueda comunicarse con usted o con su contacto si tiene una emergencia.',
+      },
+      {
+        q: '¿Quién ve mi información personal?',
+        a: 'Usted, y quienes tienen el permiso **Ver información personal** (hoy, el Director de oficina y el Administrador de Sistema), solo para consultarla. Nadie más puede verla ni cambiarla.',
+      },
+      {
+        q: 'Mi EPS no está en la lista.',
+        a: 'Elija **Otra** y comuníquese con el Administrador de Sistema para que la agregue.',
+      },
       {
         q: 'Mi cargo no está en la lista.',
         a: 'Comuníquese con el Administrador de Sistema para que lo agregue.',
@@ -738,6 +778,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             type: 'list',
             items: [
               '**Crear usuario:** nombre, correo, rol y, si el rol es de juzgado, el juzgado. El sistema genera una **contraseña temporal** que se muestra **una sola vez** arriba de la lista: cópiela y entréguela por un canal seguro. No se guarda en ningún lado.',
+              '**Ver información personal:** muestra, solo para consultar, la información personal y el contacto de emergencia que el usuario registró en Mi perfil, con los celulares y el correo listos para llamar o escribir. Requiere el permiso **Ver información personal**; solo el usuario puede cambiar esos datos.',
               '**Editar / Asignar rol:** cambia nombre, rol o juzgado.',
               '**Restablecer contraseña:** genera una nueva contraseña temporal. Quien olvida su contraseña puede recuperarla solo desde **Iniciar sesión**; esta opción queda para quien no recibe el enlace en su correo.',
               '**Desactivar / Reactivar:** desactivar impide iniciar sesión sin borrar la cuenta.',

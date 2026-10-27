@@ -1,4 +1,6 @@
-# Plan: Mi perfil con pestañas, información personal y contacto de emergencia (propuesta, 2026-10-27)
+# Plan: Mi perfil con pestañas, información personal y contacto de emergencia (implementado el 2026-10-27; migración aplicada, pendiente de probar en el navegador)
+
+> Histórico: el funcionamiento vigente está en [modulos/mi-perfil.md](modulos/mi-perfil.md).
 
 Hoy Mi perfil (`/dashboard/perfil`, ver [modulos/mi-perfil.md](modulos/mi-perfil.md)) muestra en una sola
 columna el formulario de nombre y cargo (`ProfileNameForm`) y el de contraseña (`PasswordForm`). Con este

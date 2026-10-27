@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useId } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { cn } from '../../lib/cn'
+import { Tabs, tabPanelProps } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import GuideView from './GuideView'
 import { findGuide, GUIDE_PARAM, GUIDES } from './guides'
 import type { GuideSlug } from './types'
 import { useRolesMatrix } from './useRolesMatrix'
+
+const tabs = GUIDES.map((item) => ({ id: item.slug, label: item.title }))
 
 // Ayuda (/dashboard/ayuda, docs/plan-ayuda.md): una pestaña por guía, todas visibles para todos los
 // usuarios. La pestaña abierta va en la URL (?guia=audiencias), así el botón Ayuda de la Topbar abre
@@ -15,12 +17,7 @@ export default function HelpPage() {
   const [params, setParams] = useSearchParams()
   const guide = findGuide(params.get(GUIDE_PARAM))
   const roles = useRolesMatrix()
-  const activeTab = useRef<HTMLButtonElement>(null)
-
-  // En celular la fila de pestañas se desplaza de lado: la abierta queda a la vista.
-  useEffect(() => {
-    activeTab.current?.scrollIntoView({ block: 'nearest', inline: 'center' })
-  }, [guide.slug])
+  const tabsId = useId()
 
   function open(slug: GuideSlug) {
     if (slug === guide.slug) return
@@ -35,32 +32,11 @@ export default function HelpPage() {
           Guías de uso del dashboard para todos los funcionarios. Los permisos de cada rol pueden cambiar; las tablas
           "Quién puede hacer qué" muestran los de hoy.
         </p>
-        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-          <div className="flex gap-x-6 whitespace-nowrap" role="group" aria-label="Guías">
-            {GUIDES.map((item) => {
-              const active = item.slug === guide.slug
-              return (
-                <button
-                  key={item.slug}
-                  ref={active ? activeTab : undefined}
-                  type="button"
-                  onClick={() => open(item.slug)}
-                  aria-pressed={active}
-                  className={cn(
-                    'inline-flex min-h-10 items-center border-b-2 px-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                    active
-                      ? 'border-primary font-semibold text-on-surface'
-                      : 'border-transparent font-medium text-on-surface-variant hover:text-on-surface',
-                  )}
-                >
-                  {item.title}
-                </button>
-              )
-            })}
-          </div>
-        </div>
+        <Tabs items={tabs} value={guide.slug} onChange={open} label="Guías" idPrefix={tabsId} />
       </div>
-      <GuideView key={guide.slug} guide={guide} roles={roles} />
+      <div {...tabPanelProps(tabsId, guide.slug)}>
+        <GuideView key={guide.slug} guide={guide} roles={roles} />
+      </div>
     </div>
   )
 }
