@@ -60,8 +60,9 @@ export async function fetchSurveyStats(
 
 export type SurveySummary = { survey_id: string; title: string; year: number; responses: number }
 
-export async function fetchSurveySummary(): Promise<SurveySummary | null> {
-  const { data, error } = await supabase.rpc('survey_summary')
+export async function fetchSurveySummary(signal: AbortSignal): Promise<SurveySummary | null> {
+  const { data, error } = await supabase.rpc('survey_summary').abortSignal(signal)
+  if (signal.aborted) throw new DOMException('Aborted', 'AbortError')
   if (error) throw surveyError(error)
   return ((data ?? []) as SurveySummary[])[0] ?? null
 }

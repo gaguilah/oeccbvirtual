@@ -201,7 +201,9 @@ export async function deleteHearing(id: string): Promise<void> {
 
 // Tarjeta de Inicio: audiencias programadas para hoy, por cerrar y realizadas pendientes de cargar al
 // expediente (según el alcance del usuario).
-export async function fetchHearingsSummary(): Promise<{ today: number; pendingClose: number; pendingFile: number }> {
+export async function fetchHearingsSummary(
+  signal: AbortSignal,
+): Promise<{ today: number; pendingClose: number; pendingFile: number }> {
   const now = new Date()
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(now)
   const [todayResult, pendingResult, fileResult] = await Promise.all([
@@ -210,14 +212,22 @@ export async function fetchHearingsSummary(): Promise<{ today: number; pendingCl
       .select('id', { count: 'exact', head: true })
       .eq('status_id', 1)
       .gte('scheduled_at', startOfDay(today))
-      .lt('scheduled_at', startOfDay(addDays(today, 1))),
+      .lt('scheduled_at', startOfDay(addDays(today, 1)))
+      .abortSignal(signal),
     supabase
       .from('hearings')
       .select('id', { count: 'exact', head: true })
       .eq('status_id', 1)
-      .lte('scheduled_at', now.toISOString()),
-    supabase.from('hearings').select('id', { count: 'exact', head: true }).eq('status_id', 2).is('filed_at', null),
+      .lte('scheduled_at', now.toISOString())
+      .abortSignal(signal),
+    supabase
+      .from('hearings')
+      .select('id', { count: 'exact', head: true })
+      .eq('status_id', 2)
+      .is('filed_at', null)
+      .abortSignal(signal),
   ])
+  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
   if (todayResult.error) throw hearingError(todayResult.error)
   if (pendingResult.error) throw hearingError(pendingResult.error)
   if (fileResult.error) throw hearingError(fileResult.error)

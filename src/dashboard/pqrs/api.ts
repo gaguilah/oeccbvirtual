@@ -77,8 +77,9 @@ export async function fetchRequestAudit(id: string): Promise<RequestAudit | null
   return ((data ?? []) as RequestAudit[])[0] ?? null
 }
 
-export async function fetchPqrsSummary(): Promise<PqrsSummary> {
-  const { data, error } = await supabase.rpc('pqrs_summary')
+export async function fetchPqrsSummary(signal: AbortSignal): Promise<PqrsSummary> {
+  const { data, error } = await supabase.rpc('pqrs_summary').abortSignal(signal)
+  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
   if (error) throw requestError(error)
   const row = ((data ?? []) as PqrsSummary[])[0]
   return { pending: Number(row?.pending ?? 0), overdue: Number(row?.overdue ?? 0) }
