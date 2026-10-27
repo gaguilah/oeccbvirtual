@@ -1,5 +1,6 @@
 import { Container, PageHeader } from '../components/layout'
-import { TutorialCard, TutorialsIllustration, tutorials } from '../components/tutorials'
+import { serviceDescription } from '../components/services'
+import { TUTORIALS_PATH, TutorialCard, TutorialsIllustration, tutorials } from '../components/tutorials'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 export default function Tutoriales() {
@@ -11,7 +12,7 @@ export default function Tutoriales() {
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <PageHeader
           title="Tutoriales"
-          description="Guías paso a paso para usar los servicios digitales de la oficina."
+          description={serviceDescription(TUTORIALS_PATH)}
           breadcrumb={[{ label: 'Inicio', to: '/' }, { label: 'Tutoriales' }]}
           className="pb-0"
         />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Container, PageHeader } from '../components/layout'
 import {
+  AVISOS_REMATES_PATH,
   COURTS,
   PAGE_SIZE,
   RemateDetailModal,
@@ -12,6 +13,7 @@ import {
   useRematesFilters,
   type NoticeSelection,
 } from '../components/remates'
+import { serviceDescription } from '../components/services'
 import { Alert, Button, Card, EmptyState, Pagination, Spinner } from '../components/ui'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
@@ -104,7 +106,7 @@ export default function Remates() {
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <PageHeader
           title="Avisos de Remate"
-          description="Consulta los avisos de remate publicados por los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga."
+          description={serviceDescription(AVISOS_REMATES_PATH)}
           breadcrumb={[{ label: 'Inicio', to: '/' }, { label: 'Avisos de Remate' }]}
           className="pb-0"
         />

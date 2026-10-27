@@ -1,4 +1,4 @@
-# Plan: Servicios del inicio como carrusel con ilustraciones (planeado el 2026-10-27)
+# Plan: Servicios del inicio como carrusel con ilustraciones (planeado y construido el 2026-10-27)
 
 Hoy la sección **Servicios** del inicio es una cuadrícula de 5 tarjetas (Avisos Remate, Audiencias,
 PQRS, Encuesta, Tutoriales) con ícono, título, descripción de una línea e "Ingresar →"
@@ -14,7 +14,7 @@ botones ‹ › debajo.
 | Ilustración | La de la página de cada servicio (`RematesIllustration`, `AudienciasIllustration`, `PqrsIllustration`, `SurveyIllustration`, `TutorialsIllustration`), **sin animaciones** |
 | Acción | Propia de cada servicio en vez de "Ingresar" (ver textos) |
 | Textos | Descripciones nuevas que dan protagonismo a la **Oficina** (no a los juzgados), sin afirmar quién publica cada aviso o audiencia, para que sigan siendo ciertas si cambian los permisos |
-| Fuente de los textos | **Una sola**: `services/data.ts`. Contacto ("Canales en línea": PQRS, Encuesta, Tutoriales) muestra las mismas descripciones y acciones; su tarjeta (`ServiceCard`) conserva la forma actual |
+| Fuente de los textos | **Una sola**: `services/data.ts`. Contacto ("Canales en línea": PQRS, Encuesta, Tutoriales) muestra las mismas descripciones y acciones; su tarjeta (`ServiceCard`) conserva la forma actual. Decidido después: la descripción es también el subtítulo de las páginas Avisos de Remate, Audiencias y Tutoriales (`serviceDescription(path)`); PQRS y Encuesta conservan los textos de su encabezado, que explican el formulario |
 | Vuelta al inicio | **Simple**: en la última tarjeta, › vuelve desplazándose a la primera; en la primera, ‹ va a la última. Los botones nunca se desactivan. Se descartó el carrusel infinito con copias (≈ 3 veces el código, copias ocultas para lectores y Tab, y brincos al deslizar en Safari) |
 | Celular (< 768 px) | Una tarjeta, con un **borde de la siguiente asomando** para que se note que hay más |
 | Tablet (768–1023 px) | Título "Servicios" arriba, **una tarjeta y media**; al avanzar, la que se veía a medias pasa al inicio. Botones debajo, a la derecha |
@@ -52,11 +52,13 @@ Columna izquierda (≥ 1024 px): **Servicios** · "Consultas y trámites en lín
 Las animaciones de las ilustraciones (`index.css`) usan `fill-mode: both` y los estilos base son el
 estado final, así que basta con apagarlas para verlas completas:
 
-- `IllustrationCanvas` recibe `still`: apaga toda animación dentro del lienzo (barras llenas, textos
-  completos, cursor fijo) y quita los efectos de hover internos (`pointer-events: none`), para que
-  solo reaccione la tarjeta.
-- Excepción: Tutoriales alterna 6 textos apilados (`animate-illustration-cycle`); quieta mostraría
-  los 6 a la vez. En modo quieto muestra solo el primero.
+- Utilidad `illustration-still` (`index.css`), pasada en el `className` del lienzo: apaga toda
+  animación dentro (barras llenas, textos completos, cursor fijo) y quita los efectos de hover
+  internos (`pointer-events: none`), para que solo reaccione la tarjeta. (Se planeó como opción
+  `still` de `IllustrationCanvas`; la utilidad basta, porque cada ilustración ya pasa su
+  `className` al lienzo.)
+- Tutoriales alterna 6 textos apilados (`animate-illustration-cycle`), pero todos menos el primero
+  tienen `opacity-0` en su estilo base: quieta muestra solo el primero sin cambiar el componente.
 - La ilustración de Tutoriales es 3:2 y las demás 512 × 400: va centrada en el mismo espacio para
   que todas las tarjetas midan lo mismo.
 - En las páginas de cada servicio las ilustraciones siguen animadas.
@@ -71,7 +73,7 @@ estado final, así que basta con apagarlas para verlas completas:
   anterior, vuelta) va en un `.ts` aparte, con pruebas en Vitest.
 - Accesibilidad: región con `aria-roledescription="carrusel"`, cada tarjeta "Servicio n de 5";
   un aviso `aria-live="polite"` anuncia "Servicio 2 de 5: Audiencias" al usar los botones; con Tab
-  se recorren las tarjetas y la enfocada se desplaza a la vista; con "reducir movimiento" el
+  se recorren las tarjetas y la enfocada se alinea al inicio, como con los botones; con "reducir movimiento" el
   desplazamiento es instantáneo.
 
 ## Archivos
@@ -80,8 +82,7 @@ estado final, así que basta con apagarlas para verlas completas:
   `ServiceIllustration` (elige la ilustración por servicio, `still`), helper `.ts` del índice +
   prueba. `data.ts` gana `action` y las descripciones nuevas; `ServiceCard` (Contacto) muestra
   `action` en vez de "Ingresar".
-- `components/illustration/IllustrationCanvas`: opción `still`; `tutorials/TutorialsIllustration`:
-  versión quieta (solo el primer texto).
+- `index.css`: utilidad `illustration-still`.
 - `pages/Home.tsx`: el carrusel en lugar de la cuadrícula.
 - Documentación: este plan y CLAUDE.md (la frase "home services grid (5 cards: `lg` 3 columns,
   `xl` 5)" en Audiencias, la sección de ilustraciones y la de Contacto).

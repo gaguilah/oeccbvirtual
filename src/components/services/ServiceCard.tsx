@@ -11,7 +11,7 @@ export default function ServiceCard({ service }: { service: Service }) {
     >
       <CardBody icon={service.icon} title={service.title} description={service.description} />
       <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
-        Ingresar
+        {service.action}
         <svg
           className="size-4 transition-transform group-hover:translate-x-1"
           fill="none"

@@ -1,6 +1,6 @@
 import { HeroIllustration } from '../components/home'
 import { Container } from '../components/layout'
-import { ExternalLinkCard, ServiceCard, services } from '../components/services'
+import { ExternalLinkCard, ServicesCarousel, services } from '../components/services'
 import { OFFICE_NAME } from '../lib/contact'
 import { INTEREST_LINKS } from '../lib/externalLinks'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
@@ -21,24 +21,14 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Servicios: tarjetas (surface-container-lowest) sobre una sección tonal, sin bordes. */}
-      <section aria-labelledby="servicios-title" className="bg-surface-container-low">
-        <Container className="space-y-8 py-12 sm:py-16 lg:py-20">
-          <h2
-            id="servicios-title"
-            className="font-sans text-xs font-semibold uppercase tracking-widest text-on-surface-variant"
-          >
-            Servicios
-          </h2>
-          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-5">
-            {services.map((service) => (
-              <li key={service.to}>
-                <ServiceCard service={service} />
-              </li>
-            ))}
-          </ul>
+      {/* Servicios: carrusel de tarjetas grandes con la ilustración de cada sección, sobre una
+          sección tonal (docs/plan-inicio-servicios.md). overflow-hidden recorta la fila, que sale
+          hasta el borde de la ventana. */}
+      <div className="overflow-hidden bg-surface-container-low">
+        <Container className="py-12 sm:py-16 lg:py-20">
+          <ServicesCarousel services={services} />
         </Container>
-      </section>
+      </div>
 
       {/* Enlaces de interés: vuelve al fondo surface (el cambio de tono separa las secciones) y las
           tarjetas usan surface-container-low. Ver docs/plan-enlaces-interes.md. */}

@@ -1,8 +1,11 @@
-// Servicios en línea del sitio: tarjetas del inicio y de Contacto.
+// Servicios en línea del sitio: carrusel del inicio y tarjetas de Contacto (una sola fuente de
+// textos, ver docs/plan-inicio-servicios.md). Las descripciones dan protagonismo a la Oficina.
 export type Service = {
   to: string
   title: string
   description: string
+  // Texto del enlace, propio de cada servicio (p. ej. "Ver audiencias").
+  action: string
   // Trazos del icono (Heroicons outline, viewBox 24×24).
   icon: string[]
 }
@@ -11,7 +14,9 @@ export const services: Service[] = [
   {
     to: '/avisos-remates',
     title: 'Avisos Remate',
-    description: 'Consulte los avisos de remate publicados.',
+    description:
+      'La Oficina de Apoyo reúne en un solo lugar los avisos de remate: consulte la fecha y hora, el radicado y el aviso en PDF para verlo o descargarlo.',
+    action: 'Ver avisos de remate',
     icon: [
       'M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z',
     ],
@@ -19,7 +24,9 @@ export const services: Service[] = [
   {
     to: '/audiencias',
     title: 'Audiencias',
-    description: 'Consulte las audiencias programadas, su enlace de conexión y la grabación.',
+    description:
+      'La Oficina de Apoyo le acerca a sus audiencias: consulte cuáles están programadas, conéctese con el enlace a la hora indicada y vea la grabación cuando esté disponible.',
+    action: 'Ver audiencias',
     icon: [
       'm15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z',
     ],
@@ -27,7 +34,9 @@ export const services: Service[] = [
   {
     to: '/pqrs',
     title: 'PQRS',
-    description: 'Envíe peticiones, quejas, reclamos, sugerencias y felicitaciones.',
+    description:
+      'Escríbale a la Oficina de Apoyo: envíe su petición, queja, reclamo, sugerencia o felicitación, y reciba un número de radicado y la respuesta en su correo.',
+    action: 'Crear PQRS',
     icon: [
       'M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75',
     ],
@@ -35,7 +44,9 @@ export const services: Service[] = [
   {
     to: '/encuesta',
     title: 'Encuesta',
-    description: 'Califique el servicio y ayúdenos a mejorar.',
+    description:
+      'Cuéntele a la Oficina cómo lo atendimos. Son pocas preguntas, sus respuestas son anónimas y nos ayudan a mejorar cada día.',
+    action: 'Responder encuesta',
     icon: [
       'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
     ],
@@ -43,10 +54,21 @@ export const services: Service[] = [
   {
     to: '/tutoriales',
     title: 'Tutoriales',
-    description: 'Aprenda a utilizar los servicios digitales.',
+    description:
+      'La Oficina preparó guías paso a paso, con imágenes, para que consulte publicaciones procesales, estados y traslados, y se conecte a sus audiencias.',
+    action: 'Ver tutoriales',
     icon: [
       'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
       'M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z',
     ],
   },
 ]
+
+// Descripción de un servicio por su ruta: también es el subtítulo de su página (Avisos de Remate,
+// Audiencias, Tutoriales), así el ciudadano lee lo mismo en la tarjeta y al entrar.
+export function serviceDescription(to: string): string | undefined {
+  return services.find((service) => service.to === to)?.description
+}
+
+// Frase de la sección Servicios del inicio (columna izquierda desde lg).
+export const SERVICES_INTRO = 'Consultas y trámites en línea con la Oficina, sin desplazarse.'

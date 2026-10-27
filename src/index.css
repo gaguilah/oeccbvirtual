@@ -237,6 +237,18 @@
 
 /* Texto más pequeño dentro de una ilustración (IllustrationCanvas compact). Va en un elemento
    hijo del que tiene illustration-scale, así sus valores ganan por herencia. */
+/* Ilustración quieta (tarjetas de Servicios del inicio, docs/plan-inicio-servicios.md): sin
+   animaciones ni hover internos. Las animaciones guardan su estado final en los estilos base
+   (fill-mode both), así que apagarlas la deja completa; los textos que se turnan en Tutoriales
+   tienen opacity-0 salvo el primero, así que se ve solo ese. Se pasa en className del lienzo. */
+@utility illustration-still {
+  pointer-events: none;
+
+  & * {
+    animation: none !important;
+  }
+}
+
 @utility illustration-compact {
   --text-xs: calc(var(--u) * 10.5);
   --text-sm: calc(var(--u) * 11.5);
