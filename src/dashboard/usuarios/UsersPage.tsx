@@ -7,6 +7,7 @@ import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import { manageUsers } from './api'
 import { displayName, EMPTY_FILTERS, filterUsers } from './data'
 import PasswordNoticeCard from './PasswordNoticeCard'
+import PersonalInfoModal from './PersonalInfoModal'
 import UserFormModal from './UserFormModal'
 import UsersFilters from './UsersFilters'
 import UsersTable from './UsersTable'
@@ -17,15 +18,19 @@ type Dialog =
   | { kind: 'form'; user: UserRow | null; key: number }
   | { kind: 'toggle'; user: UserRow }
   | { kind: 'reset'; user: UserRow }
+  | { kind: 'personal'; user: UserRow }
   | null
 
 // Sección Usuarios (/dashboard/usuarios, docs/plan-usuarios.md fase 2). Ver: usuarios.ver.
 // Crear, editar, desactivar y restablecer: usuarios.gestionar (lo vuelve a exigir manage-users).
+// Ver información personal (solo lectura): usuarios.datos_personales (lo exige
+// get_user_personal_info).
 export default function UsersPage() {
   useDocumentMeta({ title: 'Usuarios · Dashboard', noindex: true })
   const { session } = useAuth()
   const { access, can } = useAccess()
   const canManage = can('usuarios.gestionar')
+  const canViewPersonal = can('usuarios.datos_personales')
   const { users, roles, loading, refreshing, error, reload } = useUsers()
   const [filters, setFilters] = useState<UserFilters>(EMPTY_FILTERS)
   const [dialog, setDialog] = useState<Dialog>(null)
@@ -100,9 +105,11 @@ export default function UsersPage() {
           currentUserId={session?.user.id ?? null}
           highlightId={highlightId}
           canManage={canManage}
+          canViewPersonal={canViewPersonal}
           onEdit={(user) => setDialog({ kind: 'form', user, key: Date.now() })}
           onToggleActive={(user) => setDialog({ kind: 'toggle', user })}
           onResetPassword={(user) => setDialog({ kind: 'reset', user })}
+          onViewPersonal={(user) => setDialog({ kind: 'personal', user })}
         />
       )}
 
@@ -129,6 +136,8 @@ export default function UsersPage() {
           }}
         />
       )}
+
+      {dialog?.kind === 'personal' && <PersonalInfoModal user={dialog.user} onClose={close} />}
 
       {dialog?.kind === 'toggle' && (
         <ConfirmDialog

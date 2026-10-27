@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  AUDIENCIAS_PATH,
   AudienciaDetailModal,
   AudienciasFilters,
   AudienciasIllustration,
@@ -11,6 +12,7 @@ import {
 } from '../components/audiencias'
 import { Container, PageHeader } from '../components/layout'
 import { COURTS, stickyFilters } from '../components/remates'
+import { serviceDescription } from '../components/services'
 import { Alert, Button, Card, EmptyState, Pagination, Spinner } from '../components/ui'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
@@ -94,7 +96,7 @@ export default function Audiencias() {
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <PageHeader
           title="Audiencias"
-          description="Consulte las audiencias de los Juzgados Civiles del Circuito de Ejecución de Sentencias de Bucaramanga: fecha, hora, enlace de conexión y grabación."
+          description={serviceDescription(AUDIENCIAS_PATH)}
           breadcrumb={[{ label: 'Inicio', to: '/' }, { label: 'Audiencias' }]}
           className="pb-0"
         />

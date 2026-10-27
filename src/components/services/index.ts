@@ -1,4 +1,5 @@
 export { default as CardBody } from './CardBody'
 export { default as ExternalLinkCard } from './ExternalLinkCard'
 export { default as ServiceCard } from './ServiceCard'
-export { services, type Service } from './data'
+export { default as ServicesCarousel } from './ServicesCarousel'
+export { serviceDescription, services, type Service } from './data'

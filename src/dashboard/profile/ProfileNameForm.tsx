@@ -4,12 +4,17 @@ import { fetchJobPositions, type JobPosition } from './api'
 import { useProfile } from './profile'
 import { nameSchema } from './schema'
 
-type Props = { initialName: string; initialPositionId: number | null }
+type Props = {
+  initialName: string
+  initialPositionId: number | null
+  // Tras guardar (Mi perfil pasa a la pestaña Contraseña en el primer ingreso).
+  onSaved?: () => void
+}
 
-// Datos personales: nombre y cargo (de la lista job_positions) se pueden cambiar; el correo se
+// Pestaña Cuenta: nombre y cargo (de la lista job_positions) se pueden cambiar; el correo se
 // muestra solo de lectura (es el de la cuenta de Supabase Auth). El cargo sale en el formato de
 // audiencias realizadas (docs/plan-audiencias-formato.md) y es obligatorio.
-export default function ProfileNameForm({ initialName, initialPositionId }: Props) {
+export default function ProfileNameForm({ initialName, initialPositionId, onSaved }: Props) {
   const { email, saveProfile } = useProfile()
   const [name, setName] = useState(initialName)
   const [positionId, setPositionId] = useState(initialPositionId ? String(initialPositionId) : '')
@@ -57,6 +62,7 @@ export default function ProfileNameForm({ initialName, initialPositionId }: Prop
       setName(result.data)
       setSaved({ name: result.data, positionId })
       setMessage({ variant: 'success', text: 'Datos guardados.' })
+      onSaved?.()
     } catch (err) {
       setMessage({ variant: 'error', text: err instanceof Error ? err.message : 'No se pudieron guardar sus datos.' })
     } finally {
@@ -70,7 +76,7 @@ export default function ProfileNameForm({ initialName, initialPositionId }: Prop
     <Card>
       <form onSubmit={handleSubmit} noValidate>
         <CardHeader>
-          <h2 className="text-lg font-bold">Datos personales</h2>
+          <h2 className="text-lg font-bold">Cuenta</h2>
           <p className="mt-1 text-sm text-on-surface-variant">
             Así aparecen su nombre y su cargo en el dashboard y en los formatos que genera.
           </p>

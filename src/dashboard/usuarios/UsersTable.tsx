@@ -11,16 +11,20 @@ type Handlers = {
   onEdit: (user: UserRow) => void
   onToggleActive: (user: UserRow) => void
   onResetPassword: (user: UserRow) => void
+  onViewPersonal: (user: UserRow) => void
 }
+
+// Qué puede hacer quien mira la lista: gestionar (usuarios.gestionar) y consultar la información
+// personal (usuarios.datos_personales). Con ninguno de los dos no hay columna de acciones.
+type Abilities = { canManage: boolean; canViewPersonal: boolean }
 
 type UsersTableProps = Handlers & {
   users: UserRow[]
   currentUserId: string | null
   // Usuario recién creado o editado: se resalta y se lleva a la vista.
   highlightId: string | null
-  canManage: boolean
   className?: string
-}
+} & Abilities
 
 const headerCell = 'px-4 py-3 text-xs font-semibold uppercase tracking-widest text-on-surface-variant lg:px-6'
 const bodyCell = 'px-4 py-4 align-top lg:px-6'
@@ -73,24 +77,33 @@ function SignIn({ user }: { user: UserRow }) {
   )
 }
 
-// Menú de tres puntos: editar (o asignar rol), restablecer contraseña y desactivar / reactivar.
-// Nadie se gestiona a sí mismo aquí: en la fila propia el menú solo lleva a Mi perfil. Sin rol,
-// solo se puede asignar uno.
+// Menú de tres puntos: ver información personal, editar (o asignar rol), restablecer contraseña y
+// desactivar / reactivar. Nadie se gestiona a sí mismo aquí: en la fila propia el menú solo lleva a
+// Mi perfil. Sin rol, solo se puede asignar uno (y no hay información personal que ver: sin perfil
+// no se registra).
 function UserActions({
   user,
   isSelf,
+  canManage,
+  canViewPersonal,
   onEdit,
   onToggleActive,
   onResetPassword,
+  onViewPersonal,
   className,
-}: Handlers & { user: UserRow; isSelf: boolean; className?: string }) {
+}: Handlers & Abilities & { user: UserRow; isSelf: boolean; className?: string }) {
   const navigate = useNavigate()
   const hasRole = Boolean(user.role_id)
   const items: ActionMenuItem[] = isSelf
     ? [{ label: 'Ir a Mi perfil', icon: icons.profile, onSelect: () => navigate(PROFILE_LINK.to) }]
     : [
-        { label: hasRole ? 'Editar' : 'Asignar rol', icon: icons.pencil, onSelect: () => onEdit(user) },
-        ...(hasRole
+        ...(canViewPersonal && hasRole
+          ? [{ label: 'Ver información personal', icon: icons.eye, onSelect: () => onViewPersonal(user) }]
+          : []),
+        ...(canManage
+          ? [{ label: hasRole ? 'Editar' : 'Asignar rol', icon: icons.pencil, onSelect: () => onEdit(user) }]
+          : []),
+        ...(canManage && hasRole
           ? [
               { label: 'Restablecer contraseña', icon: icons.key, onSelect: () => onResetPassword(user) },
               {
@@ -112,9 +125,12 @@ export default function UsersTable({
   currentUserId,
   highlightId,
   canManage,
+  canViewPersonal,
   className,
   ...handlers
 }: UsersTableProps) {
+  const hasActions = canManage || canViewPersonal
+  const abilities = { canManage, canViewPersonal }
   const highlightRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -147,7 +163,7 @@ export default function UsersTable({
             <th scope="col" className={cn(headerCell, 'hidden 2xl:table-cell')}>
               Último ingreso
             </th>
-            {canManage && (
+            {hasActions && (
               <th scope="col" className={cn(headerCell, 'w-px')}>
                 <span className="sr-only">Acciones</span>
               </th>
@@ -172,11 +188,12 @@ export default function UsersTable({
               <td className={cn(bodyCell, 'hidden text-sm 2xl:table-cell')}>
                 <SignIn user={user} />
               </td>
-              {canManage && (
+              {hasActions && (
                 <td className={cn(bodyCell, 'py-2.5')}>
                   <UserActions
                     user={user}
                     isSelf={user.id === currentUserId}
+                    {...abilities}
                     className="flex justify-end"
                     {...handlers}
                   />
@@ -198,10 +215,11 @@ export default function UsersTable({
               <div className="min-w-0">
                 <NameCell user={user} isSelf={user.id === currentUserId} hideSelf />
               </div>
-              {canManage && (
+              {hasActions && (
                 <UserActions
                   user={user}
                   isSelf={user.id === currentUserId}
+                  {...abilities}
                   className="-mt-1 -mr-2 shrink-0"
                   {...handlers}
                 />

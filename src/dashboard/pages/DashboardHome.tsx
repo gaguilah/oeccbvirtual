@@ -25,46 +25,37 @@ export default function DashboardHome() {
   const [hearings, setHearings] = useState<{ today: number; pendingClose: number; pendingFile: number } | null>(null)
   const [survey, setSurvey] = useState<SurveySummary | null>(null)
 
+  // Los resúmenes de las tarjetas se cancelan al salir de Inicio (AbortController): así una consulta
+  // cortada no se registra como error. Si fallan, la tarjeta se muestra sin cifras.
+
   // Resumen de PQRS para su tarjeta (pendientes y vencidas).
   useEffect(() => {
     if (!canSeePqrs) return
-    let active = true
-    fetchPqrsSummary()
-      .then((summary) => {
-        if (active) setPqrs(summary)
-      })
+    const controller = new AbortController()
+    fetchPqrsSummary(controller.signal)
+      .then(setPqrs)
       .catch(() => {})
-    return () => {
-      active = false
-    }
+    return () => controller.abort()
   }, [canSeePqrs])
 
   // Respuestas del año en curso de la encuesta activa, para su tarjeta.
   useEffect(() => {
     if (!canSeeSurveys) return
-    let active = true
-    fetchSurveySummary()
-      .then((summary) => {
-        if (active) setSurvey(summary)
-      })
+    const controller = new AbortController()
+    fetchSurveySummary(controller.signal)
+      .then(setSurvey)
       .catch(() => {})
-    return () => {
-      active = false
-    }
+    return () => controller.abort()
   }, [canSeeSurveys])
 
   // Audiencias de hoy y por cerrar, para su tarjeta (según el alcance del usuario).
   useEffect(() => {
     if (!canSeeHearings) return
-    let active = true
-    fetchHearingsSummary()
-      .then((summary) => {
-        if (active) setHearings(summary)
-      })
+    const controller = new AbortController()
+    fetchHearingsSummary(controller.signal)
+      .then(setHearings)
       .catch(() => {})
-    return () => {
-      active = false
-    }
+    return () => controller.abort()
   }, [canSeeHearings])
 
   const extraFor = (to: string) =>

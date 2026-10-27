@@ -10,12 +10,12 @@ Quién entra al dashboard y qué puede hacer en cada sección. **Qué** puede ha
 
 | Sección | Ruta | Ver | Gestionar |
 |---|---|---|---|
-| Usuarios | `/dashboard/usuarios` | `usuarios.ver` | `usuarios.gestionar` |
+| Usuarios | `/dashboard/usuarios` | `usuarios.ver` | `usuarios.gestionar` (y `usuarios.datos_personales` para consultar la información personal) |
 | Roles | `/dashboard/roles`, `/nuevo`, `/:id` | `roles.ver` | `roles.gestionar` |
 | Permisos | `/dashboard/permisos` | `permisos.ver` | `permisos.gestionar` |
 
-Asignación vigente (2026-10-15): `usuarios.ver` para oficina y director_oficina (solo consulta); los
-demás, solo superadmin.
+Asignación vigente (2026-10-27): `usuarios.ver` para oficina y director_oficina (solo consulta);
+`usuarios.datos_personales` para director_oficina; los demás, solo superadmin.
 
 ## Modelo
 
@@ -24,14 +24,14 @@ demás, solo superadmin.
 - `permissions`: códigos `<módulo>.<acción>`, enlazados a roles en `role_permissions`.
 - `superadmin` (`is_system`): tiene todos los permisos de forma implícita, incluidos los futuros.
 
-### Roles actuales (consultados en la base el 2026-10-15)
+### Roles actuales (consultados en la base el 2026-10-27)
 
 | Rol | Alcance | Permisos |
 |---|---|---|
 | `superadmin` | Todos | Todos (implícito) |
 | `juzgado` | Su juzgado | `audiencias.ver`, `remates.ver`, `calendario.ver` |
 | `oficina` | Todos | `audiencias.ver`, `remates.ver`, `pqrs.ver`, `encuestas.ver`, `usuarios.ver`, `calendario.ver` |
-| `director_oficina` | Todos | `audiencias.ver/crear/editar/eliminar`, `remates.ver`, `pqrs.ver/gestionar/responder`, `encuestas.ver`, `usuarios.ver` |
+| `director_oficina` | Todos | `audiencias.ver/crear/editar/eliminar`, `remates.ver`, `pqrs.ver/gestionar/responder`, `encuestas.ver`, `usuarios.ver`, `usuarios.datos_personales` |
 
 En la práctica: juzgado y oficina solo consultan; el director gestiona Audiencias y PQRS; Avisos de
 Remate, Encuestas, Días no hábiles y la administración los gestiona solo el superadmin.
@@ -71,6 +71,12 @@ group by r.name, r.scope order by r.name;
   guarda. Deja `must_change_password = true`.
 - Desactivar también bloquea el inicio de sesión en Auth (`ban_duration`).
 - Nadie se gestiona a sí mismo en Usuarios: su fila solo ofrece "Ir a Mi perfil".
+- "Ver información personal" (menú ⋮, permiso `usuarios.datos_personales`, solo filas con rol):
+  `PersonalInfoModal` lee con `get_user_personal_info(p_user_id)` (`security definer`; revisa
+  `has_permission` con el juzgado del usuario consultado, o 0 si no tiene, así un rol de alcance `court`
+  solo ve los de su juzgado). Solo lectura: los datos los cambia únicamente el propio usuario en Mi perfil
+  (ver [mi-perfil.md](mi-perfil.md)). La columna de acciones aparece con `usuarios.gestionar` o con este
+  permiso.
 - Estados en la lista: Activo, Contraseña temporal, Desactivado, Sin rol (cuenta de Auth sin perfil).
 - `list_users()` incluye cuentas sin perfil. `useUsers` recarga al volver a la pestaña, cada 60 s y con
   "Actualizar", porque los cambios de otros no se notifican.
@@ -86,7 +92,8 @@ group by r.name, r.scope order by r.name;
 
 - `src/dashboard/access/`, `usuarios/`, `roles/`, `permisos/`; `supabase/functions/manage-users`.
 - Migraciones: `20261005150000_roles_permissions`, `20261005160000_list_users`,
-  `20261005170000_roles_admin` y los permisos de cada sección en su migración.
+  `20261005170000_roles_admin`, `20261027120000_profile_personal_info` (`usuarios.datos_personales`) y
+  los permisos de cada sección en su migración.
 
 ## Preguntas frecuentes (desarrollo)
 
