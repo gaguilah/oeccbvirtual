@@ -37,6 +37,11 @@ React 19 + TypeScript + Vite SPA styled with Tailwind CSS v4, with Supabase as t
 - Format with Prettier, not with the Deno formatter: `.vscode/settings.json` sets Prettier as default formatter; Deno is only the language server for `supabase/functions`.
 - TS config is strict about unused locals/params and uses `verbatimModuleSyntax`, so use `import type` for type-only imports.
 - Styling uses Tailwind CSS v4 through the `@tailwindcss/vite` plugin. It has no `tailwind.config.js`: add any config in CSS in `src/index.css` (`@theme`, `@layer base`). Use utility classes in `className` rather than inline `style` props or new CSS files. Dark mode uses the `dark:` variant, which follows the system setting.
+- **Table grants (Supabase, since 2026-10):** new tables in `public` no longer get default privileges for `anon`, `authenticated` or `service_role`, so the Data API returns "permission denied" until a `GRANT` exists (existing tables keep theirs; `20261020120000_service_role_grants.sql` makes `service_role`'s explicit for all tables that existed then). Every migration that creates a table must include its grants explicitly, in the same migration:
+  - `anon` / `authenticated`: only what the browser needs, column-scoped when possible (as the existing migrations do), always together with the RLS policies that check permissions. Never `grant all`.
+  - `service_role`: the privileges the Edge Functions use on that table (and `usage` on its sequence if it inserts into a serial column; identity columns don't need it).
+  - Tables only used by Edge Functions (like `email_log`): grants to `service_role` only, RLS on, no policies.
+  - If a "permission denied" appears while testing, add the missing grant to a migration; never run it by hand only in the SQL Editor. Dropping and recreating an existing table loses its grants: recreate them in the same migration.
 
 ## Components
 
