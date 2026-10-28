@@ -58,7 +58,7 @@ export const EPS_REGIMES = [
 // Textos de ayuda (decisión del 2026-10-27: ayudas junto a los campos, sin casilla de aceptación).
 export const PERSONAL_HELP = {
   intro:
-    'Estos datos son opcionales: registre solo los que quiera. Solo usted puede editarlos; el Director de oficina y el Administrador de Sistema pueden consultarlos para comunicarse con usted o atender una emergencia.',
+    'Estos datos son opcionales: registre solo los que quiera. Solo usted puede editarlos; quienes tienen el permiso Ver información personal pueden consultarlos para comunicarse con usted o atender una emergencia.',
   address: 'Dirección completa, con barrio y municipio.',
   phone: '10 dígitos, por ejemplo 300 123 4567.',
   email: 'Distinto del correo con el que ingresa al dashboard.',

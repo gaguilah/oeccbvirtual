@@ -2,7 +2,7 @@ import { supabase } from '../../lib/supabase'
 import type { EmergencyContactValues, PersonalInfoValues } from './personalSchema'
 
 // Fila de profile_personal_info (migración 20261027120000). Solo el propio usuario la lee y la
-// escribe (RLS); el Director de oficina la consulta con get_user_personal_info (Usuarios).
+// escribe (RLS); quien tiene usuarios.datos_personales la consulta con get_user_personal_info (Usuarios).
 export type PersonalInfo = {
   residence_address: string | null
   mobile_phone: string | null

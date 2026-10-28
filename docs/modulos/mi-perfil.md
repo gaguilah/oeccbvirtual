@@ -101,8 +101,10 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
   `service_role`. El navegador hace insert la primera vez y update después (no upsert: no hay grant de
   update sobre `user_id`).
 - Consulta de otros: solo lectura, en Usuarios → "Ver información personal", con
-  `get_user_personal_info()` y el permiso `usuarios.datos_personales` (hoy director_oficina; superadmin
-  implícito). Ver [usuarios-roles-permisos.md](usuarios-roles-permisos.md).
+  `get_user_personal_info()` y el permiso `usuarios.datos_personales` (a quién está asignado: ver
+  [usuarios-roles-permisos.md](usuarios-roles-permisos.md); superadmin implícito). Los textos para el
+  usuario (aviso de la pestaña y Ayuda) nombran el permiso, nunca roles, porque la asignación cambia en
+  Roles sin tocar código.
 
 ## Archivos y migraciones
 
