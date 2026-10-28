@@ -13,6 +13,10 @@ type TabsProps<T extends string> = {
   label: string
   // Prefijo de los ids (el mismo que usa cada panel con tabPanelProps).
   idPrefix: string
+  // Qué paneles existen en la página: 'all' (Mi perfil, todos montados y ocultos) o 'active' (Ayuda,
+  // solo el abierto). Con 'active', aria-controls va solo en la pestaña abierta, para no apuntar a ids
+  // que no existen.
+  panels?: 'all' | 'active'
   className?: string
 }
 
@@ -20,7 +24,15 @@ type TabsProps<T extends string> = {
 // otra línea si no caben; en celular, `TabsMenu`: un botón con la pestaña abierta que despliega la
 // lista. Teclado: flechas izquierda/derecha, Inicio y Fin cambian de pestaña (activación
 // automática); Tab entra al panel.
-export default function Tabs<T extends string>({ items, value, onChange, label, idPrefix, className }: TabsProps<T>) {
+export default function Tabs<T extends string>({
+  items,
+  value,
+  onChange,
+  label,
+  idPrefix,
+  panels = 'all',
+  className,
+}: TabsProps<T>) {
   // Para llevar el foco a la pestaña elegida con el teclado.
   const refs = useRef(new Map<T, HTMLButtonElement>())
 
@@ -66,7 +78,7 @@ export default function Tabs<T extends string>({ items, value, onChange, label, 
               type="button"
               role="tab"
               aria-selected={active}
-              aria-controls={ids.panel}
+              aria-controls={panels === 'all' || active ? ids.panel : undefined}
               tabIndex={active ? 0 : -1}
               onClick={() => onChange(item.id)}
               className={cn(
