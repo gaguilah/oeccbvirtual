@@ -100,6 +100,11 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
   las columnas editables; sin `delete` ("Quitar estos datos" deja la pestaña en null); nada a `anon` ni a
   `service_role`. El navegador hace insert la primera vez y update después (no upsert: no hay grant de
   update sobre `user_id`).
+- "Última actualización": cada pestaña tiene su fecha (`personal_updated_at`, `emergency_updated_at`),
+  que pone el trigger `profile_personal_info_section_dates` solo cuando cambia alguna columna de su grupo
+  y deja en null cuando el grupo queda vacío. No se escriben desde el navegador. Los grupos de columnas se
+  repiten en `personalApi.ts` (`PERSONAL_COLUMNS`, `EMERGENCY_COLUMNS`): cambiar los dos juntos.
+  `updated_at` sigue siendo la fecha de la fila. El modal de Usuarios muestra una fecha por bloque.
 - Consulta de otros: solo lectura, en Usuarios → "Ver información personal", con
   `get_user_personal_info()` y el permiso `usuarios.datos_personales` (a quién está asignado: ver
   [usuarios-roles-permisos.md](usuarios-roles-permisos.md); superadmin implícito). Los textos para el
@@ -116,7 +121,8 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
   `supabase/functions/_shared/emails/account.ts`.
 - Migraciones: `20261005120000_profiles`, `20261005130000_profiles_update_own_name`,
   `20261005140000_profiles_full_name_check`, `20261013120000_hearing_format` (cargos),
-  `20261027120000_profile_personal_info` (información personal, EPS, `usuarios.datos_personales`).
+  `20261027120000_profile_personal_info` (información personal, EPS, `usuarios.datos_personales`),
+  `20261028120000_personal_info_section_dates` (fecha por pestaña).
 
 ## Preguntas frecuentes (desarrollo)
 

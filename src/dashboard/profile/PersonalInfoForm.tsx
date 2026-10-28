@@ -91,7 +91,7 @@ export default function PersonalInfoForm({ userId, info, eps, onSaved }: Props) 
       onSubmit={handleSubmit}
       saving={saving}
       unchanged={unchanged}
-      updatedAt={info?.updated_at ?? null}
+      updatedAt={info?.personal_updated_at ?? null}
       canClear={hasAny(info, PERSONAL_COLUMNS)}
       clearTitle="¿Quitar su información personal?"
       clearText="Se borrarán su dirección, celular, correo personal y EPS. Su contacto de emergencia no cambia."

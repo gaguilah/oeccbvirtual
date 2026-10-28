@@ -11,16 +11,19 @@ export type PersonalInfo = {
   emergency_name: string | null
   emergency_relationship: string | null
   emergency_phone: string | null
-  updated_at: string
+  // Fecha de cada pestaña (migración 20261028120000, las pone un trigger); null si está vacía.
+  personal_updated_at: string | null
+  emergency_updated_at: string | null
 }
 
 export type EpsEntity = { id: number; name: string; regime: string; is_active: boolean }
 
-type Columns = Partial<Omit<PersonalInfo, 'updated_at'>>
+type Columns = Partial<Omit<PersonalInfo, 'personal_updated_at' | 'emergency_updated_at'>>
 
 const COLUMNS =
-  'residence_address, mobile_phone, personal_email, eps_id, emergency_name, emergency_relationship, emergency_phone, updated_at'
+  'residence_address, mobile_phone, personal_email, eps_id, emergency_name, emergency_relationship, emergency_phone, personal_updated_at, emergency_updated_at'
 
+// Grupos de columnas de cada pestaña; el trigger profile_personal_info_section_dates los repite.
 export const PERSONAL_COLUMNS: (keyof Columns)[] = ['residence_address', 'mobile_phone', 'personal_email', 'eps_id']
 export const EMERGENCY_COLUMNS: (keyof Columns)[] = ['emergency_name', 'emergency_relationship', 'emergency_phone']
 

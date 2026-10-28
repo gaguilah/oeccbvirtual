@@ -14,7 +14,7 @@ type Props = {
   onSubmit: () => void
   saving: boolean
   unchanged: boolean
-  // Fecha de la fila (compartida por las dos pestañas); solo se muestra si la pestaña tiene datos.
+  // Fecha de la última actualización de esta pestaña; solo se muestra si la pestaña tiene datos.
   updatedAt: string | null
   // "Quitar estos datos": solo si la pestaña tiene algo guardado.
   canClear: boolean
