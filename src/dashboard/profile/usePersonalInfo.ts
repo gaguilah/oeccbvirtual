@@ -3,8 +3,9 @@ import { useAuth } from '../../context/auth'
 import { fetchEpsEntities, fetchPersonalInfo, type EpsEntity, type PersonalInfo } from './personalApi'
 
 // Información personal del usuario en sesión y lista de EPS, solo para Mi perfil (por eso no va en
-// ProfileProvider). `info` null = todavía no ha guardado nada.
-export function usePersonalInfo() {
+// ProfileProvider). `info` null = todavía no ha guardado nada. Consulta solo con `enabled` (Mi perfil
+// lo activa al abrir por primera vez una de sus pestañas), así Cuenta y Contraseña no la piden.
+export function usePersonalInfo(enabled: boolean) {
   const { session } = useAuth()
   const userId = session?.user.id ?? null
   const [info, setInfo] = useState<PersonalInfo | null>(null)
@@ -14,7 +15,7 @@ export function usePersonalInfo() {
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId || !enabled) return
     let active = true
     Promise.all([fetchPersonalInfo(userId), fetchEpsEntities()])
       .then(([row, list]) => {
@@ -32,7 +33,7 @@ export function usePersonalInfo() {
     return () => {
       active = false
     }
-  }, [userId, attempt])
+  }, [userId, enabled, attempt])
 
   const reload = useCallback(() => {
     setLoading(true)

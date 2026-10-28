@@ -52,7 +52,9 @@ registra su información personal y su contacto de emergencia.
 Pestañas (`components/ui/Tabs`, compartido con Ayuda; en celular, por debajo de 640 px, es un botón con la
 pestaña abierta que despliega la lista, `TabsMenu`), la abierta en `?pestana=` (sin parámetro, Cuenta;
 en el primer ingreso con cargo ya guardado, Contraseña). Los paneles quedan montados y solo se ocultan:
-cambiar de pestaña no pierde lo escrito. Cada pestaña guarda por separado.
+cambiar de pestaña no pierde lo escrito. Cada pestaña guarda por separado. La información personal y la
+lista de EPS se piden la primera vez que se abre Información personal o Contacto de emergencia
+(`usePersonalInfo(enabled)`), no en cada visita a Mi perfil.
 
 | Pestaña | `?pestana=` | Contenido |
 |---|---|---|
