@@ -31,6 +31,8 @@ export default function UsersPage() {
   const { access, can } = useAccess()
   const canManage = can('usuarios.gestionar')
   const canViewPersonal = can('usuarios.datos_personales')
+  // Con un rol de alcance juzgado, la información personal solo se consulta en ese juzgado.
+  const personalCourt = access?.scope === 'court' ? access.court : null
   const { users, roles, loading, refreshing, error, reload } = useUsers()
   const [filters, setFilters] = useState<UserFilters>(EMPTY_FILTERS)
   const [dialog, setDialog] = useState<Dialog>(null)
@@ -106,6 +108,7 @@ export default function UsersPage() {
           highlightId={highlightId}
           canManage={canManage}
           canViewPersonal={canViewPersonal}
+          personalCourt={personalCourt}
           onEdit={(user) => setDialog({ kind: 'form', user, key: Date.now() })}
           onToggleActive={(user) => setDialog({ kind: 'toggle', user })}
           onResetPassword={(user) => setDialog({ kind: 'reset', user })}

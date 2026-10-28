@@ -74,7 +74,9 @@ group by r.name, r.scope order by r.name;
 - "Ver información personal" (menú ⋮, permiso `usuarios.datos_personales`, solo filas con rol):
   `PersonalInfoModal` lee con `get_user_personal_info(p_user_id)` (`security definer`; revisa
   `has_permission` con el juzgado del usuario consultado, o 0 si no tiene, así un rol de alcance `court`
-  solo ve los de su juzgado). Solo lectura: los datos los cambia únicamente el propio usuario en Mi perfil
+  solo ve los de su juzgado; el menú aplica el mismo criterio con `personalInfoBlocker()` en
+  `usuarios/data.ts` y deja la opción deshabilitada, con el motivo, en las filas de otro juzgado o sin
+  juzgado). Solo lectura: los datos los cambia únicamente el propio usuario en Mi perfil
   (ver [mi-perfil.md](mi-perfil.md)). La columna de acciones aparece con `usuarios.gestionar` o con este
   permiso.
 - Estados en la lista: Activo, Contraseña temporal, Desactivado, Sin rol (cuenta de Auth sin perfil).

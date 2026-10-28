@@ -778,7 +778,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             type: 'list',
             items: [
               '**Crear usuario:** nombre, correo, rol y, si el rol es de juzgado, el juzgado. El sistema genera una **contraseña temporal** que se muestra **una sola vez** arriba de la lista: cópiela y entréguela por un canal seguro. No se guarda en ningún lado.',
-              '**Ver información personal:** muestra, solo para consultar, la información personal y el contacto de emergencia que el usuario registró en Mi perfil, con los celulares y el correo listos para llamar o escribir. Requiere el permiso **Ver información personal**; solo el usuario puede cambiar esos datos.',
+              '**Ver información personal:** muestra, solo para consultar, la información personal y el contacto de emergencia que el usuario registró en Mi perfil, con los celulares y el correo listos para llamar o escribir. Requiere el permiso **Ver información personal**; si su rol es de un juzgado, solo puede consultar a los usuarios de ese juzgado. Solo el usuario puede cambiar esos datos.',
               '**Editar / Asignar rol:** cambia nombre, rol o juzgado.',
               '**Restablecer contraseña:** genera una nueva contraseña temporal. Quien olvida su contraseña puede recuperarla solo desde **Iniciar sesión**; esta opción queda para quien no recibe el enlace en su correo.',
               '**Desactivar / Reactivar:** desactivar impide iniciar sesión sin borrar la cuenta.',
