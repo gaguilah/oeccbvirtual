@@ -1,4 +1,4 @@
-# Plan: correcciones de la revisión de código del 2026-10-28 (pendiente)
+# Plan: correcciones de la revisión de código del 2026-10-28 (implementado el 2026-10-28; migraciones aplicadas, pendiente de probar en el navegador)
 
 > Histórico: el funcionamiento vigente de cada sección está en [modulos/](modulos/README.md).
 
