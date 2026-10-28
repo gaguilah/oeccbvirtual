@@ -32,8 +32,7 @@ export default function HelpPage() {
           Guías de uso del dashboard para todos los funcionarios. Los permisos de cada rol pueden cambiar; las tablas
           "Quién puede hacer qué" muestran los de hoy.
         </p>
-        {/* Solo se monta la guía abierta (panels="active"). */}
-        <Tabs items={tabs} value={guide.slug} onChange={open} label="Guías" idPrefix={tabsId} panels="active" />
+        <Tabs items={tabs} value={guide.slug} onChange={open} label="Guías" idPrefix={tabsId} />
       </div>
       <div {...tabPanelProps(tabsId, guide.slug)}>
         <GuideView key={guide.slug} guide={guide} roles={roles} />
