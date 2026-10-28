@@ -19,5 +19,20 @@ describe('personalSaveError', () => {
 
   it('las restricciones de formato dan su propio mensaje', () => {
     expect(personalSaveError({ code: '23514' }).message).toMatch(/^Algún dato tiene un formato no permitido/)
+    expect(personalSaveError({ code: '23514' }).field).toBeUndefined()
+  })
+
+  it('las restricciones del correo van al campo correo', () => {
+    const check = (constraint: string) =>
+      personalSaveError({
+        code: '23514',
+        message: `new row for relation "profile_personal_info" violates check constraint "${constraint}"`,
+      })
+    expect(check('profile_personal_info_email_ascii_chk')).toMatchObject({
+      field: 'personalEmail',
+      message: 'Escriba el correo sin tildes, eñes ni otros caracteres especiales',
+    })
+    expect(check('profile_personal_info_email_chk').field).toBe('personalEmail')
+    expect(check('profile_personal_info_mobile_chk').field).toBeUndefined()
   })
 })

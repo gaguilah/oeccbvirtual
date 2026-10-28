@@ -86,7 +86,7 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
 |---|---|---|
 | Dirección de residencia | Una línea, 5 a 200 caracteres | `profile/personalSchema.ts` · `profile_personal_info_address_chk` |
 | Celular (propio y del contacto) | 10 dígitos que empiezan por 3; se escribe con espacios, guiones o +57 y se guardan solo los dígitos | `profile/personalData.ts` (`normalizePhone`, `PHONE_PATTERN`) · `profile_personal_info_mobile_chk` / `_emergency_phone_chk` |
-| Correo personal | Formato de correo, minúsculas, máx. 254; aviso (no bloqueo) si es el de la cuenta | `personalSchema.ts` · `profile_personal_info_email_chk` |
+| Correo personal | Formato de correo, minúsculas, máx. 254, solo ASCII (sin tildes ni eñes, así `toLowerCase()` y `lower()` coinciden); aviso (no bloqueo) si es el de la cuenta. Si la base lo rechaza, el error sale junto al campo (`personalErrors.ts`) | `personalSchema.ts` (`EMAIL_CHARS`) · `profile_personal_info_email_chk` / `_email_ascii_chk` |
 | EPS | De `eps_entities` (26 al crearla, agrupadas por `regime`, "Otra" al final); las inactivas no se ofrecen, salvo la actual | Catálogo en la base (SQL Editor) |
 | Nombre del contacto | Misma regla del nombre del perfil | `profile/schema.ts` (`buildNameSchema`) · `profile_personal_info_emergency_name_chk` |
 | Parentesco | `madre`, `padre`, `conyuge`, `hijo`, `hermano`, `otro_familiar`, `amigo`, `otro` | `RELATIONSHIPS` en `personalData.ts` · `profile_personal_info_relationship_chk` |
@@ -122,7 +122,8 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
 - Migraciones: `20261005120000_profiles`, `20261005130000_profiles_update_own_name`,
   `20261005140000_profiles_full_name_check`, `20261013120000_hearing_format` (cargos),
   `20261027120000_profile_personal_info` (información personal, EPS, `usuarios.datos_personales`),
-  `20261028120000_personal_info_section_dates` (fecha por pestaña).
+  `20261028120000_personal_info_section_dates` (fecha por pestaña), `20261028130000_personal_email_ascii`
+  (correo solo ASCII).
 
 ## Preguntas frecuentes (desarrollo)
 

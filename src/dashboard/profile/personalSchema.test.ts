@@ -77,6 +77,14 @@ describe('información personal', () => {
       expect(personalError('personalEmail', 'nom bre@correo.com')).toBe(message)
     })
 
+    it('solo acepta caracteres ASCII (como la restricción de la base)', () => {
+      const message = 'Escriba el correo sin tildes, eñes ni otros caracteres especiales'
+      expect(personalError('personalEmail', 'josé@correo.com')).toBe(message)
+      expect(personalError('personalEmail', 'peña@correo.com')).toBe(message)
+      expect(personalError('personalEmail', 'İnes@correo.com')).toBe(message)
+      expect(personalError('personalEmail', 'jose.pena+1@correo.com')).toBeNull()
+    })
+
     it('no pasa de 254 caracteres', () => {
       expect(personalError('personalEmail', `${'a'.repeat(245)}@correo.co`)).toBe(
         'El correo no puede pasar de 254 caracteres',
