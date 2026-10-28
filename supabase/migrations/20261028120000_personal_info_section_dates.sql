@@ -13,7 +13,9 @@ alter table public.profile_personal_info
   add column if not exists emergency_updated_at timestamptz;
 
 -- Filas existentes: la fecha de la fila para cada grupo con datos. Sin el trigger de updated_at,
--- que la cambiaría a now().
+-- que la cambiaría a now(), ni el de las fechas (si la migración se repite ya existe y dejaría la
+-- fecha como estaba, porque el grupo no cambia); se vuelve a crear más abajo.
+drop trigger if exists profile_personal_info_section_dates on public.profile_personal_info;
 alter table public.profile_personal_info disable trigger profile_personal_info_set_updated_at;
 
 update public.profile_personal_info
