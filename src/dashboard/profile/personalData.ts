@@ -61,7 +61,7 @@ export const PERSONAL_HELP = {
     'Estos datos son opcionales: registre solo los que quiera. Solo usted puede editarlos; quienes tienen el permiso Ver información personal pueden consultarlos para comunicarse con usted o atender una emergencia.',
   address: 'Dirección completa, con barrio y municipio.',
   phone: '10 dígitos, por ejemplo 300 123 4567.',
-  email: 'Distinto del correo con el que ingresa al dashboard.',
+  email: 'Distinto del correo con el que ingresa al dashboard. Sin tildes ni eñes.',
   eps: 'Se usa solo para informar a los servicios de salud en caso de emergencia.',
   emergencyIntro:
     'Persona a quien la oficina llamará si usted tiene una emergencia en el trabajo. Asegúrese de que esté de acuerdo en que registre su número.',

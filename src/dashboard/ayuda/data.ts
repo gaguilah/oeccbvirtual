@@ -96,6 +96,8 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             items: [
               // profile/personalSchema.ts y las restricciones de profile_personal_info.
               'Los celulares llevan 10 dígitos y empiezan por 3; puede escribirlos con o sin espacios.',
+              'El correo personal se escribe sin tildes ni eñes (por ejemplo, jose.pena@correo.com).',
+              'Cada pestaña muestra la fecha de su **última actualización**; guardar una no cambia la de la otra.',
               'Su información personal y su contacto de emergencia **solo los puede cambiar usted**. Quienes tienen el permiso **Ver información personal** pueden consultarlos, sin modificarlos; la guía **Administración**, en Quién puede hacer qué, muestra qué roles lo tienen.',
               'Con **Quitar estos datos** borra lo que registró en esa pestaña.',
             ],
