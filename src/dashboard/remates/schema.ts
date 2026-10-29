@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { CASE_NUMBER_LENGTH } from '../../components/remates'
+import { CASE_NUMBER_LENGTH } from '../../components/remates/constants'
 
 // Radicado: se aceptan espacios, puntos o guiones al pegar y se quitan; deben quedar 23 dígitos
 // (la misma regla que auction_notices_case_number_chk).
