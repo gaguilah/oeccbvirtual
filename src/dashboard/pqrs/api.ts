@@ -19,12 +19,6 @@ function requestError(error: { message?: string; code?: string } | null): Error 
   return new Error('No se pudo completar la operación. Intente de nuevo.')
 }
 
-// Solo letras, números, espacios y @ . _ - (sin comillas, comas ni paréntesis, que rompen el filtro
-// "or" de PostgREST).
-export function sanitizeQuery(value: string) {
-  return value.replace(/[^\p{L}\p{N}\s@._-]/gu, '').slice(0, 80)
-}
-
 export type RequestsPage = { rows: RequestRow[]; total: number; outOfRange: boolean }
 
 // Una página de la lista (filtros, orden y paginación en el servidor). Pendientes: de la más
