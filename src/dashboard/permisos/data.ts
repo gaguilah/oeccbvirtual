@@ -2,7 +2,7 @@ import type { Permission, PermissionGroup } from './types'
 
 // Nombre de cada módulo de permisos (la parte antes del punto del código). Al crear una sección
 // con permisos nuevos, agregar aquí su módulo. Lo usan Permisos y la matriz de Roles.
-const MODULE_LABELS: Record<string, string> = {
+export const MODULE_LABELS: Record<string, string> = {
   usuarios: 'Usuarios',
   roles: 'Roles',
   permisos: 'Permisos',
@@ -14,7 +14,10 @@ const MODULE_LABELS: Record<string, string> = {
 }
 
 export function moduleLabel(module: string): string {
-  return MODULE_LABELS[module] ?? module.charAt(0).toLocaleUpperCase('es') + module.slice(1)
+  // Object.hasOwn: un módulo como "constructor" no debe devolver lo heredado de Object.
+  return Object.hasOwn(MODULE_LABELS, module)
+    ? MODULE_LABELS[module]
+    : module.charAt(0).toLocaleUpperCase('es') + module.slice(1)
 }
 
 // Permisos agrupados por módulo, en el orden en que llegan (ya ordenados por módulo y código).
