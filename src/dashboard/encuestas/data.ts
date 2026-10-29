@@ -28,10 +28,14 @@ function slug(text: string, separator: string) {
 }
 
 // Código de la encuesta a partir del título: "Atención presencial 2027" → "atencion-presencial-2027".
-// Cumple surveys_code_format y no cambia después de crearla.
+// Cumple surveys_code_format y no cambia después de crearla. Un título sin letras ni números
+// ("¿¿¿") da "encuesta"; sin título, '' (el editor muestra otra ayuda mientras tanto).
 export function surveyCode(title: string): string {
-  return slug(title, '-').slice(0, 60).replace(/-+$/, '')
+  return slug(title, '-').slice(0, 60).replace(/-+$/, '') || (title.trim() ? 'encuesta' : '')
 }
+
+// Código de la copia al duplicar: "<código>-copia", recortado sin dejar un guion al final.
+export const copyCode = (code: string) => `${code}-copia`.slice(0, 60).replace(/-+$/, '')
 
 // Código libre a partir de `base` que no esté en `taken` (base, base-2, base-3…).
 export function uniqueCode(base: string, taken: Iterable<string>): string {

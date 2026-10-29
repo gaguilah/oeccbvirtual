@@ -6,7 +6,7 @@ import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
 import { ActionMenu, ConfirmDialog, Icon, icons, type ActionMenuItem } from '../ui'
 import { deleteSurvey, fetchSurvey, saveSurvey, setSurveyActive } from './api'
-import { formatDate, plural, SURVEYS_PATH, surveyPath, uniqueCode } from './data'
+import { copyCode, formatDate, plural, SURVEYS_PATH, surveyPath, uniqueCode } from './data'
 import type { SurveyRow, SurveysFlash } from './types'
 import { useSurveys } from './useSurveyData'
 
@@ -52,7 +52,7 @@ export default function SurveysPage() {
     if (!detail) throw new Error('La encuesta ya no existe.')
     const title = `Copia de ${survey.title}`.slice(0, 120)
     const code = uniqueCode(
-      `${survey.code}-copia`.slice(0, 60),
+      copyCode(survey.code),
       surveys.map((s) => s.code),
     )
     const id = await saveSurvey(

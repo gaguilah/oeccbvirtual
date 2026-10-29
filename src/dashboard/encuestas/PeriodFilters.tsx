@@ -2,7 +2,7 @@ import { Select } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { MONTHS } from './period'
 import type { Period, PeriodMode, YearMonth } from './types'
-import { switchMode } from './usePeriodFilters'
+import { switchMode } from './period'
 
 const MODES: { value: PeriodMode; label: string }[] = [
   { value: 'mes', label: 'Mes' },

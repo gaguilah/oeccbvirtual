@@ -54,7 +54,8 @@ encuestas, elegir cuál está activa y ver los resultados agregados.
   respuestas), editar la copia y activarla. Los resultados anteriores quedan en la encuesta original.
 - Activar una encuesta desactiva la anterior en la misma transacción. Solo se activa con preguntas.
 - Guardado con `save_survey()` (`security invoker`, una transacción). Los códigos salen del texto y no
-  cambian.
+  cambian (`surveyCode`, `copyCode`, `uniqueCode` en `encuestas/data.ts`, máx. 60 caracteres, formato
+  `surveys_code_format`; un título sin letras ni números da `encuesta`). Probados en `data.test.ts`.
 
 ## Resultados
 
