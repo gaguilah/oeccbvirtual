@@ -3,7 +3,7 @@ import { cn } from '../../lib/cn'
 import { Input } from '../ui'
 import { CASE_NUMBER_LENGTH, COURTS } from './constants'
 import type { Court, Period, RematesFilters as Filters } from './types'
-import { sanitizeQuery } from './useRematesFilters'
+import { sanitizeQuery } from './filters'
 
 const SEARCH_DELAY_MS = 300
 

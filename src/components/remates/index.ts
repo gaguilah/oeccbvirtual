@@ -8,7 +8,7 @@ export { CaseNumberCell, CourtCell, MobileCaseNumber, MobileSchedule, ScheduleCe
 export { bodyCell, bodyRow, headerCell, mobileItem, stickyFilters } from './tableStyles'
 export { formatDate, formatLongDate, formatTime, isRealizado, realizadoCutoff } from './dates'
 export { pdfDownloadUrl } from './api'
-export { sanitizeQuery } from './useRematesFilters'
+export { sanitizeQuery } from './filters'
 export { AVISOS_REMATES_PATH, CASE_NUMBER_LENGTH, COURTS, PAGE_SIZE, TIME_ZONE } from './constants'
 export { useAuctionNotices } from './useAuctionNotices'
 export { useRematesFilters } from './useRematesFilters'
