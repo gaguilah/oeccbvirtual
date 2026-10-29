@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (en curso: Fases 0 y 1 hechas)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1 y 2)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -63,7 +63,29 @@ tipos y límites de PQRS; `password-reset`: `RESET_PATH`) se comprueban leyendo 
 | Tutoriales | Integridad de `tutorials/data.ts`: slugs únicos y válidos para la URL, `prerequisites` y `next` que apuntan a slugs existentes, `tutorialPath`; el número de tutoriales coincide con el ciclo de la ilustración (`tutorials/illustrationData.ts` y la utilidad `animate-illustration-cycle`) |
 | Navegación y contacto | `mainLinks` sin rutas repetidas; `services/data.ts` ya está cubierto |
 
-## Fase 2 · Parte privada (dashboard)
+## Fase 2 · Parte privada (dashboard) (hecha el 2026-10-29)
+
+Resultado: 19 archivos nuevos, 161 pruebas (267 en total, 38 archivos). Un commit por sección. Los
+filtros de la URL de PQRS, Encuestas (periodo) y Avisos de Remate pasaron de sus hooks a `filters.ts` /
+`period.ts`; las fechas de Audiencias y de Avisos importan de `components/remates/constants` y `/dates`
+en vez del barril (que trae `api.ts` y el cliente de Supabase). Las reglas repetidas en SQL se comprueban
+leyendo la migración como texto (horario, cierre y eliminación de audiencias, plazo de PQRS, URL del PDF,
+límites de encuestas, formato de códigos) y los permisos de `dashboardLinks` y `routes.tsx` contra los que
+crean las migraciones.
+
+Hallazgos corregidos:
+
+- **Días no hábiles:** dos festivos trasladados al mismo lunes (30 de junio de 2025: San Pedro y Sagrado
+  Corazón) salían como dos filas y "Cargar calendario 2025" fallaba siempre por la clave `day`; ahora es un
+  día con los dos motivos.
+- **Audiencias:** la vista Mes de un mes que empieza en sábado o domingo (noviembre de 2026, agosto de
+  2026) mostraba una primera fila solo con días del mes anterior.
+- **Encuestas:** un título sin letras ni números daba un código vacío, y duplicar una encuesta de código
+  largo podía dejar un guion al final; la base rechazaba los dos (`surveys_code_format`).
+- **Permisos:** `moduleLabel('constructor')` devolvía lo heredado de `Object` (como `passwordErrorMessage`).
+
+Sin cubrir: `layout/sidebarState.ts` es solo un hook (su lectura de `localStorage` no está separada), y las
+funciones que llaman a Supabase (`api.ts`) quedan para las pruebas de base de datos.
 
 Por prioridad: primero lo que protege permisos y reglas con plazos o fechas.
 
