@@ -29,5 +29,8 @@ const AUTH_ERRORS: Record<string, string> = {
 }
 
 export function passwordErrorMessage(code: string | undefined): string {
-  return (code && AUTH_ERRORS[code]) ?? 'No se pudo cambiar la contraseña. Intente de nuevo.'
+  // Object.hasOwn: un código como "toString" no debe devolver lo heredado de Object.
+  return code && Object.hasOwn(AUTH_ERRORS, code)
+    ? AUTH_ERRORS[code]
+    : 'No se pudo cambiar la contraseña. Intente de nuevo.'
 }

@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (pendiente)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (en curso: Fase 0 hecha)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -32,7 +32,11 @@ la privada. Rama: `pruebas` (sale de `correcciones-revision`, que trae las prueb
 - **Documentación.** Al terminar cada fase, la sección "Commands" del CLAUDE.md y, si aplica, el
   `docs/modulos/` de la sección dicen qué queda cubierto.
 
-## Fase 0 · Base común
+## Fase 0 · Base común (hecha el 2026-10-29)
+
+Resultado: 6 archivos nuevos, 20 pruebas. Hallazgos: `passwordErrorMessage('toString')` devolvía la función
+heredada de `Object` en vez del mensaje genérico (se corrigió con `Object.hasOwn`), y el comentario de
+`formatDate` mostraba un formato que ya no es el real ("17 de feb de 2026").
 
 | Archivo | Qué probar |
 |---|---|
