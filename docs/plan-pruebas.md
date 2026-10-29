@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (en curso: Fase 0 hecha)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (en curso: Fases 0 y 1 hechas)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -46,7 +46,13 @@ heredada de `Object` en vez del mensaje genérico (se corrigió con `Object.hasO
 | `lib/externalLinks.ts` | URL https completas, títulos sin repetir |
 | `components/ui/tabIds.ts`, `lib/cn.ts` | Ids de pestaña y panel; que `cn` resuelva conflictos de Tailwind |
 
-## Fase 1 · Parte pública
+## Fase 1 · Parte pública (hecha el 2026-10-29)
+
+Resultado: 6 archivos nuevos, 41 pruebas (106 en total). Los filtros de la URL de Avisos de Remate y
+Audiencias pasaron de sus hooks a `remates/filters.ts` y `audiencias/filters.ts` (`parseFilters`,
+`serializeFilters`) sin cambiar su lógica. Las reglas que repiten las Edge Functions (`submit-request`:
+tipos y límites de PQRS; `password-reset`: `RESET_PATH`) se comprueban leyendo su código como texto
+(`import … from '…/index.ts?raw'`), igual que las rutas de `App.tsx` frente al menú.
 
 | Sección | Qué probar |
 |---|---|

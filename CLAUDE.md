@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `npm test` / `npm run test:watch`: Vitest (unit tests only, Node environment, no config file: the defaults find `src/**/*.test.ts`). Tests sit next to the file they test (`schema.ts` → `schema.test.ts`) and import `describe`/`it`/`expect` from `vitest` (no globals). Write them for pure logic (zod schemas, helpers, rules mirrored from SQL); they don't touch Supabase. Run `npm test` before committing.
 
-There are no component, end-to-end or database (RLS) tests yet. Coverage is being added section by section (public site, then dashboard) following `docs/plan-pruebas.md`; dates in tests are fixed and written with the Bogotá offset (`2026-10-29T08:00:00-05:00`), and Intl output is compared after normalizing its non-breaking spaces.
+There are no component, end-to-end or database (RLS) tests yet. Coverage is being added section by section (public site, then dashboard) following `docs/plan-pruebas.md`; dates in tests are fixed and written with the Bogotá offset (`2026-10-29T08:00:00-05:00`), and Intl output is compared after normalizing its non-breaking spaces. Rules repeated outside `src` (Edge Functions, `App.tsx` routes) are checked by importing the file as text with `?raw` (see `pqrs/schema.test.ts`), and files in `public/` with `import.meta.glob('/public/…')`.
 
 ## Stack
 
