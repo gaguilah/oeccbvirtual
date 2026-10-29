@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { requestTypes, REQUEST_TYPE_IDS, type RequestTypeId } from '../../components/pqrs/data'
 import { Input, Select } from '../../components/ui'
 import { cn } from '../../lib/cn'
-import { sanitizeQuery } from './api'
+import { sanitizeQuery } from './filters'
 import { TABS } from './data'
 import type { RequestFilters } from './types'
 

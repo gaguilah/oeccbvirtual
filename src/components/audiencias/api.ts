@@ -22,7 +22,7 @@ export async function fetchPublicHearings(
       p_offset: (page - 1) * PAGE_SIZE,
     })
     .abortSignal(signal)
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
+  signal.throwIfAborted()
   if (error) throw error
   const rows = (data ?? []) as PublicHearing[]
   return { rows, total: rows[0] ? Number(rows[0].total_count) : 0, outOfRange: rows.length === 0 && page > 1 }

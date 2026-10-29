@@ -19,12 +19,6 @@ function requestError(error: { message?: string; code?: string } | null): Error 
   return new Error('No se pudo completar la operación. Intente de nuevo.')
 }
 
-// Solo letras, números, espacios y @ . _ - (sin comillas, comas ni paréntesis, que rompen el filtro
-// "or" de PostgREST).
-export function sanitizeQuery(value: string) {
-  return value.replace(/[^\p{L}\p{N}\s@._-]/gu, '').slice(0, 80)
-}
-
 export type RequestsPage = { rows: RequestRow[]; total: number; outOfRange: boolean }
 
 // Una página de la lista (filtros, orden y paginación en el servidor). Pendientes: de la más
@@ -53,7 +47,7 @@ export async function fetchRequests(
     .range(from, from + PAGE_SIZE - 1)
     .abortSignal(signal)
 
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
+  signal.throwIfAborted()
   if (error?.code === RANGE_NOT_SATISFIABLE) return { rows: [], total: 0, outOfRange: true }
   if (error) throw requestError(error)
   return { rows: (data ?? []) as RequestRow[], total: count ?? 0, outOfRange: false }
@@ -79,7 +73,7 @@ export async function fetchRequestAudit(id: string): Promise<RequestAudit | null
 
 export async function fetchPqrsSummary(signal: AbortSignal): Promise<PqrsSummary> {
   const { data, error } = await supabase.rpc('pqrs_summary').abortSignal(signal)
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
+  signal.throwIfAborted()
   if (error) throw requestError(error)
   const row = ((data ?? []) as PqrsSummary[])[0]
   return { pending: Number(row?.pending ?? 0), overdue: Number(row?.overdue ?? 0) }

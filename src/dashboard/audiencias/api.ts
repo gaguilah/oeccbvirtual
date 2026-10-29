@@ -41,10 +41,6 @@ export function hearingError(error: { message?: string; code?: string } | null):
   return new Error('No se pudo completar la operación. Intente de nuevo.')
 }
 
-function aborted(signal: AbortSignal) {
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
-}
-
 export type HearingsPage = { rows: Hearing[]; total: number; outOfRange: boolean }
 
 // Una página de la tabla. Próximas y Por cerrar: de la más cercana a la más lejana; Cerradas y
@@ -68,7 +64,7 @@ export async function fetchHearings(filters: HearingFilters, now: Date, signal: 
     .order('case_number')
     .range(from, from + PAGE_SIZE - 1)
     .abortSignal(signal)
-  aborted(signal)
+  signal.throwIfAborted()
   if (error?.code === RANGE_NOT_SATISFIABLE) return { rows: [], total: 0, outOfRange: true }
   if (error) throw hearingError(error)
   return { rows: (data ?? []) as Hearing[], total: count ?? 0, outOfRange: false }
@@ -81,7 +77,7 @@ export async function countPendingClose(filters: HearingFilters, now: Date, sign
   if (filters.type) request = request.eq('hearing_type_id', filters.type)
   if (filters.query) request = request.like('case_number', `%${filters.query}%`)
   const { count, error } = await request.eq('status_id', 1).lte('scheduled_at', now.toISOString()).abortSignal(signal)
-  aborted(signal)
+  signal.throwIfAborted()
   if (error) throw hearingError(error)
   return count ?? 0
 }
@@ -102,7 +98,7 @@ export async function fetchCalendarHearings(
     .order('scheduled_at')
     .limit(1000)
     .abortSignal(signal)
-  aborted(signal)
+  signal.throwIfAborted()
   if (error) throw hearingError(error)
   return (data ?? []) as Hearing[]
 }
@@ -227,7 +223,7 @@ export async function fetchHearingsSummary(
       .is('filed_at', null)
       .abortSignal(signal),
   ])
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
+  signal.throwIfAborted()
   if (todayResult.error) throw hearingError(todayResult.error)
   if (pendingResult.error) throw hearingError(pendingResult.error)
   if (fileResult.error) throw hearingError(fileResult.error)

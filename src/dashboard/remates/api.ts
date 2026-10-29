@@ -56,7 +56,7 @@ export async function fetchAdminNotices(
 
   // Petición cancelada a propósito (cambio de filtros o doble montaje en desarrollo): no es un
   // error. useAdminNotices ya descarta las respuestas de peticiones canceladas.
-  if (signal.aborted) throw new DOMException('Petición cancelada', 'AbortError')
+  signal.throwIfAborted()
   if (error?.code === RANGE_NOT_SATISFIABLE) return { rows: [], total: 0, outOfRange: true }
   if (error) throw noticeError(error)
   return { rows: (data ?? []) as AdminNotice[], total: count ?? 0, outOfRange: false }

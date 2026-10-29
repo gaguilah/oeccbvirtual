@@ -45,6 +45,8 @@ tabla.
 - **Cargar calendario <año>:** vista previa en dos grupos con casilla, calculada en
   `calendario/holidays.ts`:
   1. Festivos nacionales de Colombia: fijos, trasladados al lunes (Ley 51 de 1983) y los de Pascua.
+     Si dos caen el mismo día (30 de junio de 2025: San Pedro y Sagrado Corazón) queda uno solo con
+     los dos motivos, porque `day` es la clave de la tabla. Probado en `holidays.test.ts`.
   2. Rama Judicial (`cierre`): lunes a miércoles santos, 17 de diciembre, vacancia del 2 al 10 de enero
      y del 20 al 31 de diciembre.
 - **Eliminar** desde el menú ⋮, con confirmación (avisa que los plazos se recalculan).

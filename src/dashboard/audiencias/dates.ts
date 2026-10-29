@@ -1,4 +1,4 @@
-import { TIME_ZONE } from '../../components/remates'
+import { TIME_ZONE } from '../../components/remates/constants'
 import { bogotaParts, todayInBogota, toScheduledAt } from '../remates/datetime'
 
 export { bogotaParts, todayInBogota, toScheduledAt }
@@ -31,12 +31,17 @@ export function addMonths(day: string, months: number): string {
 
 export const weekDays = (day: string) => Array.from({ length: 5 }, (_, i) => addDays(weekStart(day), i))
 
-// Semanas (lunes a viernes) que tocan el mes de `day`.
+// Semanas (lunes a viernes) que tocan el mes de `day`. Si el mes empieza en sábado o domingo, la
+// semana de ese día no tiene ningún día hábil del mes: se empieza en el lunes siguiente.
 export function monthWeeks(day: string): string[][] {
   const first = monthStart(day)
   const next = addMonths(first, 1)
   const weeks: string[][] = []
-  for (let monday = weekStart(first); monday < next; monday = addDays(monday, 7)) {
+  for (
+    let monday = weekStart(isWeekend(first) ? addDays(first, 2) : first);
+    monday < next;
+    monday = addDays(monday, 7)
+  ) {
     weeks.push(Array.from({ length: 5 }, (_, i) => addDays(monday, i)))
   }
   return weeks

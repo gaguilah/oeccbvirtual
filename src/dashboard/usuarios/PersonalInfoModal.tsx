@@ -28,11 +28,14 @@ function Phone({ value }: { value: string | null }) {
   )
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ title, updatedAt, children }: { title: string; updatedAt?: string | null; children: ReactNode }) {
   return (
     <section className="space-y-3 rounded-lg bg-surface-container-low p-4">
       <h3 className="text-sm font-semibold">{title}</h3>
       <dl className="grid gap-3 text-sm sm:grid-cols-2">{children}</dl>
+      {updatedAt && (
+        <p className="text-xs text-on-surface-variant">Última actualización: {formatUpdatedAt(updatedAt)}</p>
+      )}
     </section>
   )
 }
@@ -80,7 +83,7 @@ export default function PersonalInfoModal({ user, onClose }: Props) {
         <Alert variant="error">{error}</Alert>
       ) : (
         <div className="space-y-4">
-          <Section title="Información personal">
+          <Section title="Información personal" updatedAt={info?.personal_updated_at}>
             <Item label="Dirección de residencia">{info?.residence_address}</Item>
             <Item label="Celular">{info?.mobile_phone && <Phone value={info.mobile_phone} />}</Item>
             <Item label="Correo personal">
@@ -95,15 +98,13 @@ export default function PersonalInfoModal({ user, onClose }: Props) {
             </Item>
             <Item label="EPS">{info?.eps_name}</Item>
           </Section>
-          <Section title="Contacto de emergencia">
+          <Section title="Contacto de emergencia" updatedAt={info?.emergency_updated_at}>
             <Item label="Nombre">{info?.emergency_name}</Item>
             <Item label="Parentesco">{relationshipLabel(info?.emergency_relationship ?? null)}</Item>
             <Item label="Celular">{info?.emergency_phone && <Phone value={info.emergency_phone} />}</Item>
           </Section>
           <p className="text-xs text-on-surface-variant">
-            {info?.updated_at
-              ? `Última actualización: ${formatUpdatedAt(info.updated_at)}. `
-              : 'Todavía no ha registrado información. '}
+            {!info?.personal_updated_at && !info?.emergency_updated_at && 'Todavía no ha registrado información. '}
             Solo {displayName(user)} puede cambiar estos datos, desde Mi perfil.
           </p>
         </div>

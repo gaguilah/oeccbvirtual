@@ -52,7 +52,9 @@ registra su información personal y su contacto de emergencia.
 Pestañas (`components/ui/Tabs`, compartido con Ayuda; en celular, por debajo de 640 px, es un botón con la
 pestaña abierta que despliega la lista, `TabsMenu`), la abierta en `?pestana=` (sin parámetro, Cuenta;
 en el primer ingreso con cargo ya guardado, Contraseña). Los paneles quedan montados y solo se ocultan:
-cambiar de pestaña no pierde lo escrito. Cada pestaña guarda por separado.
+cambiar de pestaña no pierde lo escrito. Cada pestaña guarda por separado. La información personal y la
+lista de EPS se piden la primera vez que se abre Información personal o Contacto de emergencia
+(`usePersonalInfo(enabled)`), no en cada visita a Mi perfil.
 
 | Pestaña | `?pestana=` | Contenido |
 |---|---|---|
@@ -86,7 +88,7 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
 |---|---|---|
 | Dirección de residencia | Una línea, 5 a 200 caracteres | `profile/personalSchema.ts` · `profile_personal_info_address_chk` |
 | Celular (propio y del contacto) | 10 dígitos que empiezan por 3; se escribe con espacios, guiones o +57 y se guardan solo los dígitos | `profile/personalData.ts` (`normalizePhone`, `PHONE_PATTERN`) · `profile_personal_info_mobile_chk` / `_emergency_phone_chk` |
-| Correo personal | Formato de correo, minúsculas, máx. 254; aviso (no bloqueo) si es el de la cuenta | `personalSchema.ts` · `profile_personal_info_email_chk` |
+| Correo personal | Formato de correo, minúsculas, máx. 254, solo ASCII (sin tildes ni eñes, así `toLowerCase()` y `lower()` coinciden); aviso (no bloqueo) si es el de la cuenta. Si la base lo rechaza, el error sale junto al campo (`personalErrors.ts`) | `personalSchema.ts` (`EMAIL_CHARS`) · `profile_personal_info_email_chk` / `_email_ascii_chk` |
 | EPS | De `eps_entities` (26 al crearla, agrupadas por `regime`, "Otra" al final); las inactivas no se ofrecen, salvo la actual | Catálogo en la base (SQL Editor) |
 | Nombre del contacto | Misma regla del nombre del perfil | `profile/schema.ts` (`buildNameSchema`) · `profile_personal_info_emergency_name_chk` |
 | Parentesco | `madre`, `padre`, `conyuge`, `hijo`, `hermano`, `otro_familiar`, `amigo`, `otro` | `RELATIONSHIPS` en `personalData.ts` · `profile_personal_info_relationship_chk` |
@@ -100,9 +102,16 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
   las columnas editables; sin `delete` ("Quitar estos datos" deja la pestaña en null); nada a `anon` ni a
   `service_role`. El navegador hace insert la primera vez y update después (no upsert: no hay grant de
   update sobre `user_id`).
+- "Última actualización": cada pestaña tiene su fecha (`personal_updated_at`, `emergency_updated_at`),
+  que pone el trigger `profile_personal_info_section_dates` solo cuando cambia alguna columna de su grupo
+  y deja en null cuando el grupo queda vacío. No se escriben desde el navegador. Los grupos de columnas se
+  repiten en `personalApi.ts` (`PERSONAL_COLUMNS`, `EMERGENCY_COLUMNS`): cambiar los dos juntos.
+  `updated_at` sigue siendo la fecha de la fila. El modal de Usuarios muestra una fecha por bloque.
 - Consulta de otros: solo lectura, en Usuarios → "Ver información personal", con
-  `get_user_personal_info()` y el permiso `usuarios.datos_personales` (hoy director_oficina; superadmin
-  implícito). Ver [usuarios-roles-permisos.md](usuarios-roles-permisos.md).
+  `get_user_personal_info()` y el permiso `usuarios.datos_personales` (a quién está asignado: ver
+  [usuarios-roles-permisos.md](usuarios-roles-permisos.md); superadmin implícito). Los textos para el
+  usuario (aviso de la pestaña y Ayuda) nombran el permiso, nunca roles, porque la asignación cambia en
+  Roles sin tocar código.
 
 ## Archivos y migraciones
 
@@ -114,7 +123,9 @@ opcionales** (null); cada regla se aplica solo si el campo tiene valor.
   `supabase/functions/_shared/emails/account.ts`.
 - Migraciones: `20261005120000_profiles`, `20261005130000_profiles_update_own_name`,
   `20261005140000_profiles_full_name_check`, `20261013120000_hearing_format` (cargos),
-  `20261027120000_profile_personal_info` (información personal, EPS, `usuarios.datos_personales`).
+  `20261027120000_profile_personal_info` (información personal, EPS, `usuarios.datos_personales`),
+  `20261028120000_personal_info_section_dates` (fecha por pestaña), `20261028130000_personal_email_ascii`
+  (correo solo ASCII).
 
 ## Preguntas frecuentes (desarrollo)
 

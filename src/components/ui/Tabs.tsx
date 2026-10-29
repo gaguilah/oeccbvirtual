@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent } from 'react'
+import { useRef, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/cn'
 import { tabIds } from './tabIds'
 import TabsMenu from './TabsMenu'
@@ -21,11 +21,8 @@ type TabsProps<T extends string> = {
 // lista. Teclado: flechas izquierda/derecha, Inicio y Fin cambian de pestaña (activación
 // automática); Tab entra al panel.
 export default function Tabs<T extends string>({ items, value, onChange, label, idPrefix, className }: TabsProps<T>) {
+  // Para llevar el foco a la pestaña elegida con el teclado.
   const refs = useRef(new Map<T, HTMLButtonElement>())
-
-  useEffect(() => {
-    refs.current.get(value)?.scrollIntoView({ block: 'nearest', inline: 'center' })
-  }, [value])
 
   function handleKeyDown(event: KeyboardEvent) {
     const index = items.findIndex((item) => item.id === value)
@@ -69,7 +66,8 @@ export default function Tabs<T extends string>({ items, value, onChange, label, 
               type="button"
               role="tab"
               aria-selected={active}
-              aria-controls={ids.panel}
+              // Solo la abierta: hay páginas que montan únicamente su panel (Ayuda).
+              aria-controls={active ? ids.panel : undefined}
               tabIndex={active ? 0 : -1}
               onClick={() => onChange(item.id)}
               className={cn(
