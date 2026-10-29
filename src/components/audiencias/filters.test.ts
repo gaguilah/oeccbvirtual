@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { publicStatus } from './constants'
 import { parseFilters, serializeFilters } from './filters'
+import type { AudienciasFilters } from './types'
 
 const parse = (query: string) => parseFilters(new URLSearchParams(query))
-const DEFAULTS = { period: 'proximas', court: null, from: null, to: null, query: '', page: 1 }
+const DEFAULTS: AudienciasFilters = { period: 'proximas', court: null, from: null, to: null, query: '', page: 1 }
 
 describe('filtros de Audiencias en la URL', () => {
   it('sin parámetros: próximas, todos los juzgados, sin fechas, página 1', () => {
