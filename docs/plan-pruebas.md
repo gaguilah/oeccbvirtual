@@ -163,7 +163,31 @@ Hallazgo corregido:
 No es un hallazgo: el correo personal admite comillas (la regla es amplia, igual que el check de la base),
 pero el enlace siempre empieza por `mailto:` y React escapa el atributo; la prueba comprueba ese prefijo.
 
-Pendiente fuera de Vitest: las cabeceras de seguridad en `netlify.toml`.
+### Cabeceras de seguridad en Netlify (hecho el 2026-10-30)
+
+`netlify.toml` envía en todas las rutas `X-Content-Type-Options: nosniff`, `Referrer-Policy:
+strict-origin-when-cross-origin`, `X-Frame-Options: DENY` y una `Content-Security-Policy` que solo permite la
+app, el script del tema de `index.html` (por su sha256), Supabase, Turnstile y Google Fonts; sin
+`'unsafe-inline'` ni `'unsafe-eval'` para scripts. `src/lib/netlify.test.ts` comprueba todo eso, la huella del
+script contra `index.html`, el build, la caché de `/assets/*` y la regla de `public/_redirects`.
+
+Cómo se activó: primero en modo informe (`Content-Security-Policy-Report-Only`), revisando la consola en la
+vista previa del PR #1 y después en producción, y solo entonces en modo activo. Ajustes que salieron de la
+revisión:
+
+- La librería del PDF de audiencias compila su motor de diseño en WebAssembly, incrustado como `data:`:
+  necesita `'wasm-unsafe-eval'` en `script-src` (solo WebAssembly) y `data:` en `connect-src`.
+- zod prueba `new Function` para validar más rápido; `src/lib/zodConfig.ts` lo pone en modo `jitless` y
+  `main.tsx` lo importa primero.
+
+Avisos que no son de la política y se ignoran: en las vistas previas, la barra de Netlify (estilo en línea
+de la línea 33, marcos de `app.netlify.com`, Gravatar) y Turnstile 110200 (dominio no autorizado); en todas
+partes, los mensajes del marco del captcha (`flexible:1`: su propia política, `No available adapters`, `OTS
+parsing error`) y `Buffer is not defined` de la librería del PDF (el PDF sale completo).
+
+Para agregar un servicio externo (script, API, fuente, marco) hay que sumar su dominio a la política, o el
+navegador lo bloquea. Las variables `VITE_*` de Netlify no son secretas (van en el JavaScript público): no
+marcarlas como secretas, o el escáner de secretos detiene el build al ver la URL de Supabase en la política.
 
 ## Fases futuras (fuera de este plan)
 
