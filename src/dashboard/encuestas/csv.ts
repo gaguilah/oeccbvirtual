@@ -7,8 +7,12 @@ import type { Period, SurveyDetail } from './types'
 const SEPARATOR = ';'
 const BOM = String.fromCharCode(0xfeff)
 
+// Un texto que empieza por =, +, -, @, tabulador o retorno Excel lo puede tomar como fórmula
+// (inyección de fórmulas en CSV): se le antepone ' para que quede como texto.
+const FORMULA_START = /^[=+\-@\t\r]/
+
 function cell(value: string | number) {
-  const text = String(value)
+  const text = typeof value === 'string' && FORMULA_START.test(value) ? `'${value}` : String(value)
   return /[;"\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
 }
 

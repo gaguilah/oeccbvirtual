@@ -79,4 +79,26 @@ describe('buildCsv', () => {
     expect(line?.startsWith(`2;"${scaleQuestion.text.replace(/"/g, '""')}";Escala 1–5;`)).toBe(true)
     expect(line?.endsWith(';5,0')).toBe(true)
   })
+
+  it("un texto que Excel tomaría como fórmula queda como texto, con ' delante", () => {
+    const formulas = ['=HYPERLINK("http://x.test","clic")', '+1+1', '-2+3', '@SUM(A1)', '\tx']
+    const survey = { ...testSurvey, title: formulas[0] }
+    const questions = formulas.map((text, i) => ({ ...yesNoQuestion, id: `f${i}`, text }))
+    const csv = buildCsv(
+      survey,
+      october,
+      0,
+      questions.map((question) => questionResult(question, stats)),
+    )
+    const lines = csv.slice(1).split('\r\n')
+    expect(cells(lines[0])[1]).toBe(`'${formulas[0]}`)
+    const texts = lines.slice(6, -1).map((line) => cells(line)[1])
+    expect(new Set(texts)).toEqual(new Set(formulas.map((text) => `'${text}`)))
+  })
+
+  it('los números y los textos normales no cambian', () => {
+    const lines = build().slice(1).split('\r\n')
+    expect(lines[2]).toBe('Respuestas;4')
+    expect(cells(lines[6])[1]).toBe(yesNoQuestion.text)
+  })
 })

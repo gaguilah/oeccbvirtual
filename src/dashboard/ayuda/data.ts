@@ -699,7 +699,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
           },
           {
             type: 'paragraph',
-            text: 'Con **Descargar CSV** obtiene los totales del periodo en un archivo que se abre en Excel.',
+            text: "Con **Descargar CSV** obtiene los totales del periodo en un archivo que se abre en Excel. Si un título o una pregunta empieza por =, +, - o @, en el archivo aparece con un apóstrofo (') delante, para que Excel no lo tome como una fórmula.",
           },
           { type: 'paragraph', text: 'El Inicio muestra cuántas respuestas lleva la encuesta activa en el año.' },
         ],
