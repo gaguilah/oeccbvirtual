@@ -31,10 +31,22 @@ const addressField = z
   .refine((value) => value === null || value.length <= 200, 'La dirección no puede pasar de 200 caracteres')
 
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+// Solo ASCII imprimible (sin tildes ni ñ), como profile_personal_info_email_ascii_chk
+// (migración 20261028130000): así toLowerCase da lo mismo que lower() en la base, que exige
+// minúsculas. El espacio pasa aquí y lo rechaza EMAIL_PATTERN con su mensaje.
+const EMAIL_CHARS = /^[\x20-\x7e]*$/
+export const EMAIL_CHARS_MESSAGE = 'Escriba el correo sin tildes, eñes ni otros caracteres especiales'
 
 const emailField = z
   .string()
-  .transform((value) => orNull(value.trim().toLowerCase()))
+  .transform((value, ctx) => {
+    const email = value.trim()
+    if (!EMAIL_CHARS.test(email)) {
+      ctx.addIssue({ code: 'custom', message: EMAIL_CHARS_MESSAGE })
+      return z.NEVER
+    }
+    return orNull(email.toLowerCase())
+  })
   .refine((value) => value === null || value.length <= 254, 'El correo no puede pasar de 254 caracteres')
   .refine(
     (value) => value === null || EMAIL_PATTERN.test(value),

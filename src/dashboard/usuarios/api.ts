@@ -19,6 +19,7 @@ export async function fetchRoles(): Promise<RoleOption[]> {
 
 // Información personal de otro usuario, solo lectura (get_user_personal_info, migración
 // 20261027120000: exige usuarios.datos_personales). Sin fila, todo en null (no ha registrado nada).
+// Cada bloque tiene su fecha (20261028120000); null si ese bloque está vacío.
 export type UserPersonalInfo = {
   residence_address: string | null
   mobile_phone: string | null
@@ -27,7 +28,8 @@ export type UserPersonalInfo = {
   emergency_name: string | null
   emergency_relationship: string | null
   emergency_phone: string | null
-  updated_at: string | null
+  personal_updated_at: string | null
+  emergency_updated_at: string | null
 }
 
 export async function fetchUserPersonalInfo(userId: string): Promise<UserPersonalInfo | null> {

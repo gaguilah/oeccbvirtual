@@ -96,7 +96,9 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             items: [
               // profile/personalSchema.ts y las restricciones de profile_personal_info.
               'Los celulares llevan 10 dígitos y empiezan por 3; puede escribirlos con o sin espacios.',
-              'Su información personal y su contacto de emergencia **solo los puede cambiar usted**. Quienes tienen el permiso **Ver información personal** (hoy, el Director de oficina y el Administrador de Sistema) pueden consultarlos, sin modificarlos.',
+              'El correo personal se escribe sin tildes ni eñes (por ejemplo, jose.pena@correo.com).',
+              'Cada pestaña muestra la fecha de su **última actualización**; guardar una no cambia la de la otra.',
+              'Su información personal y su contacto de emergencia **solo los puede cambiar usted**. Quienes tienen el permiso **Ver información personal** pueden consultarlos, sin modificarlos; la guía **Administración**, en Quién puede hacer qué, muestra qué roles lo tienen.',
               'Con **Quitar estos datos** borra lo que registró en esa pestaña.',
             ],
           },
@@ -152,7 +154,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
       },
       {
         q: '¿Quién ve mi información personal?',
-        a: 'Usted, y quienes tienen el permiso **Ver información personal** (hoy, el Director de oficina y el Administrador de Sistema), solo para consultarla. Nadie más puede verla ni cambiarla.',
+        a: 'Usted, y quienes tienen el permiso **Ver información personal**, solo para consultarla (la guía **Administración**, en Quién puede hacer qué, muestra qué roles lo tienen). Nadie más puede verla ni cambiarla.',
       },
       {
         q: 'Mi EPS no está en la lista.',
@@ -697,7 +699,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
           },
           {
             type: 'paragraph',
-            text: 'Con **Descargar CSV** obtiene los totales del periodo en un archivo que se abre en Excel.',
+            text: "Con **Descargar CSV** obtiene los totales del periodo en un archivo que se abre en Excel. Si un título o una pregunta empieza por =, +, - o @, en el archivo aparece con un apóstrofo (') delante, para que Excel no lo tome como una fórmula.",
           },
           { type: 'paragraph', text: 'El Inicio muestra cuántas respuestas lleva la encuesta activa en el año.' },
         ],
@@ -778,7 +780,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
             type: 'list',
             items: [
               '**Crear usuario:** nombre, correo, rol y, si el rol es de juzgado, el juzgado. El sistema genera una **contraseña temporal** que se muestra **una sola vez** arriba de la lista: cópiela y entréguela por un canal seguro. No se guarda en ningún lado.',
-              '**Ver información personal:** muestra, solo para consultar, la información personal y el contacto de emergencia que el usuario registró en Mi perfil, con los celulares y el correo listos para llamar o escribir. Requiere el permiso **Ver información personal**; solo el usuario puede cambiar esos datos.',
+              '**Ver información personal:** muestra, solo para consultar, la información personal y el contacto de emergencia que el usuario registró en Mi perfil, con los celulares y el correo listos para llamar o escribir. Requiere el permiso **Ver información personal**; si su rol es de un juzgado, solo puede consultar a los usuarios de ese juzgado. Solo el usuario puede cambiar esos datos.',
               '**Editar / Asignar rol:** cambia nombre, rol o juzgado.',
               '**Restablecer contraseña:** genera una nueva contraseña temporal. Quien olvida su contraseña puede recuperarla solo desde **Iniciar sesión**; esta opción queda para quien no recibe el enlace en su correo.',
               '**Desactivar / Reactivar:** desactivar impide iniciar sesión sin borrar la cuenta.',

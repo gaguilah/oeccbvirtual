@@ -38,12 +38,12 @@ function Loading() {
 // Contacto de emergencia y Contraseña. La pestaña va en la URL (?pestana=contacto-emergencia). Los
 // paneles quedan montados y solo se ocultan: cambiar de pestaña no pierde lo escrito sin guardar.
 // Con contraseña temporal, primero el cargo y luego la contraseña (complete_password_change()
-// rechaza sin cargo); las pestañas nuevas no se exigen.
+// rechaza sin cargo); las pestañas nuevas no se exigen. Su información se pide la primera vez que
+// se abre una de ellas (no en cada visita, ni en el paso obligatorio de la contraseña) y se conserva.
 export default function ProfilePage() {
   useDocumentMeta({ title: 'Mi perfil · Dashboard', noindex: true })
   const { profile, loading, failed } = useProfile()
   const { mustChangePassword, reload } = useAccess()
-  const personal = usePersonalInfo()
   const [params, setParams] = useSearchParams()
   const [completeError, setCompleteError] = useState<string | null>(null)
   const tabsId = useId()
@@ -55,6 +55,11 @@ export default function ProfilePage() {
     : mustChangePassword && !loading && !missingPosition
       ? 'contrasena'
       : 'cuenta'
+
+  const personalTab = tab === 'informacion-personal' || tab === 'contacto-emergencia'
+  const [personalOpened, setPersonalOpened] = useState(personalTab)
+  if (personalTab && !personalOpened) setPersonalOpened(true)
+  const personal = usePersonalInfo(personalOpened)
 
   function open(id: TabId) {
     if (id === tab) return

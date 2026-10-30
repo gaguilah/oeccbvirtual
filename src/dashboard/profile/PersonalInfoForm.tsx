@@ -9,6 +9,7 @@ import {
   type PersonalInfo,
 } from './personalApi'
 import { EPS_REGIMES, formatPhone, PERSONAL_HELP } from './personalData'
+import { PersonalSaveError } from './personalErrors'
 import { personalInfoSchema, type PersonalInfoInput } from './personalSchema'
 import PersonalSectionCard from './PersonalSectionCard'
 import { useProfile } from './profile'
@@ -75,7 +76,9 @@ export default function PersonalInfoForm({ userId, info, eps, onSaved }: Props) 
     try {
       finish(await savePersonalInfo(userId, info !== null, result.data), 'Información guardada.')
     } catch (err) {
-      setMessage({ variant: 'error', text: err instanceof Error ? err.message : 'No se pudo guardar.' })
+      // Un error de la base sobre un campo (el correo) se muestra junto a él.
+      if (err instanceof PersonalSaveError && err.field) setErrors({ [err.field]: err.message })
+      else setMessage({ variant: 'error', text: err instanceof Error ? err.message : 'No se pudo guardar.' })
     } finally {
       setSaving(false)
     }
@@ -91,7 +94,7 @@ export default function PersonalInfoForm({ userId, info, eps, onSaved }: Props) 
       onSubmit={handleSubmit}
       saving={saving}
       unchanged={unchanged}
-      updatedAt={info?.updated_at ?? null}
+      updatedAt={info?.personal_updated_at ?? null}
       canClear={hasAny(info, PERSONAL_COLUMNS)}
       clearTitle="¿Quitar su información personal?"
       clearText="Se borrarán su dirección, celular, correo personal y EPS. Su contacto de emergencia no cambia."

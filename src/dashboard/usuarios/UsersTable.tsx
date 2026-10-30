@@ -2,9 +2,10 @@ import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Badge } from '../../components/ui'
 import { cn } from '../../lib/cn'
+import type { CourtNumber } from '../../lib/courts'
 import { PROFILE_LINK } from '../navigation'
 import { ActionMenu, icons, type ActionMenuItem } from '../ui'
-import { dependencyLabel, displayName, lastSignIn, STATUS, userStatus } from './data'
+import { dependencyLabel, displayName, lastSignIn, personalInfoBlocker, STATUS, userStatus } from './data'
 import type { UserRow } from './types'
 
 type Handlers = {
@@ -16,7 +17,9 @@ type Handlers = {
 
 // Qué puede hacer quien mira la lista: gestionar (usuarios.gestionar) y consultar la información
 // personal (usuarios.datos_personales). Con ninguno de los dos no hay columna de acciones.
-type Abilities = { canManage: boolean; canViewPersonal: boolean }
+// `personalCourt`: si el rol de quien mira tiene alcance de juzgado, su juzgado (solo consulta la
+// información personal de ese juzgado); null si ve todos.
+type Abilities = { canManage: boolean; canViewPersonal: boolean; personalCourt: CourtNumber | null }
 
 type UsersTableProps = Handlers & {
   users: UserRow[]
@@ -86,6 +89,7 @@ function UserActions({
   isSelf,
   canManage,
   canViewPersonal,
+  personalCourt,
   onEdit,
   onToggleActive,
   onResetPassword,
@@ -98,7 +102,14 @@ function UserActions({
     ? [{ label: 'Ir a Mi perfil', icon: icons.profile, onSelect: () => navigate(PROFILE_LINK.to) }]
     : [
         ...(canViewPersonal && hasRole
-          ? [{ label: 'Ver información personal', icon: icons.eye, onSelect: () => onViewPersonal(user) }]
+          ? [
+              {
+                label: 'Ver información personal',
+                icon: icons.eye,
+                onSelect: () => onViewPersonal(user),
+                disabledReason: personalInfoBlocker(personalCourt, user),
+              },
+            ]
           : []),
         ...(canManage
           ? [{ label: hasRole ? 'Editar' : 'Asignar rol', icon: icons.pencil, onSelect: () => onEdit(user) }]
@@ -126,11 +137,12 @@ export default function UsersTable({
   highlightId,
   canManage,
   canViewPersonal,
+  personalCourt,
   className,
   ...handlers
 }: UsersTableProps) {
   const hasActions = canManage || canViewPersonal
-  const abilities = { canManage, canViewPersonal }
+  const abilities = { canManage, canViewPersonal, personalCourt }
   const highlightRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {

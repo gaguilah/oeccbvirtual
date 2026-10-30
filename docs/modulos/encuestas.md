@@ -54,7 +54,8 @@ encuestas, elegir cuál está activa y ver los resultados agregados.
   respuestas), editar la copia y activarla. Los resultados anteriores quedan en la encuesta original.
 - Activar una encuesta desactiva la anterior en la misma transacción. Solo se activa con preguntas.
 - Guardado con `save_survey()` (`security invoker`, una transacción). Los códigos salen del texto y no
-  cambian.
+  cambian (`surveyCode`, `copyCode`, `uniqueCode` en `encuestas/data.ts`, máx. 60 caracteres, formato
+  `surveys_code_format`; un título sin letras ni números da `encuesta`). Probados en `data.test.ts`.
 
 ## Resultados
 
@@ -65,7 +66,9 @@ encuestas, elegir cuál está activa y ver los resultados agregados.
   valor incluidos los ceros), cada uno con "Ver como tabla".
 - Promedios: si las escalas tienen rangos distintos, no se mezclan.
 - "Descargar CSV" (`encuestas/csv.ts`): totales del periodo, una fila por opción de cada pregunta; `;`,
-  UTF-8 con BOM y CRLF para Excel en español. Sin permiso adicional.
+  UTF-8 con BOM y CRLF para Excel en español. Sin permiso adicional. Un texto (título, pregunta,
+  etiqueta) que empieza por `=`, `+`, `-`, `@`, tabulador o retorno sale con `'` delante, para que
+  Excel no lo tome como fórmula (inyección de fórmulas en CSV; desde 2026-10-30).
 
 ## Permisos (sin juzgado)
 

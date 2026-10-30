@@ -77,7 +77,7 @@ export default function EmergencyContactForm({ userId, info, onSaved }: Props) {
       onSubmit={handleSubmit}
       saving={saving}
       unchanged={unchanged}
-      updatedAt={info?.updated_at ?? null}
+      updatedAt={info?.emergency_updated_at ?? null}
       canClear={hasAny(info, EMERGENCY_COLUMNS)}
       clearTitle="¿Quitar su contacto de emergencia?"
       clearText="Se borrarán el nombre, el parentesco y el celular de su contacto. Su información personal no cambia."

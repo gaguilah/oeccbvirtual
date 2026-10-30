@@ -1,4 +1,4 @@
-import { TIME_ZONE } from '../../components/remates'
+import { TIME_ZONE } from '../../components/remates/constants'
 
 // Colombia no tiene horario de verano: siempre UTC−5.
 const BOGOTA_OFFSET = '-05:00'

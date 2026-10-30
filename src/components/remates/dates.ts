@@ -33,7 +33,7 @@ export function dateParts(iso: string) {
   return { day: get('day'), month: get('month').replace('.', '').toUpperCase(), year: get('year') }
 }
 
-// Fecha en hora de Colombia, p. ej. "17 feb 2026".
+// Fecha en hora de Colombia, p. ej. "17 de feb de 2026".
 export function formatDate(iso: string) {
   return dateFormatter.format(new Date(iso))
 }

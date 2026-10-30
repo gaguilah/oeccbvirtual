@@ -73,10 +73,14 @@ export function colombianHolidays(year: number): CandidateDay[] {
     [nextMonday(addDays(easter, 60)), 'Corpus Christi'],
     [nextMonday(addDays(easter, 68)), 'Sagrado Corazón de Jesús'],
   ]
-  return list
-    .filter(([value]) => isWeekday(value))
-    .map(([value, reason]) => ({ day: key(value), reason }))
-    .sort((x, y) => x.day.localeCompare(y.day))
+  // Dos trasladables pueden caer el mismo lunes (30 de junio de 2025: San Pedro y Sagrado Corazón):
+  // un solo día con los dos motivos, porque `day` es la clave de non_business_days.
+  const byDay = new Map<string, string>()
+  for (const [value, reason] of list.filter(([value]) => isWeekday(value))) {
+    const day = key(value)
+    byDay.set(day, byDay.has(day) ? `${byDay.get(day)} y ${reason}` : reason)
+  }
+  return [...byDay].map(([day, reason]) => ({ day, reason })).sort((x, y) => x.day.localeCompare(y.day))
 }
 
 // Días de la Rama Judicial de un año (tipo "cierre"): lunes a miércoles santos, 17 de diciembre

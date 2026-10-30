@@ -1,4 +1,4 @@
-import { COURTS, courtByNumber } from '../../lib/courts'
+import { COURTS, courtByNumber, type CourtNumber } from '../../lib/courts'
 import { formatDate, formatTime } from '../../components/remates/dates'
 import type { UserFilters, UserRow, UserStatus } from './types'
 
@@ -40,6 +40,14 @@ export function dependencyLabel(user: UserRow): string {
 export function lastSignIn(user: UserRow): { date: string; time: string | null } {
   if (!user.last_sign_in_at) return { date: 'Nunca', time: null }
   return { date: formatDate(user.last_sign_in_at), time: formatTime(user.last_sign_in_at) }
+}
+
+// "Ver información personal" con el mismo criterio que get_user_personal_info: has_permission con el
+// juzgado del usuario consultado (0 si no tiene). `viewerCourt` es el juzgado de quien consulta si su
+// rol tiene alcance de juzgado (null si ve todos). Devuelve el motivo para deshabilitar la opción.
+export function personalInfoBlocker(viewerCourt: CourtNumber | null, user: UserRow): string | undefined {
+  if (viewerCourt === null || user.court === viewerCourt) return undefined
+  return `Solo puede consultar usuarios del ${courtByNumber(viewerCourt).short}`
 }
 
 export function displayName(user: UserRow): string {

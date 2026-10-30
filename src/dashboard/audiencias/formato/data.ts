@@ -1,4 +1,4 @@
-import { formatLongDate } from '../../../components/remates'
+import { formatLongDate } from '../../../components/remates/dates'
 import { bogotaParts } from '../dates'
 import type { Hearing } from '../types'
 
