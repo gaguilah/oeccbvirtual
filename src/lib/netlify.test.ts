@@ -39,6 +39,32 @@ describe('netlify.toml', () => {
   })
 })
 
+describe('cabeceras de seguridad', () => {
+  // Bloque [[headers]] de una ruta, hasta el siguiente bloque o el final.
+  const headersFor = (path: string) => {
+    const start = netlifyToml.indexOf(`for = "${path}"`)
+    if (start === -1) return ''
+    const next = netlifyToml.indexOf('[[headers]]', start)
+    return netlifyToml.slice(start, next === -1 ? undefined : next)
+  }
+
+  it('van en todas las rutas (/*), también en index.html y las rutas de la SPA', () => {
+    expect(headersFor('/*')).not.toBe('')
+  })
+
+  it.each([
+    ['X-Content-Type-Options', 'nosniff'],
+    ['Referrer-Policy', 'strict-origin-when-cross-origin'],
+    ['X-Frame-Options', 'DENY'],
+  ])('%s = %s', (name, value) => {
+    expect(headersFor('/*')).toMatch(new RegExp(`^\\s*${name} = "${value}"\\s*$`, 'm'))
+  })
+
+  it('la caché inmutable sigue solo en /assets/*, no en todas las rutas', () => {
+    expect(headersFor('/*')).not.toContain('Cache-Control')
+  })
+})
+
 describe('public/_redirects', () => {
   it('existe (Vite lo copia a dist/)', () => {
     expect(redirects).toBeTypeOf('string')

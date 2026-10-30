@@ -16,3 +16,15 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Cabeceras de seguridad para todas las rutas (se suman a las de /assets/*). Plan en
+# docs/plan-pruebas.md (Fase 3).
+#   nosniff: el navegador no adivina el tipo de un archivo (no ejecuta como script lo que no lo es).
+#   Referrer-Policy: a otros sitios solo se les dice el dominio, no la ruta ni los parámetros.
+#   X-Frame-Options: ningún sitio puede mostrar este dentro de un marco (engaños de clic).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
