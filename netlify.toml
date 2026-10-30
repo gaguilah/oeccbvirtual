@@ -16,3 +16,24 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Cabeceras de seguridad para todas las rutas (se suman a las de /assets/*). Plan en
+# docs/plan-pruebas.md (Fase 3).
+#   nosniff: el navegador no adivina el tipo de un archivo (no ejecuta como script lo que no lo es).
+#   Referrer-Policy: a otros sitios solo se les dice el dominio, no la ruta ni los parámetros.
+#   X-Frame-Options: ningún sitio puede mostrar este dentro de un marco (engaños de clic).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    # Content-Security-Policy en modo informe: el navegador avisa en la consola lo que bloquearía,
+    # pero no bloquea nada. Cuando la vista previa no muestre avisos se pasa a Content-Security-Policy.
+    #   script-src: la app, el script del tema de index.html (su sha256: si cambia ese script, cambiar
+    #     la huella; src/lib/netlify.test.ts lo comprueba) y Turnstile.
+    #   connect-src: la app (fuentes del PDF de audiencias), Supabase (datos, Auth, Edge Functions) y Turnstile.
+    #   style-src / font-src: Google Fonts (index.html). img-src: data: y blob: para imágenes generadas.
+    #   frame-src: el captcha de Turnstile. Los enlaces externos (Rama Judicial, Teams, mapas) son
+    #   navegaciones: la política no los afecta.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'sha256-aKF9Q5RR2ngep9+OTqq1ucrfnd3Zr8KeDL1cQhS9hrI=' https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://pedmspinnqcnrduktcdt.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
