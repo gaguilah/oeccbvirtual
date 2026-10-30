@@ -67,7 +67,7 @@ describe('cabeceras de seguridad', () => {
 })
 
 describe('Content-Security-Policy', () => {
-  const policy = netlifyToml.match(/^\s*Content-Security-Policy(?:-Report-Only)? = "([^"]+)"$/m)?.[1] ?? ''
+  const policy = netlifyToml.match(/^\s*Content-Security-Policy = "([^"]+)"$/m)?.[1] ?? ''
   const directive = (name: string) =>
     policy
       .split(';')
@@ -75,8 +75,9 @@ describe('Content-Security-Policy', () => {
       .find(([key]) => key === name)
       ?.slice(1) ?? []
 
-  it('está definida para todas las rutas', () => {
+  it('está activa (bloquea, no solo informa) para todas las rutas', () => {
     expect(policy).not.toBe('')
+    expect(netlifyToml).not.toMatch(/^\s*Content-Security-Policy-Report-Only =/m)
     expect(headersFor('/*')).toContain(policy)
   })
 
