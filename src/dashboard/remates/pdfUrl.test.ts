@@ -91,4 +91,11 @@ describe('esquemas del aviso', () => {
     expect(pdfUrlSchema.safeParse('x.test/a.pdf').success).toBe(false)
     expect(auctionNoticesSql).toContain("pdf_url ~ '^https://'")
   })
+
+  it('URL del PDF corregida: rechaza enlaces que ejecutan código (se muestra en el sitio público)', () => {
+    for (const url of ['javascript:alert(1)', 'JavaScript:alert(1)', 'data:text/html,<script>alert(1)</script>']) {
+      expect(pdfUrlSchema.safeParse(url).success).toBe(false)
+      expect(/^https:\/\//.test(url)).toBe(false)
+    }
+  })
 })

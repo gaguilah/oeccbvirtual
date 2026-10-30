@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { INJECTION_PAYLOADS } from '../../lib/testInjection'
+import personalInfoModalSource from '../usuarios/PersonalInfoModal.tsx?raw'
 import { emergencyContactSchema, personalInfoSchema } from './personalSchema'
 
 const emptyPersonal = { residenceAddress: '', mobilePhone: '', personalEmail: '', epsId: '' }
@@ -127,5 +129,24 @@ describe('contacto de emergencia', () => {
 
   it('valida el celular igual que el propio', () => {
     expect(emergencyError('emergencyPhone', 'abc')).toBe('Escriba solo números (puede separarlos con espacios)')
+  })
+})
+
+// Se muestran en Usuarios → "Ver información personal": el celular en un enlace tel: y el correo en
+// uno mailto:, así que no pueden llevar código. La dirección es texto libre que React muestra como texto.
+describe('código en la información personal', () => {
+  it.each(INJECTION_PAYLOADS)('celulares, correo, nombre y parentesco rechazan %s', (payload) => {
+    expect(personalError('mobilePhone', payload)).not.toBeNull()
+    expect(personalError('personalEmail', payload)).not.toBeNull()
+    expect(emergencyError('emergencyPhone', payload)).not.toBeNull()
+    expect(emergencyError('emergencyName', payload)).not.toBeNull()
+    expect(emergencyError('emergencyRelationship', payload)).not.toBeNull()
+  })
+
+  // El formato del correo es amplio (igual que el check de la base) y admite comillas; no es un
+  // riesgo porque el enlace siempre empieza por mailto: y React escapa las comillas del atributo.
+  it('los enlaces del modal empiezan siempre por mailto: y tel:', () => {
+    expect(personalInfoModalSource).toContain('href={`mailto:${info.personal_email}`}')
+    expect(personalInfoModalSource).toContain('href={`tel:+57${value}`}')
   })
 })

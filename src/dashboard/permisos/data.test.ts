@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { INJECTION_PAYLOADS } from '../../lib/testInjection'
 import { roleCode, scopeLabel } from '../roles/data'
 import { groupPermissions, MODULE_LABELS, moduleLabel } from './data'
 import type { Permission } from './types'
@@ -41,6 +42,8 @@ describe('roles', () => {
     // Sin letras: vacío, y el editor pide un nombre con letras.
     expect(roleCode('123')).toBe('')
     for (const name of ['Secretaría General', 'a-b-c', 'Ünï  çase']) expect(roleCode(name)).toMatch(/^[a-z_]+$/)
+    // El código nunca lleva lo que no sea letras o guion bajo, aunque el nombre traiga código.
+    for (const name of INJECTION_PAYLOADS) expect(roleCode(name)).toMatch(/^[a-z_]*$/)
   })
 
   it('scopeLabel', () => {
