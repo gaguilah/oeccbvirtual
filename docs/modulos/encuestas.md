@@ -66,7 +66,9 @@ encuestas, elegir cuál está activa y ver los resultados agregados.
   valor incluidos los ceros), cada uno con "Ver como tabla".
 - Promedios: si las escalas tienen rangos distintos, no se mezclan.
 - "Descargar CSV" (`encuestas/csv.ts`): totales del periodo, una fila por opción de cada pregunta; `;`,
-  UTF-8 con BOM y CRLF para Excel en español. Sin permiso adicional.
+  UTF-8 con BOM y CRLF para Excel en español. Sin permiso adicional. Un texto (título, pregunta,
+  etiqueta) que empieza por `=`, `+`, `-`, `@`, tabulador o retorno sale con `'` delante, para que
+  Excel no lo tome como fórmula (inyección de fórmulas en CSV; desde 2026-10-30).
 
 ## Permisos (sin juzgado)
 

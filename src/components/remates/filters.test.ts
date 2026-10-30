@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { INJECTION_PAYLOADS } from '../../lib/testInjection'
 import { CASE_NUMBER_LENGTH } from './constants'
 import { parseFilters, sanitizeQuery, serializeFilters } from './filters'
 
@@ -10,6 +11,16 @@ describe('sanitizeQuery', () => {
     expect(sanitizeQuery('68001-31-03')).toBe('680013103')
     expect(sanitizeQuery('abc')).toBe('')
     expect(sanitizeQuery('1'.repeat(CASE_NUMBER_LENGTH + 5))).toHaveLength(CASE_NUMBER_LENGTH)
+  })
+
+  it.each(INJECTION_PAYLOADS)('de %s solo quedan sus dígitos', (payload) => {
+    expect(sanitizeQuery(payload)).toBe(payload.replace(/\D/g, ''))
+    expect(sanitizeQuery(`6800${payload}`)).toMatch(/^\d+$/)
+  })
+
+  it('el código en ?q= de la URL (enlace compartido) no llega a la búsqueda', () => {
+    const url = new URLSearchParams({ q: `68001<script>alert(1)</script>` })
+    expect(parseFilters(url).query).toBe('680011')
   })
 })
 

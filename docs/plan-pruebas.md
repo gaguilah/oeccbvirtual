@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1 y 2)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2 y 3)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -101,6 +101,69 @@ Por prioridad: primero lo que protege permisos y reglas con plazos o fechas.
 | Usuarios | `filterUsers` (búsqueda sin tildes, rol, dependencia, estado), `userStatus`, `dependencyLabel` (se suma a `personalInfoBlocker`, ya probado) | Baja |
 | Ayuda | `guideForPath`, que cada `paths` de `GUIDES` sea una ruta del dashboard, el formato `**negrita**` de `RichText` (si se separa a un `.ts`) | Baja |
 | Layout y perfil | `sidebarState.ts` (lectura segura de `localStorage`), `profile/initials.ts` | Baja |
+
+## Fase 3 · Inyección de código en campos de texto (hecha el 2026-10-30)
+
+Ninguna prueba mete código (`<script>`, `<img onerror=…>`, `javascript:`, `"><`) en los campos para
+comprobar que no se ejecuta. La protección existe por diseño, pero no hay pruebas que lo demuestren:
+
+- React muestra todo como texto, y en `src` no hay `dangerouslySetInnerHTML` ni `innerHTML`.
+- El único lugar donde un texto escrito por alguien se vuelve HTML son los correos de las Edge Functions,
+  y ahí pasa por `escapeHtml` / `multiline` (`supabase/functions/_shared/emails/layout.ts`).
+- Los enlaces que se muestran solo aceptan `https://`, en el formulario y en un check de la base.
+
+Mismo patrón que las fases anteriores (Vitest, Node, sin Supabase; las Edge Functions por `?raw` o
+importando el módulo si Vitest lo resuelve).
+
+### Parte pública
+
+| Campo | Qué probar | Prioridad |
+|---|---|---|
+| PQRS: nombre, correo y mensaje | `escapeHtml` y `multiline` con cargas maliciosas (`<`, `>`, `&`, `"`, `'`, saltos de línea); que el acuse y el aviso a la oficina (`_shared/emails/pqrs.ts`) no lleven la carga sin escapar en el HTML; que `requestSchema` y `submit-request` las acepten como texto (no se filtran: se escapan al mostrar) | Alta |
+| Búsqueda por radicado (Avisos de Remate, Audiencias, `?q=` en la URL) | `sanitizeQuery` con cargas reales (no solo `abc`): queda solo con dígitos, máximo 23 | Media |
+| Todo `src` | Prueba que falle si aparece `dangerouslySetInnerHTML` o `innerHTML` (leyendo los archivos con `import.meta.glob(..., '?raw')`) | Media |
+
+### Parte privada (dashboard)
+
+Los funcionarios escriben texto que llega a los ciudadanos (correos, página pública) o a otros
+funcionarios. El riesgo es menor (hay que tener cuenta y permiso), pero un funcionario o una cuenta
+robada no debe poder inyectar código en lo que ven los demás.
+
+| Campo | Adónde llega | Qué probar | Prioridad |
+|---|---|---|---|
+| Respuesta de PQRS y motivo de cierre | Correo al ciudadano (`requestResponseEmail`) y detalle en el dashboard | La respuesta va escapada en el HTML del correo, y la solicitud original también | Alta |
+| Nombre del funcionario (`full_name`) | Correos de cuenta (`_shared/emails/account.ts`), menú, Usuarios, formato PDF de audiencias | El saludo del correo va escapado; `profiles_full_name_format` y `profile/schema.ts` ya rechazan `<` y `>` (agregar el caso a sus pruebas) | Media |
+| Tipos de audiencia, radicado y enlaces | Correos de audiencias (`_shared/emails/hearings.ts`) y la página pública `/audiencias` | Nombre del tipo y enlace escapados en el HTML; `connection_url` / `recording_url` rechazan `javascript:` y `data:` en `audiencias/schema.ts` y en los checks `hearings_*_url_chk` | Media |
+| URL del PDF de un aviso (corrección manual) | Botones "Ver aviso" / "Descargar PDF" del sitio público | `pdfUrlSchema` y `auction_notices_pdf_url_chk` rechazan `javascript:` | Media |
+| Encuestas: título, preguntas, ayudas y etiquetas | Página pública `/encuesta` y CSV de resultados | Se muestran como texto (cubierto por la prueba de `src`); en el CSV, una celda que empiece por `=`, `+`, `-` o `@` puede ejecutarse como fórmula en Excel: hoy `csv.ts` no lo evita. Decidir si se antepone `'` y probarlo | Media |
+| Información personal y contacto de emergencia | "Ver información personal" en Usuarios (`tel:`, `mailto:`) | Teléfono solo dígitos y correo válido en `personalSchema.ts` (agregar cargas maliciosas a sus pruebas) | Baja |
+| Roles y Permisos: nombres y descripciones | Roles, Permisos y la tabla "Quién puede hacer qué" de Ayuda | Se muestran como texto (cubierto por la prueba de `src`); `RichText` solo interpreta `**negrita**` del contenido fijo de Ayuda, nunca texto de la base | Baja |
+| Notas de audiencia, carpetas de PDF | Solo el dashboard | Cubierto por la prueba de `src` | Baja |
+
+Fuera de Vitest (anotar, no probar aquí): el sitio no envía cabeceras de seguridad (`Content-Security-Policy`,
+`X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors`). Se agregarían en `netlify.toml` como segunda
+barrera; la CSP debe permitir Supabase, Turnstile y Google Fonts.
+
+### Resultado (2026-10-30)
+
+335 pruebas (68 nuevas). Las cargas están en `src/lib/testInjection.ts`; las plantillas de correo de las
+Edge Functions son TypeScript puro y se importan directamente. Archivos: `lib/noRawHtml.test.ts`,
+`components/pqrs/emails.test.ts`, `dashboard/pqrs/emails.test.ts`, `dashboard/profile/emails.test.ts`,
+`dashboard/audiencias/emails.test.ts`, y casos nuevos en los filtros, `pdfUrl`, `personalSchema`,
+`permisos/data` y `encuestas/csv`.
+
+Todo lo escrito por ciudadanos o funcionarios sale escapado en los correos, ningún enlace acepta
+`javascript:` ni `data:`, y `src` no usa `innerHTML`, `dangerouslySetInnerHTML` ni `eval`.
+
+Hallazgo corregido:
+
+- **Encuestas:** el CSV dejaba pasar textos que Excel toma como fórmulas (`=HYPERLINK(…)`, `+1+1`, `@SUM(…)`).
+  Ahora salen con `'` delante.
+
+No es un hallazgo: el correo personal admite comillas (la regla es amplia, igual que el check de la base),
+pero el enlace siempre empieza por `mailto:` y React escapa el atributo; la prueba comprueba ese prefijo.
+
+Pendiente fuera de Vitest: las cabeceras de seguridad en `netlify.toml`.
 
 ## Fases futuras (fuera de este plan)
 

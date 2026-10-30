@@ -11,6 +11,11 @@ describe('filtros de Audiencias en la URL', () => {
     expect(parse('')).toEqual(DEFAULTS)
   })
 
+  it('el código en ?q= o en las fechas de la URL no llega a la búsqueda', () => {
+    const url = new URLSearchParams({ q: `"><img src=x onerror=alert(1)>`, desde: '<script>', hasta: '"><svg>' })
+    expect(parseFilters(url)).toEqual({ ...DEFAULTS, query: '1' })
+  })
+
   it('lee los parámetros válidos', () => {
     expect(parse('periodo=anteriores&juzgado=1&desde=2026-10-01&hasta=2026-10-31&q=6800&pagina=2')).toEqual({
       period: 'anteriores',
