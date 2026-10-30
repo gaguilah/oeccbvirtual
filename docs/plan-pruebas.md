@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1 y 2)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2 y 3)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -102,7 +102,7 @@ Por prioridad: primero lo que protege permisos y reglas con plazos o fechas.
 | Ayuda | `guideForPath`, que cada `paths` de `GUIDES` sea una ruta del dashboard, el formato `**negrita**` de `RichText` (si se separa a un `.ts`) | Baja |
 | Layout y perfil | `sidebarState.ts` (lectura segura de `localStorage`), `profile/initials.ts` | Baja |
 
-## Fase 3 · Inyección de código en campos de texto (pendiente, registrada el 2026-10-30)
+## Fase 3 · Inyección de código en campos de texto (hecha el 2026-10-30)
 
 Ninguna prueba mete código (`<script>`, `<img onerror=…>`, `javascript:`, `"><`) en los campos para
 comprobar que no se ejecuta. La protección existe por diseño, pero no hay pruebas que lo demuestren:
@@ -143,6 +143,27 @@ robada no debe poder inyectar código en lo que ven los demás.
 Fuera de Vitest (anotar, no probar aquí): el sitio no envía cabeceras de seguridad (`Content-Security-Policy`,
 `X-Content-Type-Options`, `Referrer-Policy`, `frame-ancestors`). Se agregarían en `netlify.toml` como segunda
 barrera; la CSP debe permitir Supabase, Turnstile y Google Fonts.
+
+### Resultado (2026-10-30)
+
+335 pruebas (68 nuevas). Las cargas están en `src/lib/testInjection.ts`; las plantillas de correo de las
+Edge Functions son TypeScript puro y se importan directamente. Archivos: `lib/noRawHtml.test.ts`,
+`components/pqrs/emails.test.ts`, `dashboard/pqrs/emails.test.ts`, `dashboard/profile/emails.test.ts`,
+`dashboard/audiencias/emails.test.ts`, y casos nuevos en los filtros, `pdfUrl`, `personalSchema`,
+`permisos/data` y `encuestas/csv`.
+
+Todo lo escrito por ciudadanos o funcionarios sale escapado en los correos, ningún enlace acepta
+`javascript:` ni `data:`, y `src` no usa `innerHTML`, `dangerouslySetInnerHTML` ni `eval`.
+
+Hallazgo corregido:
+
+- **Encuestas:** el CSV dejaba pasar textos que Excel toma como fórmulas (`=HYPERLINK(…)`, `+1+1`, `@SUM(…)`).
+  Ahora salen con `'` delante.
+
+No es un hallazgo: el correo personal admite comillas (la regla es amplia, igual que el check de la base),
+pero el enlace siempre empieza por `mailto:` y React escapa el atributo; la prueba comprueba ese prefijo.
+
+Pendiente fuera de Vitest: las cabeceras de seguridad en `netlify.toml`.
 
 ## Fases futuras (fuera de este plan)
 
