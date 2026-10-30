@@ -91,6 +91,10 @@ describe('Content-Security-Policy', () => {
   it('nunca permite scripts en línea ni eval en general', () => {
     expect(directive('script-src')).not.toContain("'unsafe-inline'")
     expect(policy).not.toContain("'unsafe-eval'")
+    // Solo WebAssembly, para el motor de diseño del PDF de audiencias (no habilita eval de JavaScript).
+    expect(directive('script-src')).toContain("'wasm-unsafe-eval'")
+    // Ese motor viene incrustado como data: y la librería lo descarga con fetch.
+    expect(directive('connect-src')).toContain('data:')
     expect(directive('object-src')).toEqual(["'none'"])
     expect(directive('frame-ancestors')).toEqual(["'none'"])
     expect(directive('base-uri')).toEqual(["'self'"])
