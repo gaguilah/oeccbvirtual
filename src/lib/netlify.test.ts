@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 // Configuración del despliegue como texto: si alguien la cambia o la borra, la app sigue compilando y
 // las demás pruebas pasan, pero en producción se rompen las rutas o la caché.
+import indexHtml from '../../index.html?raw'
 import netlifyToml from '../../netlify.toml?raw'
 import packageJson from '../../package.json'
 import viteConfig from '../../vite.config.ts?raw'
@@ -39,15 +40,15 @@ describe('netlify.toml', () => {
   })
 })
 
-describe('cabeceras de seguridad', () => {
-  // Bloque [[headers]] de una ruta, hasta el siguiente bloque o el final.
-  const headersFor = (path: string) => {
-    const start = netlifyToml.indexOf(`for = "${path}"`)
-    if (start === -1) return ''
-    const next = netlifyToml.indexOf('[[headers]]', start)
-    return netlifyToml.slice(start, next === -1 ? undefined : next)
-  }
+// Bloque [[headers]] de una ruta, hasta el siguiente bloque o el final.
+const headersFor = (path: string) => {
+  const start = netlifyToml.indexOf(`for = "${path}"`)
+  if (start === -1) return ''
+  const next = netlifyToml.indexOf('[[headers]]', start)
+  return netlifyToml.slice(start, next === -1 ? undefined : next)
+}
 
+describe('cabeceras de seguridad', () => {
   it('van en todas las rutas (/*), también en index.html y las rutas de la SPA', () => {
     expect(headersFor('/*')).not.toBe('')
   })
@@ -62,6 +63,46 @@ describe('cabeceras de seguridad', () => {
 
   it('la caché inmutable sigue solo en /assets/*, no en todas las rutas', () => {
     expect(headersFor('/*')).not.toContain('Cache-Control')
+  })
+})
+
+describe('Content-Security-Policy', () => {
+  const policy = netlifyToml.match(/^\s*Content-Security-Policy(?:-Report-Only)? = "([^"]+)"$/m)?.[1] ?? ''
+  const directive = (name: string) =>
+    policy
+      .split(';')
+      .map((part) => part.trim().split(/\s+/))
+      .find(([key]) => key === name)
+      ?.slice(1) ?? []
+
+  it('está definida para todas las rutas', () => {
+    expect(policy).not.toBe('')
+    expect(headersFor('/*')).toContain(policy)
+  })
+
+  it('permite el script del tema de index.html por su huella (cambia si se edita el script)', async () => {
+    const script = indexHtml.match(/<script>([\s\S]*?)<\/script>/)?.[1] ?? ''
+    expect(script).toContain("localStorage.getItem('theme')")
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(script))
+    const hash = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    expect(directive('script-src')).toContain(`'sha256-${hash}'`)
+  })
+
+  it('nunca permite scripts en línea ni eval en general', () => {
+    expect(directive('script-src')).not.toContain("'unsafe-inline'")
+    expect(policy).not.toContain("'unsafe-eval'")
+    expect(directive('object-src')).toEqual(["'none'"])
+    expect(directive('frame-ancestors')).toEqual(["'none'"])
+    expect(directive('base-uri')).toEqual(["'self'"])
+  })
+
+  it('permite Supabase, Turnstile y Google Fonts', () => {
+    expect(directive('connect-src').some((source) => /^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(source))).toBe(true)
+    for (const name of ['script-src', 'connect-src', 'frame-src'])
+      expect(directive(name)).toContain('https://challenges.cloudflare.com')
+    expect(directive('style-src')).toContain('https://fonts.googleapis.com')
+    expect(directive('font-src')).toContain('https://fonts.gstatic.com')
+    expect(indexHtml).toContain('https://fonts.googleapis.com/css2?')
   })
 })
 
