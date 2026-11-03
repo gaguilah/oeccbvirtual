@@ -75,8 +75,8 @@ update public.auction_notices set case_number = '68001310300220200000999' where 
 -- Crear --------------------------------------------------------------------------------------------
 select tests.login_as('editoruno@prueba.test');
 select lives_ok(
-  $$ insert into public.auction_notices (id, case_number, court, scheduled_at, is_published)
-     values ('00000000-0000-0000-0000-0000000000a4', '68001310300120200000104', 1, '2026-12-04T10:00:00-05:00', true) $$,
+  $$ insert into public.auction_notices (case_number, court, scheduled_at, is_published)
+     values ('68001310300120200000104', 1, '2026-12-04T10:00:00-05:00', true) $$,
   'editor del juzgado 1 crea un aviso en su juzgado'
 );
 select throws_ok(
@@ -127,12 +127,12 @@ select throws_ok(
 -- Resultado (como postgres) --------------------------------------------------------------------------
 select tests.logout();
 select is(
-  (select is_published from public.auction_notices where id = '00000000-0000-0000-0000-0000000000a4'),
+  (select is_published from public.auction_notices where case_number = '68001310300120200000104'),
   false,
   'creado sin remates.publicar, el aviso nace oculto'
 );
 select is(
-  (select created_by from public.auction_notices where id = '00000000-0000-0000-0000-0000000000a4'),
+  (select created_by from public.auction_notices where case_number = '68001310300120200000104'),
   tests.user_id('editoruno@prueba.test'),
   'created_by es quien lo creó'
 );
