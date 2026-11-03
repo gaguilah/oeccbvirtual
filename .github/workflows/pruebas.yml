@@ -45,4 +45,12 @@ jobs:
       - name: Supabase local
         run: supabase start -x studio,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor,realtime,storage-api,postgres-meta
       - name: Pruebas pgTAP
-        run: supabase test db
+        run: |
+          set -o pipefail
+          supabase test db 2>&1 | tee pgtap.log
+      # Las pruebas que fallan, como anotación del commit (se ven en el resumen sin abrir el log).
+      - name: Resumen de fallas
+        if: failure()
+        run: |
+          msg=$(grep -E 'not ok|^\s*#|Failed|Dubious|ERROR|error' pgtap.log | head -80 | sed ':a;N;$!ba;s/%/%25/g;s/\n/%0A/g')
+          echo "::error title=pgTAP::${msg:-sin detalle}"
