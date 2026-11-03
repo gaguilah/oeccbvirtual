@@ -34,7 +34,10 @@ sesión, `survey_responses` y `survey_answers` no tienen permisos para `anon` ni
 `handle_new_user` tiene `search_path` vacío. El aviso de seguridad sobre `handle_new_user` desapareció.
 Un `update` como usuario con sesión (en una transacción que se deshizo) pasó con sus triggers. Además se
 quitaron los permisos de `anon` y `authenticated` sobre las secuencias: son de columnas identity y no los
-necesitan. Quedan pendientes las pruebas en el sitio y el dashboard (punto 4).
+necesitan. Probado en producción el 2026-11-03: sitio público sin sesión (Avisos de Remate y Audiencias listan y
+abren el detalle, se enviaron una PQRS y una encuesta) y dashboard (Avisos de Remate y Audiencias listan y
+abren, llegaron la PQRS y la respuesta de la encuesta, se editó el nombre en Mi perfil). También pasaron Usuarios (lista), Encuestas (resultados), una edición
+en Avisos de Remate o Audiencias y guardar un rol sin cambios.
 
 Migración nueva `20261103120000_security_cleanup.sql`, idempotente, aplicada por SQL Editor o
 `apply_migration` (el CLI no conecta) y registrada en el historial.
