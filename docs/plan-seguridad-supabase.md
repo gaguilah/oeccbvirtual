@@ -70,6 +70,20 @@ hace fallar `npm test`.
 
 ## Fase 2 · Edge Functions con las claves nuevas
 
+**Avance (2026-11-03):** las 6 funciones se desplegaron con el conector de Supabase, una a una, con las
+mismas banderas de `verify_jwt`, y se probaron en producción:
+
+| Función | Versión | Prueba |
+|---|---|---|
+| `submit-survey` | 15 | Encuesta respondida; las respuestas llegan al dashboard |
+| `submit-request` | 21 | PQRS con radicado; acuse al ciudadano y aviso a la oficina |
+| `password-reset` | 2 | Enlace por correo, contraseña nueva y aviso de cambio |
+| `hearings-mailer` | 11 | Llamada del cron con respuesta 200 y sin errores (no había avisos ni recordatorios que enviar; la prueba de envío real se omitió) |
+| `respond-request` | 13 | Respuesta a una PQRS; llega el correo |
+| `manage-users` | 16 | Edición de nombre y restablecimiento de contraseña; el usuario cambió la temporal en Mi perfil |
+
+Falta el punto 6: desactivar las claves antiguas y repetir las pruebas.
+
 Las claves antiguas (`anon`, `service_role`) se retiran a inicios de 2027. Las 6 funciones leen
 `SUPABASE_SERVICE_ROLE_KEY` y dos de ellas (`manage-users`, `respond-request`) también `SUPABASE_ANON_KEY`.
 

@@ -6,7 +6,7 @@
 //   1. identifica a quien llama con su JWT;
 //   2. exige usuarios.gestionar con public.has_permission (la misma regla de las políticas);
 //   3. valida los datos;
-//   4. opera con la service role key (auth.admin.*), que solo existe aquí.
+//   4. opera con la clave secreta (auth.admin.*, _shared/keys.ts), que solo existe aquí.
 // Las reglas de la base de datos (formato del nombre, juzgado según el alcance del rol, último
 // superadmin) también se aplican: sus errores se traducen a mensajes en español.
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
