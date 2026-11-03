@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2 y 3; Fase 4 propuesta)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2, 3 y 4)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -189,7 +189,7 @@ Para agregar un servicio externo (script, API, fuente, marco) hay que sumar su d
 navegador lo bloquea. Las variables `VITE_*` de Netlify no son secretas (van en el JavaScript público): no
 marcarlas como secretas, o el escáner de secretos detiene el build al ver la URL de Supabase en la política.
 
-## Fase 4 · Base de datos con pgTAP en GitHub Actions (propuesta, 2026-11-03)
+## Fase 4 · Base de datos con pgTAP en GitHub Actions (hecha el 2026-11-03)
 
 Rama `seguridad-supabase`, la misma de `docs/plan-seguridad-supabase.md`, para que un solo PR lleve todo a
 producción. Prueba lo que protege los datos de verdad: RLS, grants, triggers y funciones SQL. No prueba las
@@ -224,7 +224,16 @@ Nunca se conecta a producción, no usa secretos y no gasta créditos de Netlify.
 - **El flujo de GitHub Actions** y una primera prueba mínima (que las migraciones cargan y pgTAP responde),
   para comprobar el entorno antes de escribir las demás.
 
-**Estado (2026-11-03): entorno funcionando.** La rama se subió sin PR (Netlify solo construye `main`), y en GitHub Actions los dos trabajos pasan. Se agregaron:
+**Resultado (2026-11-03):** 9 archivos y 188 pruebas, todas en verde en GitHub Actions
+([corrida 41718689787](https://github.com/gaguilah/oeccbvirtual/actions/runs/41718689787)). `01_esquema.sql`
+quedó como la comparación con producción que el plan dejaba para el final: los grants de tablas y columnas,
+quién ejecuta cada función, las funciones `security definer`, las políticas y los triggers son una foto de
+producción. Solo encontró una diferencia: el `SELECT` de `anon` y `authenticated` sobre `auction_notices`
+venía del interruptor de autoexposición y no de una migración. Se corrigió con
+`20261103130000_auction_notices_select_grant.sql`, que tampoco cambia nada en producción y no está registrada
+allí. Las fallas se ven como la anotación "pgTAP" de la corrida (`gh run view <id> --log-failed`).
+
+**Estado del entorno:** La rama se subió sin PR (Netlify solo construye `main`), y en GitHub Actions los dos trabajos pasan. Se agregaron:
 - `.github/workflows/pruebas.yml`, con dos trabajos: "Sitio" corre Vitest, lint, Prettier y build, y "Base
   de datos" corre `supabase start` + `supabase test db`;
 - `supabase/seed.sql` y `supabase/tests/00_entorno.sql`;
