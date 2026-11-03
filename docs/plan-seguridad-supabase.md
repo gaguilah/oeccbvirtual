@@ -126,6 +126,9 @@ créditos de build. Hecho:
 - Documentación: CLAUDE.md, `docs/modulos/mi-perfil.md`, Ayuda (`ayuda/data.ts`, con las cifras de
   `PASSWORD_MIN` / `PASSWORD_MAX`) y `docs/guia-despliegue.md`.
 
+**Probado en local (2026-11-03):** iniciar sesión y cambiar la contraseña en Mi perfil funcionan con el
+widget de Turnstile (captcha de Auth todavía apagado).
+
 **Pendiente, en este orden. No activar nada en el panel antes de que el sitio esté desplegado:**
 
 1. Desplegar el sitio (PR de la rama `seguridad-supabase` cuando Netlify tenga créditos).
