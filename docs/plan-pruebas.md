@@ -224,7 +224,7 @@ Nunca se conecta a producción, no usa secretos y no gasta créditos de Netlify.
 - **El flujo de GitHub Actions** y una primera prueba mínima (que las migraciones cargan y pgTAP responde),
   para comprobar el entorno antes de escribir las demás.
 
-**Estado (2026-11-03): primer commit hecho en local, falta el push para verlo correr.** Se agregaron:
+**Estado (2026-11-03): entorno funcionando.** La rama se subió sin PR (Netlify solo construye `main`), y en GitHub Actions los dos trabajos pasan. Se agregaron:
 - `.github/workflows/pruebas.yml`, con dos trabajos: "Sitio" corre Vitest, lint, Prettier y build, y "Base
   de datos" corre `supabase start` + `supabase test db`;
 - `supabase/seed.sql` y `supabase/tests/00_entorno.sql`;
@@ -240,7 +240,12 @@ Hallazgos al preparar:
   `juan.perez@…`, `j01…@…` o `ana_m@…`, el insert del perfil falla y Auth responde "Database error creating new
   user". Los 19 usuarios actuales tienen correos de solo letras, lo que es consistente con el error.
   Corrección propuesta: el trigger crea el perfil sin nombre, porque `manage-users` lo guarda enseguida. Está
-  pendiente de confirmar.
+  pendiente de decidir. El usuario no ha visto el error, porque los correos actuales son de solo letras.
+- La migración `20261005120500` todavía **no está registrada en producción** (el usuario no autorizó escribir
+  allí). No hace falta, porque la función y el trigger ya existen.
+- En GitHub fallaron dos pruebas que en local pasaban gracias al `.env`: el menú del dashboard (`navigation/links.ts`)
+  importaba el barrel de `services`, que llega a `components/remates/api.ts` y al cliente de Supabase. Se importa
+  `services/data` directamente.
 
 ### Pruebas (`supabase/tests/`, un archivo y un commit por sección)
 
