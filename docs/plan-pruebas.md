@@ -230,8 +230,7 @@ quedó como la comparación con producción que el plan dejaba para el final: lo
 quién ejecuta cada función, las funciones `security definer`, las políticas y los triggers son una foto de
 producción. Solo encontró una diferencia: el `SELECT` de `anon` y `authenticated` sobre `auction_notices`
 venía del interruptor de autoexposición y no de una migración. Se corrigió con
-`20261103130000_auction_notices_select_grant.sql`, que tampoco cambia nada en producción y no está registrada
-allí. Las fallas se ven como la anotación "pgTAP" de la corrida (`gh run view <id> --log-failed`).
+`20261103130000_auction_notices_select_grant.sql`, que tampoco cambia nada en producción. Las fallas se ven como la anotación "pgTAP" de la corrida (`gh run view <id> --log-failed`).
 
 **Estado del entorno:** La rama se subió sin PR (Netlify solo construye `main`), y en GitHub Actions los dos trabajos pasan. Se agregaron:
 - `.github/workflows/pruebas.yml`, con dos trabajos: "Sitio" corre Vitest, lint, Prettier y build, y "Base
@@ -250,8 +249,9 @@ Hallazgos al preparar:
   user". Los 19 usuarios actuales tienen correos de solo letras, lo que es consistente con el error.
   Corrección propuesta: el trigger crea el perfil sin nombre, porque `manage-users` lo guarda enseguida. Está
   pendiente de decidir. El usuario no ha visto el error, porque los correos actuales son de solo letras.
-- La migración `20261005120500` todavía **no está registrada en producción** (el usuario no autorizó escribir
-  allí). No hace falta, porque la función y el trigger ya existen.
+- Las dos migraciones nuevas (`20261005120500` y `20261103130000`) las aplicó el usuario en el SQL Editor el
+  2026-11-03 y quedaron registradas en `supabase_migrations.schema_migrations`. Producción tiene registradas las
+  mismas 31 migraciones que el repositorio.
 - En GitHub fallaron dos pruebas que en local pasaban gracias al `.env`: el menú del dashboard (`navigation/links.ts`)
   importaba el barrel de `services`, que llega a `components/remates/api.ts` y al cliente de Supabase. Se importa
   `services/data` directamente.
