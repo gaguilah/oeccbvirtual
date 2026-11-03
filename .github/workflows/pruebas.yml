@@ -1,0 +1,48 @@
+# Pruebas en cada push y PR (docs/plan-pruebas.md, Fase 4). No se conecta a producción ni usa
+# secretos: la base de datos es un Supabase local que se crea y se destruye en la máquina de GitHub.
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Sitio (Vitest, lint, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # El mismo de netlify.toml (NODE_VERSION).
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+
+  base-de-datos:
+    name: Base de datos (pgTAP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      # Solo hacen falta Postgres y Auth (crea el esquema auth); los demás servicios se omiten
+      # para que arranque más rápido. start aplica supabase/migrations y luego supabase/seed.sql.
+      - name: Supabase local
+        run: supabase start -x studio,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor,realtime,storage-api,postgres-meta
+      - name: Pruebas pgTAP
+        run: supabase test db

@@ -85,4 +85,34 @@ describe('migraciones de Supabase', () => {
     )
     expect(cleanup).toMatch(/alter function public\.handle_new_user\(\) set search_path = '';/)
   })
+
+  it('las funciones que ajusta la limpieza se crean en una migración anterior', () => {
+    const cleanupIndex = entries.findIndex(([path]) => path.endsWith('20261103120000_security_cleanup.sql'))
+    const before = entries.slice(0, cleanupIndex).map(([, sql]) => sql)
+    const functions = [...entries[cleanupIndex][1].matchAll(/function public\.([a-z_]+)\(\)/g)].map((m) => m[1])
+    expect(functions).toContain('handle_new_user')
+    for (const name of new Set(functions)) {
+      const created = new RegExp(`create\\s+(?:or\\s+replace\\s+)?function\\s+public\\.${name}\\(`, 'i')
+      expect(
+        before.some((sql) => created.test(sql)),
+        name,
+      ).toBe(true)
+    }
+  })
+})
+
+// Base local de las pruebas pgTAP (docs/plan-pruebas.md, Fase 4): igual a producción.
+const config = import.meta.glob<string>('/supabase/config.toml', { query: '?raw', import: 'default', eager: true })[
+  '/supabase/config.toml'
+]
+
+describe('Supabase local para pgTAP', () => {
+  it('no expone tablas nuevas sin GRANT, como producción desde el 2026-11-03', () => {
+    expect(config).toMatch(/^auto_expose_new_tables = false$/m)
+  })
+
+  it('el primer superadmin no hace fallar una base nueva', () => {
+    const roles = entries.find(([path]) => path.endsWith('20261005150000_roles_permissions.sql'))?.[1]
+    expect(roles).not.toMatch(/raise exception 'No existe en auth\.users/)
+  })
 })

@@ -1,4 +1,4 @@
-# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2 y 3)
+# Plan: pruebas unitarias por sección, parte pública y parte privada (hecho: Fases 0, 1, 2 y 3; Fase 4 propuesta)
 
 Hoy hay 7 archivos de prueba (45 pruebas, Vitest) frente a unos 336 archivos de código en `src/`: solo
 cubren el carrusel y los datos de Servicios del inicio, las reglas de Mi perfil y una regla de Usuarios. No
@@ -189,13 +189,110 @@ Para agregar un servicio externo (script, API, fuente, marco) hay que sumar su d
 navegador lo bloquea. Las variables `VITE_*` de Netlify no son secretas (van en el JavaScript público): no
 marcarlas como secretas, o el escáner de secretos detiene el build al ver la URL de Supabase en la política.
 
+## Fase 4 · Base de datos con pgTAP en GitHub Actions (propuesta, 2026-11-03)
+
+Rama `seguridad-supabase`, la misma de `docs/plan-seguridad-supabase.md`, para que un solo PR lleve todo a
+producción. Prueba lo que protege los datos de verdad: RLS, grants, triggers y funciones SQL. No prueba las
+Edge Functions, los correos, el captcha ni la interfaz.
+
+### Dónde corre
+
+En el equipo no hay Docker, así que las pruebas corren en **GitHub Actions**. En cada push y PR, el flujo
+`.github/workflows/db-tests.yml` hace esto en una máquina temporal:
+
+1. Instala el CLI de Supabase.
+2. Levanta un Supabase local vacío con `supabase start`.
+3. Aplica todas las migraciones desde cero y después `supabase/seed.sql`.
+4. Corre `supabase test db`.
+
+Nunca se conecta a producción, no usa secretos y no gasta créditos de Netlify. El resultado es una ✓ o una
+✗ en el commit y en el PR. Si algún día se instala Docker, se corre lo mismo en local.
+
+### Cambios previos (primer commit)
+
+- **Migración del primer superadmin.** `20261005150000_roles_permissions.sql` falla si no existe en Auth la
+  cuenta del propietario, y en una base nueva no existe. Se cambia `raise exception` por `raise notice` y se
+  omite la asignación. En producción no cambia nada, porque ya está aplicada y registrada. Así las migraciones
+  vuelven a recrear la base desde cero.
+- **`supabase/config.toml`.** `auto_expose_new_tables = false`, igual que producción desde el 2026-11-03. Sin
+  esto, la base local daría permisos que producción no da, y las pruebas de grants mentirían.
+- **`supabase/seed.sql`.** Solo crea ayudas para las pruebas, en un esquema `tests`:
+  - crear usuarios de prueba en `auth.users` con su perfil, rol y juzgado;
+  - "entrar como" un usuario (rol `authenticated` + `request.jwt.claims`) o como anónimo.
+
+  `seed.sql` no llega a producción: solo lo cargan `supabase start` y `db reset` en local.
+- **El flujo de GitHub Actions** y una primera prueba mínima (que las migraciones cargan y pgTAP responde),
+  para comprobar el entorno antes de escribir las demás.
+
+**Estado (2026-11-03): primer commit hecho en local, falta el push para verlo correr.** Se agregaron:
+- `.github/workflows/pruebas.yml`, con dos trabajos: "Sitio" corre Vitest, lint, Prettier y build, y "Base
+  de datos" corre `supabase start` + `supabase test db`;
+- `supabase/seed.sql` y `supabase/tests/00_entorno.sql`;
+- las pruebas de `config.toml` y de las migraciones en `src/lib/migrations.test.ts`.
+
+Hallazgos al preparar:
+- `handle_new_user` y su trigger `on_auth_user_created` (sobre `auth.users`) existían solo en producción, creados
+  a mano. En una base nueva, `20261103120000_security_cleanup.sql` fallaba porque la función no existía. La
+  migración `20261005120500_handle_new_user.sql` los copia tal como están en producción, así que aplicarla allí
+  no cambia nada.
+- **Posible error en producción:** `handle_new_user` guarda como nombre la parte del correo antes de @, y
+  `profiles_full_name_format` solo admite letras. Al crear en Usuarios una cuenta con un correo como
+  `juan.perez@…`, `j01…@…` o `ana_m@…`, el insert del perfil falla y Auth responde "Database error creating new
+  user". Los 19 usuarios actuales tienen correos de solo letras, lo que es consistente con el error.
+  Corrección propuesta: el trigger crea el perfil sin nombre, porque `manage-users` lo guarda enseguida. Está
+  pendiente de confirmar.
+
+### Pruebas (`supabase/tests/`, un archivo y un commit por sección)
+
+Cada archivo abre una transacción, crea sus propios datos y la deshace al final, así que no depende de los
+demás. Los usuarios de prueba son: anónimo, sin rol, juzgado 1, juzgado 2, oficina, director de oficina y
+superadmin.
+
+| Archivo | Qué comprueba |
+|---|---|
+| `01_grants.sql` | Lo que cerró la Fase 1 de seguridad: ninguna tabla da TRUNCATE, REFERENCES, TRIGGER ni MAINTAIN a `anon` / `authenticated`; las tablas de respuestas de encuesta, `email_log`, `request_counters` y `hearing_notifications` no dan nada a esos roles; toda tabla de `public` tiene RLS; toda función `security definer` tiene `search_path` fijo; `submit_survey_response` solo la ejecuta `service_role`; las funciones de triggers no se ejecutan por la API |
+| `02_acceso.sql` | `has_permission` por rol y juzgado (superadmin todo, juzgado solo el suyo, sin rol o inactivo nada); `get_my_access`; un usuario no cambia su rol, juzgado, `active` ni `must_change_password`; solo edita su `full_name` y su cargo; no se borra el último superadmin activo ni se tocan los roles de sistema; `complete_password_change` exige cargo |
+| `03_remates.sql` | El público solo lee avisos publicados; juzgado 1 no ve ni edita los del juzgado 2; `auction_notices_authorize`: cambiar datos pide `editar`, publicar pide `publicar`, sin `publicar` el aviso nace oculto; la URL del PDF que arma el trigger; `created_at` no cambia |
+| `04_audiencias.sql` | La tabla `hearings` está cerrada al público y `list_public_hearings` nunca devuelve `notes`; `hearings_rules`: nace Programada, en el futuro, en día hábil, de 7:00 a 17:00 en pasos de 15 minutos; Realizada desde 1 hora después y con grabación; Cancelada desde la hora; qué se puede borrar; "cargado al expediente" y autor de la grabación (servidor, no navegador); permisos por juzgado; aviso con audiencia (`create_auction_notice_with_hearing` y el movimiento al editar el aviso) |
+| `05_pqrs.sql` | Anónimo no lee ni escribe `customer_requests`; `pqrs.ver` lee y sin él no; `set_request_status` (cerrar pide motivo, una respondida no cambia); número `PQRS-<año>-<6 dígitos>`; `pqrs_due_date` y `business_days_left` con fines de semana y días no hábiles |
+| `06_encuestas.sql` | El público lee solo la encuesta activa y sus preguntas; `submit_survey_response` (activa, preguntas suyas, tipo y rango, sin duplicados, obligatorias) con sus errores; una sola activa; `save_survey` y el guardia de preguntas con respuestas; no se borra una con respuestas o activa; `survey_stats` pide `encuestas.ver` |
+| `07_calendario.sql` | Solo lunes a viernes en `non_business_days`; `calendario.gestionar` escribe y los demás no; `is_business_day` y `business_days_between` |
+| `08_perfil.sql` | `profile_personal_info`: cada uno lee y escribe solo su fila y no la borra; las reglas de formato (las mismas de `personalSchema.ts`); las fechas por pestaña del trigger; `get_user_personal_info` pide `usuarios.datos_personales` y respeta el juzgado; `list_users` pide `usuarios.ver` |
+
+Cuando una prueba repite una regla del front (horario, formatos, plazo), lleva un comentario con el archivo
+`.ts` para recordar que se cambian juntas, como en las fases anteriores.
+
+### Comparar con producción (al final)
+
+Las pruebas corren sobre la base que arman las migraciones. Para saber que esa base es igual a producción,
+se comparan con consultas de solo lectura en los dos lados:
+- las políticas RLS (tabla, comando y roles);
+- los grants de tablas y columnas;
+- las funciones (si son `security definer`, su `search_path` y quién las ejecuta);
+- los triggers.
+
+Si algo se creó en producción a mano y no está en una migración, se agrega una migración, que se aplica como
+siempre y no cambia nada en producción. Las diferencias encontradas quedan anotadas en este plan.
+
+### Al terminar
+
+- CLAUDE.md ("Commands"): cómo se corren las pruebas de base de datos y la regla de que cada migración que
+  cambia RLS, grants o un trigger trae o ajusta su prueba en `supabase/tests/`.
+- `docs/modulos/`: qué queda cubierto en cada sección.
+- El estado de esta fase en este plan, con los hallazgos.
+
+### Para confirmar antes de empezar
+
+1. **Push de la rama.** Para que GitHub corra las pruebas, hay que subir la rama `seguridad-supabase`, sin
+   abrir PR. Antes hay que revisar en Netlify (Site configuration → Build & deploy → Branches and deploy
+   contexts) que **Branch deploys** esté en "Deploy only the production branch". Si está en "All", el push
+   intenta un build y gasta créditos.
+2. **Pruebas del front en el mismo flujo.** Opcional: el mismo flujo también puede correr `npm test`,
+   `npm run lint` y `npm run build`, en un trabajo aparte y sin variables de Supabase.
+
 ## Fases futuras (fuera de este plan)
 
 - **Componentes:** Testing Library con jsdom para formularios (PQRS, encuesta, Mi perfil), `Tabs`,
   `ActionMenu` y `ConfirmDialog`.
-- **Base de datos:** pgTAP con `supabase test db` para RLS, triggers (`hearings_rules`,
-  `auction_notices_authorize`, `profile_personal_info_section_dates`, …) y funciones (`has_permission`,
-  `pqrs_due_date`, `submit_survey_response`). Es lo más valioso para la seguridad, pero necesita Supabase
-  local con Docker.
 - **De punta a punta:** Playwright para los recorridos públicos (PQRS y encuesta con la clave de prueba de
   Turnstile) y el ingreso al dashboard.
