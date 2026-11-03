@@ -19,6 +19,13 @@ registra su información personal y su contacto de emergencia.
 - Sin registro público: la cuenta y la contraseña temporal las da el administrador en Usuarios (ver
   [usuarios-roles-permisos.md](usuarios-roles-permisos.md)).
 - `ProtectedRoute` lleva a `/login` con `state.from` y, tras ingresar, vuelve a esa ruta del dashboard.
+- **Captcha de Auth** (`docs/plan-seguridad-supabase.md`, Fase 3): `/login` y Mi perfil → Contraseña muestran
+  Turnstile (`CaptchaField`) y envían el token en `signInWithPassword({ …, options: { captchaToken } })`;
+  el token se reinicia tras cada intento. Auth lo verifica solo cuando el captcha está activado en el panel
+  (Authentication → Attack Protection, Turnstile con la misma clave secreta de las Edge Functions). Si el
+  widget no carga (vistas previas de Netlify, error 110200), se deja intentar sin token y Auth decide.
+  Errores de inicio de sesión en español en `components/account/loginErrors.ts`. Crear contraseña nueva
+  (`verifyOtp`) no pasa por el captcha.
 - Primer ingreso (`must_change_password`): todas las rutas salvo la Ayuda llevan a Mi perfil con el menú deshabilitado
   hasta que el usuario **guarde un cargo** (pestaña Cuenta; al guardar pasa sola a Contraseña) y **cambie la
   contraseña**. `complete_password_change()` rechaza con `position_required` si no hay cargo. Información
@@ -30,7 +37,7 @@ registra su información personal y su contacto de emergencia.
 |---|---|---|
 | Vigencia del enlace | 1 hora, un solo uso | Panel de Auth (OTP expiry) · texto en `_shared/emails/account.ts` y en la página |
 | Límite por correo | 1 cada 5 minutos y 5 al día (por tipo de correo) | `MIN_INTERVAL_MS` / `DAILY_LIMIT` en `password-reset`, contado en `email_log` |
-| Reglas de contraseña | 8 a 72 caracteres | `src/lib/password.ts` (compartido con Mi perfil) |
+| Reglas de contraseña | 8 a 72 caracteres, con al menos una letra a-z (sin tilde) y un número | `src/lib/password.ts` (compartido con Mi perfil) · Supabase Auth (Policies: mínimo 8, "Letters and digits") |
 
 1. `/login` → "¿Olvidó su contraseña?" → `/recuperar-contrasena`: correo + Turnstile → Edge Function
    `password-reset` (`--no-verify-jwt`), acción `request`. Respuesta **siempre igual** (no revela
@@ -70,7 +77,7 @@ lista de EPS se piden la primera vez que se abre Información personal o Contact
 | Nombre | Letras (con tildes), separados por un espacio, guion, apóstrofo o ". "; 3 a 120 caracteres | `profile/schema.ts` · restricción `profiles_full_name_format` |
 | Cargo | De la lista `job_positions` (se administra en el SQL Editor) | `profiles.position_id` |
 | Correo | Solo lectura | Auth |
-| Contraseña | 8 a 72 caracteres, distinta de la actual; pide la actual y la verifica con `signInWithPassword` | `src/lib/password.ts` (reglas y errores de Auth en español) · `profile/schema.ts` · `profile/api.ts` |
+| Contraseña | 8 a 72 caracteres, con al menos una letra a-z (sin tilde) y un número, distinta de la actual; pide la actual y la verifica con `signInWithPassword` (con el captcha de Auth) | `src/lib/password.ts` (reglas y errores de Auth en español) · `profile/schema.ts` · `profile/api.ts` |
 
 - El usuario solo puede actualizar `full_name` y `position_id` de su propia fila (grant por columna +
   política de fila propia). Nunca `grant update on profiles` completo.

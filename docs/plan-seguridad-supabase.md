@@ -112,6 +112,32 @@ Las claves antiguas (`anon`, `service_role`) se retiran a inicios de 2027. Las 6
 
 ## Fase 3 · Contraseñas y captcha del login
 
+**Avance (2026-11-03): código hecho en la rama, sin desplegar.** No hay PR todavía: Netlify no tiene
+créditos de build. Hecho:
+
+- `src/lib/password.ts`: letra a-z y número obligatorios, `PASSWORD_HINT` (Mi perfil y Crear contraseña
+  nueva) y `captcha_failed` en español; pruebas en `password.test.ts`.
+- `pages/Login.tsx` y `dashboard/profile/PasswordForm.tsx`: Turnstile (`CaptchaField`) y
+  `options.captchaToken`, con el widget reiniciado tras cada intento. **Cambio respecto al plan:** si el
+  widget no carga, se deja intentar sin token y Auth decide. Así las vistas previas (error 110200)
+  siguen pudiendo iniciar sesión mientras el captcha de Auth esté apagado.
+- `components/account/loginErrors.ts` (+ prueba): errores de inicio de sesión en español, que antes
+  salían en inglés (`error.message`).
+- Documentación: CLAUDE.md, `docs/modulos/mi-perfil.md`, Ayuda (`ayuda/data.ts`, con las cifras de
+  `PASSWORD_MIN` / `PASSWORD_MAX`) y `docs/guia-despliegue.md`.
+
+**Pendiente, en este orden. No activar nada en el panel antes de que el sitio esté desplegado:**
+
+1. Desplegar el sitio (PR de la rama `seguridad-supabase` cuando Netlify tenga créditos).
+2. En Supabase → Authentication, poner la política de contraseñas: mínimo 8 y "Letters and digits".
+3. En Supabase → Authentication → Attack Protection, activar el captcha con Turnstile y la misma clave
+   secreta de Turnstile.
+4. Probar en producción: iniciar sesión, cambiar la contraseña en Mi perfil y recuperar la contraseña.
+   Si falla, desactivar el captcha en ese mismo panel.
+
+Si el captcha se activa antes de desplegar, nadie puede iniciar sesión: el sitio publicado no envía el
+token.
+
 **Contraseñas (letras y números):**
 
 1. **App:** `newPasswordField` (`src/lib/password.ts`) exige además al menos una letra **sin tilde (a-z,

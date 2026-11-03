@@ -48,9 +48,19 @@ function passwordError(code: string | undefined): Error {
 
 // Cambia la contraseña del usuario en sesión (Supabase Auth). Primero comprueba la actual
 // iniciando sesión con ella (renueva la sesión del mismo usuario): así una sesión abierta y
-// olvidada no basta para cambiarla desde esta página.
-export async function changePassword(email: string, currentPassword: string, newPassword: string): Promise<void> {
-  const check = await supabase.auth.signInWithPassword({ email, password: currentPassword })
+// olvidada no basta para cambiarla desde esta página. Ese inicio de sesión pasa por el captcha de Auth
+// (docs/plan-seguridad-supabase.md, Fase 3): sin token, Auth lo rechaza cuando el captcha está activado.
+export async function changePassword(
+  email: string,
+  currentPassword: string,
+  newPassword: string,
+  captchaToken: string | null,
+): Promise<void> {
+  const check = await supabase.auth.signInWithPassword({
+    email,
+    password: currentPassword,
+    options: captchaToken ? { captchaToken } : undefined,
+  })
   if (check.error) throw passwordError(check.error.code)
 
   const { error } = await supabase.auth.updateUser({ password: newPassword })

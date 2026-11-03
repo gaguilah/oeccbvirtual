@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { RECOVER_PATH, RESET_PATH, saveNewPassword, verifyRecoveryLink } from '../components/account'
 import { Container } from '../components/layout'
 import { Alert, Button, ButtonLink, Card, CardBody, Input } from '../components/ui'
-import { newPasswordSchema, PASSWORD_MIN } from '../lib/password'
+import { newPasswordSchema, PASSWORD_HINT } from '../lib/password'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 type Step = 'verifying' | 'invalid' | 'form' | 'done'
@@ -84,7 +84,7 @@ export default function RestablecerContrasena() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
-                hint={`Al menos ${PASSWORD_MIN} caracteres.`}
+                hint={PASSWORD_HINT}
                 error={fieldErrors.password}
               />
               <Input
