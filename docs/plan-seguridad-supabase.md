@@ -68,7 +68,7 @@ cada `create table public.<tabla>`, la misma migración debe tener `enable row l
 una lista de excepciones explícita, cubierta por esta migración. Una tabla nueva sin RLS o sin `revoke`
 hace fallar `npm test`.
 
-## Fase 2 · Edge Functions con las claves nuevas
+## Fase 2 · Edge Functions con las claves nuevas (hecha el 2026-11-03)
 
 **Avance (2026-11-03):** las 6 funciones se desplegaron con el conector de Supabase, una a una, con las
 mismas banderas de `verify_jwt`, y se probaron en producción:
@@ -82,7 +82,11 @@ mismas banderas de `verify_jwt`, y se probaron en producción:
 | `respond-request` | 13 | Respuesta a una PQRS; llega el correo |
 | `manage-users` | 16 | Edición de nombre y restablecimiento de contraseña; el usuario cambió la temporal en Mi perfil |
 
-Falta el punto 6: desactivar las claves antiguas y repetir las pruebas.
+**Claves antiguas desactivadas el 2026-11-03** (Settings → API Keys → "Disable JWT-based API keys";
+Netlify ya usaba `sb_publishable_`). Después se repitieron las pruebas: Avisos de Remate, Audiencias,
+encuesta, responder PQRS y modificar usuarios funcionaron, y el cron de audiencias de las 17:45 UTC respondió
+200 sin correos fallidos. `verify_jwt` sigue activado en `manage-users` y `respond-request` sin problemas.
+**Fase 2 terminada.**
 
 Las claves antiguas (`anon`, `service_role`) se retiran a inicios de 2027. Las 6 funciones leen
 `SUPABASE_SERVICE_ROLE_KEY` y dos de ellas (`manage-users`, `respond-request`) también `SUPABASE_ANON_KEY`.
