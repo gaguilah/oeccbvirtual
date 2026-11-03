@@ -8,13 +8,14 @@
 // Secrets requeridos (supabase secrets set ...):
 //   TURNSTILE_SECRET_KEY  clave secreta de Turnstile (nunca en el frontend)
 //   ALLOWED_ORIGINS       opcional, orígenes permitidos separados por coma
-// SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY los inyecta Supabase automáticamente.
+// SUPABASE_URL y SUPABASE_SECRET_KEYS los inyecta Supabase automáticamente (_shared/keys.ts).
 //
 // Cuerpo esperado: { surveyId, answers: [{ questionId, value }], captchaToken }
 //   yes_no → value boolean · scale → value entero
 // Respuestas de error: { error: string } (el frontend muestra el mensaje tal cual).
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { secretKey } from '../_shared/keys.ts'
 import { z } from 'npm:zod@4'
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
@@ -101,7 +102,7 @@ Deno.serve(async (req) => {
     }
 
     // 2. Registro atómico con service_role (única identidad con permiso EXECUTE sobre la función).
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, secretKey(), {
       auth: { persistSession: false },
     })
     const { error } = await supabase.rpc('submit_survey_response', {

@@ -104,6 +104,12 @@ supabase secrets set TURNSTILE_SECRET_KEY=<secret-key-de-turnstile>
 
 (`RESEND_API_KEY` y `EMAIL_FROM` se agregan en el paso 9.)
 
+Las claves de Supabase no se configuran: Supabase inyecta `SUPABASE_URL`, `SUPABASE_SECRET_KEYS` y
+`SUPABASE_PUBLISHABLE_KEYS`, y las funciones usan la clave `default` de cada una
+(`supabase/functions/_shared/keys.ts`). Comprobar en **Settings → API Keys** que existan una clave
+publicable y una secreta llamadas `default` (si aparece **Create new API keys**, crearlas). Las claves
+antiguas (`anon`, `service_role`) no se usan y pueden quedar desactivadas.
+
 Desplegar las funciones:
 
 ```bash

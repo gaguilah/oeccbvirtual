@@ -12,6 +12,7 @@
 // Secretos: RESEND_API_KEY, EMAIL_FROM, HEARINGS_CRON_SECRET y, en pruebas,
 // HEARINGS_EMAIL_TEST_TO (todos los correos van solo ahí, con "[Prueba]" en el asunto).
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { secretKey } from '../_shared/keys.ts'
 import { sendAndLog, type Email } from '../_shared/email.ts'
 import {
   COURT_NAMES,
@@ -312,8 +313,8 @@ Deno.serve(async (req) => {
   const secret = Deno.env.get('HEARINGS_CRON_SECRET')
   if (!secret || req.headers.get('x-cron-secret') !== secret) return json({ error: 'forbidden' }, 403)
 
-  const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   try {
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey())
     const body = await req.json().catch(() => ({}))
     if (body.job === 'weekly') return json(await weekly(admin, body.force === true, body.date))
     if (body.job === 'tick') return json({ changes: await changes(admin), reminders: await reminders(admin) })

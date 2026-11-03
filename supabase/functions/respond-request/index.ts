@@ -8,6 +8,7 @@
 // Exige pqrs.responder con has_permission evaluado con el JWT de quien llama. Si el correo falla,
 // la respuesta queda guardada y se informa (emailSent: false) para ofrecer "Reenviar".
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { publishableKey, secretKey } from '../_shared/keys.ts'
 import { sendAndLog } from '../_shared/email.ts'
 import { requestResponseEmail } from '../_shared/emails/pqrs.ts'
 
@@ -75,14 +76,12 @@ Deno.serve(async (req) => {
     if (!authorization) throw new HttpError(401, 'Inicie sesión de nuevo.')
 
     const url = Deno.env.get('SUPABASE_URL')!
-    const publicKey = Deno.env.get('SUPABASE_ANON_KEY') ?? req.headers.get('apikey')
-    if (!publicKey) throw new HttpError(401, 'Inicie sesión de nuevo.')
     // Cliente con el JWT de quien llama: has_permission se evalúa como ese usuario.
-    const asCaller = createClient(url, publicKey, {
+    const asCaller = createClient(url, publishableKey(), {
       global: { headers: { Authorization: authorization } },
       auth: { persistSession: false },
     })
-    const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } })
+    const admin = createClient(url, secretKey(), { auth: { persistSession: false } })
 
     const { data: userData, error: userError } = await asCaller.auth.getUser()
     if (userError || !userData.user) throw new HttpError(401, 'Su sesión expiró. Inicie sesión de nuevo.')
