@@ -1,7 +1,8 @@
-import { formatYearMonth, periodLabel } from './period'
+import { formatYearMonth, periodLabel } from '../period/period'
+import type { Period } from '../period/types'
 import { formatAverage, formatPercent, type QuestionResult } from './results'
 import { questionTypeLabel } from './data'
-import type { Period, SurveyDetail } from './types'
+import type { SurveyDetail } from './types'
 
 // CSV para Excel en español: separador ";", BOM para que reconozca UTF-8 (tildes) y saltos CRLF.
 const SEPARATOR = ';'

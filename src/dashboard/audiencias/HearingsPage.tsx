@@ -8,7 +8,7 @@ import { ConfirmDialog, Icon, icons, stickyFilters } from '../ui'
 import type { HearingAction } from './actions'
 import { deleteHearing, setHearingFiled, updateHearing } from './api'
 import { downloadHearingFormat } from './formato'
-import { HEARING_TYPES_PATH, PAGE_SIZE, TABS, typeName, VIEWS } from './data'
+import { HEARING_STATS_PATH, HEARING_TYPES_PATH, PAGE_SIZE, TABS, typeName, VIEWS } from './data'
 import HearingDetailModal from './HearingDetailModal'
 import HearingFormModal from './HearingFormModal'
 import HearingsCalendar from './HearingsCalendar'
@@ -233,6 +233,10 @@ export default function HearingsPage() {
               ))}
             </div>
             <div className="flex flex-wrap gap-2">
+              <ButtonLink to={HEARING_STATS_PATH} variant="secondary">
+                <Icon paths={icons.chartBar} className="size-4" />
+                Ver estadísticas
+              </ButtonLink>
               {can('audiencias.tipos') && (
                 <ButtonLink to={HEARING_TYPES_PATH} variant="secondary">
                   <Icon paths={tagIcon} className="size-4" />

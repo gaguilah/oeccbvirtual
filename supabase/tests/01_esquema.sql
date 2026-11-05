@@ -159,7 +159,7 @@ select set_eq(
     select f || ' authenticated' from unnest(array[
       'auction_notice_audit', 'business_days_between', 'business_days_left', 'complete_password_change',
       'create_auction_notice_with_hearing', 'due_date', 'get_my_access', 'get_user_personal_info', 'has_permission',
-      'hearing_audit', 'hearing_non_business_days', 'hearing_schedule_error', 'is_business_day',
+      'hearing_audit', 'hearing_non_business_days', 'hearing_schedule_error', 'hearing_stats', 'is_business_day',
       'link_hearing_to_notice', 'list_public_hearings', 'list_roles', 'list_surveys', 'list_users', 'pqrs_due_date',
       'pqrs_summary', 'request_audit', 'request_emails', 'save_role', 'save_survey', 'set_active_survey',
       'set_request_status', 'survey_has_responses', 'survey_stats', 'survey_summary'

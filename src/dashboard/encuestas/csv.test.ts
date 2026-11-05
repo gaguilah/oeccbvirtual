@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buildCsv, csvFileName } from './csv'
 import { questionResult } from './results'
 import { scaleQuestion, testSurvey, yesNoQuestion } from './testSurvey'
-import type { Period, SurveyStats } from './types'
+import type { Period } from '../period/types'
+import type { SurveyStats } from './types'
 
 const october: Period = { mode: 'mes', month: { year: 2026, month: 10 } }
 const stats: SurveyStats = {
