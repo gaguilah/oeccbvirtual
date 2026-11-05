@@ -373,8 +373,12 @@ declare
   v_role uuid;
 begin
   select id into v_user from auth.users where lower(email) = 'gaguilah@gmail.com';
+  -- En una base nueva (Supabase local, pruebas pgTAP en GitHub Actions) la cuenta no existe: solo
+  -- se avisa, para que las migraciones recreen la base desde cero. En producción ya se aplicó con
+  -- la cuenta existente (docs/plan-pruebas.md, Fase 4).
   if v_user is null then
-    raise exception 'No existe en auth.users la cuenta del primer superadmin (gaguilah@gmail.com).';
+    raise notice 'No existe en auth.users la cuenta del primer superadmin (gaguilah@gmail.com): no se asigna.';
+    return;
   end if;
 
   select id into v_role from public.roles where code = 'superadmin';

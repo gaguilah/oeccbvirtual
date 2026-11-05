@@ -11,6 +11,7 @@
 //                   usuario se identifica aquí con su token, ya que la plataforma no lo verifica.
 // Límite por correo: 1 cada 5 minutos y 5 al día, contados en email_log.
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { secretKey } from '../_shared/keys.ts'
 import { sendAndLog } from '../_shared/email.ts'
 import { passwordChangedEmail, passwordResetEmail } from '../_shared/emails/account.ts'
 import { SITE_URL } from '../_shared/office.ts'
@@ -124,7 +125,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}))
-    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey())
     if (body?.action === 'request') return await handleRequest(admin, body, req.headers.get('Origin'))
     if (body?.action === 'notify-changed') return await handleNotifyChanged(admin, req)
     return json({ error: 'Acción no válida.' }, 400)

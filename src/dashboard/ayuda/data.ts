@@ -1,4 +1,5 @@
 import { CASE_NUMBER_LENGTH, REALIZADO_DESPUES_DE_MIN } from '../../components/remates/constants'
+import { PASSWORD_MAX, PASSWORD_MIN } from '../../lib/password'
 import { CLOSE_AFTER_MINUTES, FIRST_HOUR, LAST_HOUR, timeLabel } from '../audiencias/data'
 import { MAX_RANGE_MONTHS } from '../encuestas/period'
 import { RESPONSE_MAX_CHARS } from '../pqrs/data'
@@ -38,6 +39,10 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
           {
             type: 'paragraph',
             text: 'Si olvida su contraseña, la puede recuperar usted mismo desde **Iniciar sesión** con **¿Olvidó su contraseña?** (vea las preguntas frecuentes).',
+          },
+          {
+            type: 'paragraph',
+            text: 'Al iniciar sesión, y al cambiar su contraseña en **Mi perfil**, aparece una **verificación de seguridad** que confirma que quien entra es una persona. Casi siempre se completa sola en unos segundos; si le pide marcar una casilla, márquela antes de continuar.',
           },
         ],
       },
@@ -87,7 +92,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
               ],
               [
                 '**Contraseña**',
-                'Pide la actual. La nueva debe tener al menos 8 caracteres y ser distinta de la actual.',
+                `Pide la actual. La nueva debe tener entre ${PASSWORD_MIN} y ${PASSWORD_MAX} caracteres, con al menos una letra (sin tilde ni ñ) y un número, y ser distinta de la actual.`,
               ],
             ],
           },

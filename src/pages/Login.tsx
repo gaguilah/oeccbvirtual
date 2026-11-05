@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, type Location } from 'react-router-dom'
 import { z } from 'zod'
-import { RECOVER_PATH } from '../components/account'
+import { loginErrorMessage, RECOVER_PATH } from '../components/account'
 import { supabase } from '../lib/supabase'
 import { Container } from '../components/layout'
-import { Alert, Button, Card, CardBody, Input } from '../components/ui'
+import { Alert, Button, CaptchaField, Card, CardBody, Input } from '../components/ui'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
 
 // Solo inicio de sesión: las cuentas no se crean desde la vista pública.
@@ -13,12 +14,19 @@ const credentialsSchema = z.object({
   password: z.string().min(1, 'Ingrese su contraseña'),
 })
 
+// Captcha de Supabase Auth (docs/plan-seguridad-supabase.md, Fase 3): el token va en
+// signInWithPassword y Auth lo verifica cuando el captcha está activado en el panel. Si el widget no
+// carga (p. ej. en las vistas previas de Netlify, cuyo dominio Turnstile no autoriza), se deja intentar
+// sin token: Auth decide.
 export default function Login() {
   useDocumentMeta({ title: 'Iniciar sesión' })
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaFailed, setCaptchaFailed] = useState(false)
+  const captchaRef = useRef<TurnstileInstance>(null)
   const navigate = useNavigate()
   // ProtectedRoute guarda la ruta pedida (state.from): tras iniciar sesión se vuelve a ella.
   const from = (useLocation().state as { from?: Location } | null)?.from
@@ -35,13 +43,23 @@ export default function Login() {
       setError(result.error.issues[0].message)
       return
     }
+    if (!captchaToken && !captchaFailed) {
+      setError('Complete la verificación de seguridad.')
+      return
+    }
 
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword(result.data)
+    const { error } = await supabase.auth.signInWithPassword({
+      ...result.data,
+      options: captchaToken ? { captchaToken } : undefined,
+    })
     setLoading(false)
 
     if (error) {
-      setError(error.message)
+      setError(loginErrorMessage(error.code))
+      // Los tokens de Turnstile se usan una sola vez.
+      captchaRef.current?.reset()
+      setCaptchaToken(null)
     } else {
       navigate(redirectTo, { replace: true })
     }
@@ -67,6 +85,14 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
+            />
+            <CaptchaField
+              ref={captchaRef}
+              onToken={(token) => {
+                setCaptchaToken(token)
+                if (token) setCaptchaFailed(false)
+              }}
+              onError={() => setCaptchaFailed(true)}
             />
             <Button type="submit" loading={loading} fullWidth>
               {loading ? 'Procesando...' : 'Entrar'}

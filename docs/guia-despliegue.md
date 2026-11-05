@@ -46,6 +46,12 @@ Si es un sitio nuevo (no una copia de prueba), revisar y cambiar los datos propi
 2. **Authentication → Sign In / Providers → Email:**
    - Desactivar **Allow new users to sign up** (las cuentas solo se crean desde el dashboard).
    - Activar **Secure password change**.
+   - Contraseñas: longitud mínima **8** y requisito **Letters and digits** (la misma regla de
+     `src/lib/password.ts`).
+   - Después de desplegar el sitio (necesita la clave de Turnstile, paso 4): **Authentication → Attack
+     Protection → Enable CAPTCHA protection**, proveedor **Turnstile**, con la misma **Secret Key** que
+     `TURNSTILE_SECRET_KEY`. Desde ese momento no se puede iniciar sesión desde las vistas previas de
+     Netlify (Turnstile no autoriza esos dominios).
 3. **Authentication → Users → Add user → Create new user:** crear la cuenta del **primer superadmin** (correo y contraseña), marcando *Auto Confirm User*.
 4. **Antes de aplicar las migraciones**, poner ese correo en `supabase/migrations/20261005150000_roles_permissions.sql` (busca `gaguilah@gmail.com`; aparece dos veces). La migración le asigna el rol `superadmin` y **falla si el correo no existe** en Auth.
 
@@ -103,6 +109,12 @@ supabase secrets set TURNSTILE_SECRET_KEY=<secret-key-de-turnstile>
 ```
 
 (`RESEND_API_KEY` y `EMAIL_FROM` se agregan en el paso 9.)
+
+Las claves de Supabase no se configuran: Supabase inyecta `SUPABASE_URL`, `SUPABASE_SECRET_KEYS` y
+`SUPABASE_PUBLISHABLE_KEYS`, y las funciones usan la clave `default` de cada una
+(`supabase/functions/_shared/keys.ts`). Comprobar en **Settings → API Keys** que existan una clave
+publicable y una secreta llamadas `default` (si aparece **Create new API keys**, crearlas). Las claves
+antiguas (`anon`, `service_role`) no se usan y pueden quedar desactivadas.
 
 Desplegar las funciones:
 

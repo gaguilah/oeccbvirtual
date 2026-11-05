@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { secretKey } from '../_shared/keys.ts'
 import { sendAndLog } from '../_shared/email.ts'
 import { officeNewRequestEmail, requestReceivedEmail } from '../_shared/emails/pqrs.ts'
 
@@ -60,9 +61,9 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 3. Insertar usando la service_role key (solo existe aquí, en el servidor). La base de datos
+    // 3. Insertar usando la clave secreta (solo existe aquí, en el servidor). La base de datos
     //    asigna el número de radicado (PQRS-<año>-<consecutivo>).
-    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey())
 
     const { data: saved, error } = await supabaseAdmin
       .from('customer_requests')

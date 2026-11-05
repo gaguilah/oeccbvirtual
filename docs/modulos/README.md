@@ -3,6 +3,11 @@
 Un documento vivo por sección: describe cómo funciona **hoy**. Los `docs/plan-*.md` son el historial
 de decisiones; si un plan y un módulo no coinciden, vale el módulo.
 
+Pruebas: la lógica pura de cada sección tiene pruebas Vitest junto a su archivo. La base de datos
+(RLS, grants, triggers y funciones SQL de todas estas secciones) se prueba con pgTAP en
+`supabase/tests/`, un archivo por sección (`03_remates`, `04_audiencias`, `05_pqrs`, `06_encuestas`,
+`07_calendario`, `08_perfil`; acceso y roles en `02_acceso`). Ver `docs/plan-pruebas.md`, Fase 4.
+
 | Módulo | Qué cubre |
 |---|---|
 | [audiencias.md](audiencias.md) | Programación, cierre, formato, expediente, sitio público y correos |

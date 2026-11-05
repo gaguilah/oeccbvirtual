@@ -1,6 +1,6 @@
 // Opciones del dashboard: fuente única del menú lateral, del título de la Topbar y de las tarjetas
 // de Inicio. El orden del arreglo es el orden del menú. Ver docs/plan-dashboard.md.
-import { services } from '../../components/services'
+import { services } from '../../components/services/data'
 import { icons } from '../ui/icons'
 
 export type DashboardLink = {

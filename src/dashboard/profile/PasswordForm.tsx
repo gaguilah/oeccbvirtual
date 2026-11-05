@@ -1,5 +1,7 @@
-import { useState, type FormEvent } from 'react'
-import { Alert, Button, Card, CardBody, CardFooter, CardHeader, Input } from '../../components/ui'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
+import { useRef, useState, type FormEvent } from 'react'
+import { Alert, Button, CaptchaField, Card, CardBody, CardFooter, CardHeader, Input } from '../../components/ui'
+import { PASSWORD_HINT } from '../../lib/password'
 import { changePassword } from './api'
 import { useProfile } from './profile'
 import { passwordSchema, type PasswordFields } from './schema'
@@ -9,6 +11,8 @@ const EMPTY: PasswordFields = { current: '', password: '', confirm: '' }
 // Cambio de contraseña del usuario en sesión: pide la actual, la nueva y su confirmación.
 // onChanged se llama tras un cambio exitoso (p. ej. para quitar el aviso de contraseña temporal).
 // blockedReason: el formulario queda deshabilitado con ese motivo (p. ej. falta elegir el cargo).
+// La contraseña actual se comprueba iniciando sesión, que pasa por el captcha de Auth: como en
+// Iniciar sesión, si el widget no carga se deja intentar sin token y Auth decide.
 export default function PasswordForm({
   onChanged,
   blockedReason,
@@ -21,6 +25,9 @@ export default function PasswordForm({
   const [errors, setErrors] = useState<Partial<Record<keyof PasswordFields, string>>>({})
   const [message, setMessage] = useState<{ variant: 'success' | 'error'; text: string } | null>(null)
   const [saving, setSaving] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaFailed, setCaptchaFailed] = useState(false)
+  const captchaRef = useRef<TurnstileInstance>(null)
 
   function update(field: keyof PasswordFields, value: string) {
     setFields((current) => ({ ...current, [field]: value }))
@@ -40,9 +47,13 @@ export default function PasswordForm({
       return
     }
     setErrors({})
+    if (!captchaToken && !captchaFailed) {
+      setMessage({ variant: 'error', text: 'Complete la verificación de seguridad.' })
+      return
+    }
     setSaving(true)
     try {
-      await changePassword(email, result.data.current, result.data.password)
+      await changePassword(email, result.data.current, result.data.password, captchaToken)
       setFields(EMPTY)
       setMessage({ variant: 'success', text: 'Contraseña actualizada.' })
       await onChanged?.()
@@ -53,6 +64,9 @@ export default function PasswordForm({
       })
     } finally {
       setSaving(false)
+      // Los tokens de Turnstile se usan una sola vez.
+      captchaRef.current?.reset()
+      setCaptchaToken(null)
     }
   }
 
@@ -61,7 +75,7 @@ export default function PasswordForm({
       <form onSubmit={handleSubmit} noValidate>
         <CardHeader>
           <h2 className="text-lg font-bold">Cambiar contraseña</h2>
-          <p className="mt-1 text-sm text-on-surface-variant">Mínimo 8 caracteres.</p>
+          <p className="mt-1 text-sm text-on-surface-variant">{PASSWORD_HINT}</p>
         </CardHeader>
         <CardBody className="space-y-4">
           <Input
@@ -88,6 +102,16 @@ export default function PasswordForm({
             autoComplete="new-password"
             error={errors.confirm}
           />
+          {!blockedReason && (
+            <CaptchaField
+              ref={captchaRef}
+              onToken={(token) => {
+                setCaptchaToken(token)
+                if (token) setCaptchaFailed(false)
+              }}
+              onError={() => setCaptchaFailed(true)}
+            />
+          )}
           {message && (
             <Alert variant={message.variant} onClose={() => setMessage(null)}>
               {message.text}
