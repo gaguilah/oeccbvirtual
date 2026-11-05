@@ -1,4 +1,4 @@
-# Plan: seguridad de Supabase (propuesto el 2026-11-03)
+# Plan: seguridad de Supabase (propuesto el 2026-11-03, terminado el 2026-11-05)
 
 Sale de la revisión de seguridad del 2026-11-03: avisos de seguridad de Supabase, RLS, grants y políticas
 de cada tabla, funciones `security definer`, Edge Functions, claves de API y Data API. No se encontró nada
@@ -110,7 +110,12 @@ Las claves antiguas (`anon`, `service_role`) se retiran a inicios de 2027. Las 6
    pruebas del punto 5. Si `manage-users` o `respond-request` responden "Invalid JWT", se reactivan las
    antiguas y se revisa `verify_jwt` (la otra opción de la decisión).
 
-## Fase 3 · Contraseñas y captcha del login
+## Fase 3 · Contraseñas y captcha del login (hecha el 2026-11-05)
+
+**Resultado (2026-11-05):**
+- **Despliegue:** el PR #4 (`seguridad-supabase` → `main`, con la fase 4 de `plan-pruebas.md`) se fusionó y se desplegó en producción. En la vista previa el widget aparecía en `/login` y en Mi perfil → Contraseña, con el error 110200 esperado.
+- **Panel de Supabase Auth:** quedaron puestos la política de contraseñas (mínimo 8, "Letters and digits") y el captcha Turnstile de Attack Protection, con la clave secreta del mismo widget.
+- **Pruebas en producción:** pasaron el inicio de sesión, el cambio de contraseña en Mi perfil y la recuperación de contraseña. **Fase 3 terminada.**
 
 **Avance (2026-11-03): código hecho en la rama, sin desplegar.** No hay PR todavía: Netlify no tiene
 créditos de build. Hecho:
@@ -129,7 +134,7 @@ créditos de build. Hecho:
 **Probado en local (2026-11-03):** iniciar sesión y cambiar la contraseña en Mi perfil funcionan con el
 widget de Turnstile (captcha de Auth todavía apagado).
 
-**Pendiente, en este orden. No activar nada en el panel antes de que el sitio esté desplegado:**
+**Pasos que quedaban (hechos el 2026-11-05), en este orden. No activar nada en el panel antes de que el sitio esté desplegado:**
 
 1. Desplegar el sitio (PR de la rama `seguridad-supabase` cuando Netlify tenga créditos).
 2. En Supabase → Authentication, poner la política de contraseñas: mínimo 8 y "Letters and digits".

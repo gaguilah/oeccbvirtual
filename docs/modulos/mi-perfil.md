@@ -22,7 +22,8 @@ registra su información personal y su contacto de emergencia.
 - **Captcha de Auth** (`docs/plan-seguridad-supabase.md`, Fase 3): `/login` y Mi perfil → Contraseña muestran
   Turnstile (`CaptchaField`) y envían el token en `signInWithPassword({ …, options: { captchaToken } })`;
   el token se reinicia tras cada intento. Auth lo verifica solo cuando el captcha está activado en el panel
-  (Authentication → Attack Protection, Turnstile con la misma clave secreta de las Edge Functions). Si el
+  (Authentication → Attack Protection, Turnstile con la misma clave secreta de las Edge Functions; activo en
+  producción desde el 2026-11-05, junto con la política "Letters and digits"). Si el
   widget no carga (vistas previas de Netlify, error 110200), se deja intentar sin token y Auth decide.
   Errores de inicio de sesión en español en `components/account/loginErrors.ts`. Crear contraseña nueva
   (`verifyOtp`) no pasa por el captcha.
