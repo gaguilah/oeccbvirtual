@@ -114,7 +114,8 @@ function Filters({
 }) {
   const options = typesForModality(types, filters.modality)
   return (
-    <div className={cn('grid gap-3 sm:grid-cols-2', showCourt ? 'lg:grid-cols-3' : '')}>
+    // Uno por fila en el teléfono; desde md (768 px), todos en una fila (3 con juzgado, 2 sin él).
+    <div className={cn('grid gap-3', showCourt ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
       {showCourt && (
         <Select
           label="Juzgado"
