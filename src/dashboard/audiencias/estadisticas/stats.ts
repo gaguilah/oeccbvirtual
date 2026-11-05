@@ -27,10 +27,11 @@ export const share = (part: number, total: number) => (total > 0 ? percentFormat
 export const formatValue = (value: number, total: number) => `${formatCount(value)} (${share(value, total)})`
 
 // Partes de cada barra, en este orden: las cerradas y luego las que siguen Programadas, separadas en
-// próximas (su hora no ha llegado) y por cerrar (ya llegó). Colores de los estados del dashboard.
+// próximas (su hora no ha llegado) y por cerrar (ya llegó). Mismos colores que las etiquetas de
+// estado del dashboard (HearingBadges): Cancelada es gris (token), no rojo, porque no es un error.
 export const STATS_SERIES: StackedSeries[] = [
   { label: 'Realizadas', className: 'bg-green-600 dark:bg-green-500' },
-  { label: 'Canceladas', className: 'bg-red-500 dark:bg-red-400' },
+  { label: 'Canceladas', className: 'bg-outline-variant' },
   { label: 'Próximas', className: 'bg-primary' },
   { label: 'Por cerrar', className: 'bg-amber-500 dark:bg-amber-400' },
 ]

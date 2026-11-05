@@ -58,7 +58,8 @@ Migración nueva `2026110xxxxxxx_hearing_stats.sql`:
   URL: hoy `serializePeriod` los reemplaza todos y borraría `juzgado` y `tipo`.
 - **Gráficos compartidos:** mover `encuestas/charts/` a `src/dashboard/charts/` y agregar
   `StackedBarChart`: barras horizontales apiladas, leyenda, colores de estado (verde Realizadas,
-  rojo Canceladas, azul/primary Programadas, los mismos de `HearingBadges`), "Ver como tabla"
+  gris `outline-variant` Canceladas, `primary` Próximas, ámbar Por cerrar: los mismos de
+  `HearingBadges`; Cancelada es gris allí porque no es un error), "Ver como tabla"
   accesible y conteo + % en el texto de cada barra, porque el color solo no basta.
 - `src/dashboard/audiencias/estadisticas/`:
   - `HearingStatsPage.tsx`: la página, con `useDocumentMeta({ title: 'Estadísticas de audiencias · Dashboard', noindex: true })`
