@@ -315,7 +315,7 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
               'Cada audiencia cuenta en el mes de su **fecha programada**, no en el de su creación.',
               `Filtros: juzgado, modalidad, tipo y periodo (un mes, un rango de hasta ${MAX_RANGE_MONTHS} meses o un año). Por defecto se ve el mes actual.`,
               'Las tarjetas muestran el total y, para Realizadas, Canceladas y Programadas, cuántas son y su porcentaje del total. Programadas son las que siguen en ese estado; "por cerrar" son las que ya pasaron su hora y nadie ha cerrado.',
-              'La **modalidad** sale del tipo de audiencia: los tipos que requieren enlace son virtuales (Microsoft Teams) y los demás, presenciales. Si a un tipo se le cambia esa marca, sus audiencias anteriores también cambian de modalidad en las estadísticas.',
+              'La **modalidad** sale del tipo de audiencia: en **Tipos de audiencia**, los que requieren enlace de conexión aparecen como Virtual (Microsoft Teams) y los demás, como Presencial. Si a un tipo se le cambia esa marca, sus audiencias, incluidas las anteriores, también cambian de modalidad en el sitio público y en las estadísticas.',
               'El gráfico "Por tipo de audiencia" tiene **Ver como tabla** para leer los números exactos.',
             ],
           },

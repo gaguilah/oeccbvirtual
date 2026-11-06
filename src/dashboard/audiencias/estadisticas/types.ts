@@ -1,7 +1,5 @@
+import type { Modality } from '../../../components/audiencias/modality'
 import type { Court } from '../types'
-
-// Modalidad según el tipo de la audiencia (hearing_types.requires_link): virtual = requiere enlace.
-export type Modality = 'virtual' | 'presencial'
 
 export type StatsFilters = { court: Court | null; type: number | null; modality: Modality | null }
 

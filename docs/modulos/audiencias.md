@@ -134,7 +134,7 @@ juzgado (no hay permiso propio).
 | Programadas | Las que siguen en estado Programada; los tres estados suman el total | `hearing_stats()` · `estadisticas/stats.ts` |
 | Por cerrar | De las Programadas, las que ya llegaron a su hora (`scheduled_at <= now()`, servidor) | `hearing_stats()` |
 | Porcentajes | Del total del filtro, sin decimales; con total 0 se ve "—" | `estadisticas/stats.ts` |
-| Modalidad | Del tipo: `requires_link` = Virtual (Microsoft Teams), si no Presencial. No se guarda por audiencia: cambiar la marca de un tipo cambia sus audiencias pasadas | `hearing_stats(p_virtual)` · `estadisticas/filters.ts` |
+| Modalidad | Del tipo: `requires_link` = Virtual (Microsoft Teams), si no Presencial; Tipos de audiencia la muestra así y avisa del efecto en su formulario. No se guarda por audiencia: cambiar la marca de un tipo cambia sus audiencias pasadas, en el sitio público y en estadísticas | `components/audiencias/modality.ts` (regla y nombres) · `hearing_stats(p_virtual)` (la repite en SQL) |
 | Filtros | Juzgado (fijo para alcance `court`), modalidad, tipo (incluye inactivos; la lista sigue la modalidad), periodo; todos en la URL (`juzgado`, `modalidad`, `tipo`, `periodo`…) | `estadisticas/filters.ts` |
 | Gráfico | Por tipo, barras horizontales apiladas (Realizadas, Canceladas, Próximas, Por cerrar), de más a menos audiencias, con "Ver como tabla" | `src/dashboard/charts/StackedBarChart.tsx` |
 

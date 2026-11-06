@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { MODALITIES, modalityShort, type Modality } from '../../../components/audiencias/modality'
 import { COURTS, type Court } from '../../../components/remates'
 import { Alert, Button, EmptyState, Select, Spinner } from '../../../components/ui'
 import { cn } from '../../../lib/cn'
@@ -18,9 +19,9 @@ import {
 import { HEARINGS_PATH } from '../data'
 import type { HearingType } from '../types'
 import { useHearingTypes } from '../useHearingsData'
-import { changeStatsFilters, MODALITIES, parseStatsFilters, typesForModality, withStatsFilters } from './filters'
+import { changeStatsFilters, parseStatsFilters, typesForModality, withStatsFilters } from './filters'
 import { formatCount, formatValue, seriesValues, share, STATS_SERIES, totals, typeBars } from './stats'
-import type { HearingStatsRow, Modality, StatsFilters } from './types'
+import type { HearingStatsRow, StatsFilters } from './types'
 import { useHearingStats } from './useHearingStats'
 
 function Kpi({
@@ -70,9 +71,7 @@ function StatsTable({ rows, caption }: { rows: HearingStatsRow[]; caption: strin
             <tr key={row.type_id} className="odd:bg-surface-container-lowest/60">
               <th scope="row" className="py-2 pr-4 pl-2 text-left font-medium">
                 {row.description}
-                <span className="block text-xs font-normal text-on-surface-variant">
-                  {row.requires_link ? 'Virtual' : 'Presencial'}
-                </span>
+                <span className="block text-xs font-normal text-on-surface-variant">{modalityShort(row)}</span>
               </th>
               {seriesValues(row).map((value, i) => (
                 <td key={STATS_SERIES[i].label} className="py-2 pr-4 text-right tabular-nums">

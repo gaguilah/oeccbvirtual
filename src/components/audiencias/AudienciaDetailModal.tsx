@@ -1,6 +1,7 @@
 import { CaseNumberBox, COURTS, DetailHeader, DetailList, formatLongDate, formatTime } from '../remates'
 import { Badge, Button, ButtonAnchor, Modal } from '../ui'
 import { publicStatus } from './constants'
+import { modalityLabel } from './modality'
 import type { PublicHearing } from './types'
 
 const videoIcon = [
@@ -45,7 +46,7 @@ function HearingDetail({ hearing }: { hearing: PublicHearing }) {
           ['Fecha', formatLongDate(hearing.scheduled_at)],
           ['Hora', formatTime(hearing.scheduled_at)],
           ['Juzgado', COURTS[hearing.court_id].name],
-          ['Modalidad', hearing.requires_link ? 'Virtual (Microsoft Teams)' : 'Presencial'],
+          ['Modalidad', modalityLabel(hearing)],
         ]}
       >
         {hearing.status_id === 1 &&
