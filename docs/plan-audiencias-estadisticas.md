@@ -4,6 +4,7 @@
 
 Estado: **construido** (5 de noviembre de 2026), en la rama `audiencias-estadisticas`. La migración
 `20261105120000_hearing_stats.sql` se aplicó en producción (SQL Editor) y se registró el 5 de noviembre de 2026.
+Pruebas manuales hechas el 9 de noviembre de 2026.
 
 ## Objetivo
 
