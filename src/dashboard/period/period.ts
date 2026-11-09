@@ -86,18 +86,26 @@ export function periodPhrase(period: Period): string {
     : `de ${label.charAt(0).toLocaleLowerCase('es')}${label.slice(1)}`
 }
 
+// Años del filtro, del más reciente al más antiguo: de `first` a `last`, siempre con el actual.
+export function yearRange(first: number | null, last: number | null): number[] {
+  const now = currentMonth().year
+  const years: number[] = []
+  for (let year = Math.max(last ?? now, now); year >= Math.min(first ?? now, now); year--) years.push(year)
+  return years
+}
+
 // Años que se pueden consultar: desde el de creación de la encuesta hasta el actual.
 export function availableYears(createdAt: string): number[] {
   const first = Number(
     new Intl.DateTimeFormat('en-US', { timeZone: 'America/Bogota', year: 'numeric' }).format(new Date(createdAt)),
   )
-  const last = currentMonth().year
-  const years: number[] = []
-  for (let year = last; year >= Math.min(first, last); year--) years.push(year)
-  return years
+  return yearRange(first, null)
 }
 
-// /dashboard/encuestas/:id?periodo=mes&mes=2026-10
+const PERIOD_PARAMS = ['periodo', 'mes', 'desde', 'hasta', 'anio']
+
+// /dashboard/encuestas/:id y /dashboard/audiencias/estadisticas:
+//                       ?periodo=mes&mes=2026-10
 //                       ?periodo=rango&desde=2026-01&hasta=2026-06
 //                       ?periodo=anio&anio=2026
 // Por defecto: el mes actual (hora de Colombia).
@@ -130,6 +138,14 @@ export function serializePeriod(period: Period) {
     params.set('periodo', 'anio')
     params.set('anio', String(period.year))
   }
+  return params
+}
+
+// La URL con otro periodo, conservando los demás filtros de la página (juzgado, tipo…).
+export function withPeriod(current: URLSearchParams, period: Period) {
+  const params = new URLSearchParams(current)
+  for (const key of PERIOD_PARAMS) params.delete(key)
+  for (const [key, value] of serializePeriod(period)) params.set(key, value)
   return params
 }
 

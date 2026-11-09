@@ -287,6 +287,27 @@
     }
   }
 
+  /* Con un <dialog> abierto (modales, confirmaciones, menú móvil) la página de atrás no se mueve. El
+     canal de la barra de scroll queda reservado para que el contenido no salte al ocultarla, y el
+     diálogo no le pasa el gesto al fondo al llegar a su final. */
+  /* Barra de scroll con los tokens del tema. Carril transparente: se hereda a modales, menú lateral y
+     tablas, y así cada barra toma el fondo que tiene detrás. */
+  html {
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--color-outline-variant) transparent;
+  }
+
+  /* El fondo del modal no cubre el canal reservado de la barra: se pinta del mismo tono
+     (backdrop:bg-slate-950/40 de Modal, ConfirmDialog y MobileSidebar; cambiar ambos a la vez). */
+  html:has(dialog[open]) {
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color-slate-950) 40%, var(--color-surface));
+  }
+
+  dialog {
+    overscroll-behavior: contain;
+  }
+
   body {
     @apply min-h-svh bg-surface font-sans text-on-surface antialiased;
   }

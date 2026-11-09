@@ -1,5 +1,6 @@
 import { useId, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { modalityShort } from '../../components/audiencias/modality'
 import { Alert, Badge, Button, EmptyState, Input, Modal, Spinner } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
@@ -84,7 +85,9 @@ function TypeFormModal({
           <span>
             <span className="block text-sm font-semibold text-on-surface">Requiere enlace de conexión</span>
             <span className="block text-xs text-on-surface-variant">
-              Sin enlace, la audiencia no se comunica. Desmárquelo en los tipos presenciales (diligencias).
+              Define la modalidad: marcado es virtual (Microsoft Teams) y sin marcar, presencial. En los virtuales, la
+              audiencia sin enlace no se comunica. Si cambia esta marca, también cambia la modalidad de las audiencias
+              de este tipo, incluidas las anteriores, en el sitio público y en las estadísticas.
             </span>
           </span>
         </label>
@@ -154,9 +157,7 @@ export default function HearingTypesPage() {
               <div className="min-w-0 space-y-1">
                 <p className="font-semibold text-on-surface">{type.description}</p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant={type.requires_link ? 'primary' : 'neutral'}>
-                    {type.requires_link ? 'Requiere enlace' : 'Presencial'}
-                  </Badge>
+                  <Badge variant={type.requires_link ? 'primary' : 'neutral'}>{modalityShort(type)}</Badge>
                   {!type.is_active && <Badge>Inactivo</Badge>}
                 </div>
               </div>

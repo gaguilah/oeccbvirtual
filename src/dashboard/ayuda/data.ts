@@ -1,7 +1,7 @@
 import { CASE_NUMBER_LENGTH, REALIZADO_DESPUES_DE_MIN } from '../../components/remates/constants'
 import { PASSWORD_MAX, PASSWORD_MIN } from '../../lib/password'
 import { CLOSE_AFTER_MINUTES, FIRST_HOUR, LAST_HOUR, timeLabel } from '../audiencias/data'
-import { MAX_RANGE_MONTHS } from '../encuestas/period'
+import { MAX_RANGE_MONTHS } from '../period/period'
 import { RESPONSE_MAX_CHARS } from '../pqrs/data'
 import { RESPONSE_BUSINESS_DAYS } from '../pqrs/deadline'
 import type { GuideContent, GuideSlug } from './types'
@@ -296,6 +296,27 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
               'En "Elaborado por" y "Cargo" aparece quien registró la grabación, con el cargo que tenía en su perfil en ese momento. Por eso es importante tener el cargo actualizado en **Mi perfil**.',
               'Después de cargar el formato al expediente, active **Cargado al expediente** en el detalle de la audiencia. Las pendientes se ven con la etiqueta "Pendiente de cargar" y en el contador del Inicio.',
               'Si se corrige el enlace de la grabación, el formato cambia y la audiencia vuelve a "Pendiente de cargar": hay que descargarlo y cargarlo de nuevo.',
+            ],
+          },
+        ],
+      },
+      {
+        // docs/plan-audiencias-estadisticas.md; reglas en hearing_stats() y audiencias/estadisticas/.
+        id: 'estadisticas',
+        title: 'Estadísticas',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'El botón **Ver estadísticas** muestra cuántas audiencias hubo en un periodo y cómo terminaron. Lo ve todo el que puede ver audiencias, con su mismo alcance: el personal de un juzgado solo ve las de su juzgado.',
+          },
+          {
+            type: 'list',
+            items: [
+              'Cada audiencia cuenta en el mes de su **fecha programada**, no en el de su creación.',
+              `Filtros: juzgado, modalidad, tipo y periodo (un mes, un rango de hasta ${MAX_RANGE_MONTHS} meses o un año). Por defecto se ve el mes actual.`,
+              'Las tarjetas muestran el total y, para Realizadas, Canceladas y Programadas, cuántas son y su porcentaje del total. Programadas son las que siguen en ese estado; "por cerrar" son las que ya pasaron su hora y nadie ha cerrado.',
+              'La **modalidad** sale del tipo de audiencia: en **Tipos de audiencia**, los que requieren enlace de conexión aparecen como Virtual (Microsoft Teams) y los demás, como Presencial. Si a un tipo se le cambia esa marca, sus audiencias, incluidas las anteriores, también cambian de modalidad en el sitio público y en las estadísticas.',
+              'El gráfico "Por tipo de audiencia" tiene **Ver como tabla** para leer los números exactos.',
             ],
           },
         ],

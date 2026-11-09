@@ -44,11 +44,4 @@ export type SurveyStats = {
   answers: { question_id: string; value: number; count: number }[]
 }
 
-export type YearMonth = { year: number; month: number }
-
-export type Period =
-  { mode: 'mes'; month: YearMonth } | { mode: 'rango'; from: YearMonth; to: YearMonth } | { mode: 'anio'; year: number }
-
-export type PeriodMode = Period['mode']
-
 export type SurveysFlash = { message: string; highlightId: string }

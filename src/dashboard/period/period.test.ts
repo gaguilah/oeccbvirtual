@@ -11,6 +11,8 @@ import {
   periodRange,
   serializePeriod,
   switchMode,
+  withPeriod,
+  yearRange,
 } from './period'
 import type { Period } from './types'
 
@@ -104,6 +106,33 @@ describe('availableYears', () => {
     // 1 de enero de 2026 en UTC aún es 2025 en Bogotá.
     expect(availableYears('2026-01-01T03:00:00Z')).toEqual([2026, 2025])
     expect(availableYears('2027-01-01T12:00:00-05:00')).toEqual([2026])
+  })
+})
+
+describe('yearRange', () => {
+  it('de la última a la primera, siempre con el año actual', () => {
+    expect(yearRange(2024, 2027)).toEqual([2027, 2026, 2025, 2024])
+    expect(yearRange(2025, 2025)).toEqual([2026, 2025])
+    expect(yearRange(2028, 2029)).toEqual([2029, 2028, 2027, 2026])
+  })
+  it('sin datos: solo el año actual', () => {
+    expect(yearRange(null, null)).toEqual([2026])
+  })
+})
+
+describe('withPeriod', () => {
+  it('cambia el periodo y conserva los demás filtros', () => {
+    const current = new URLSearchParams('juzgado=1&periodo=rango&desde=2026-01&hasta=2026-03&tipo=4')
+    expect(withPeriod(current, { mode: 'anio', year: 2025 }).toString()).toBe('juzgado=1&tipo=4&periodo=anio&anio=2025')
+  })
+  it('volver al mes actual deja solo los demás filtros', () => {
+    const current = new URLSearchParams('periodo=anio&anio=2025&modalidad=virtual')
+    expect(withPeriod(current, { mode: 'mes', month: oct2026 }).toString()).toBe('modalidad=virtual')
+  })
+  it('no cambia la URL original', () => {
+    const current = new URLSearchParams('mes=2026-05')
+    withPeriod(current, { mode: 'anio', year: 2025 })
+    expect(current.toString()).toBe('mes=2026-05')
   })
 })
 

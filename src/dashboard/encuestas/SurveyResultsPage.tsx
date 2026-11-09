@@ -2,16 +2,22 @@ import { useParams } from 'react-router-dom'
 import { Alert, Badge, Button, ButtonLink, EmptyState, Spinner } from '../../components/ui'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
+import {
+  availableYears,
+  PeriodFilters,
+  periodError,
+  periodLabel,
+  periodPhrase,
+  periodRange,
+  usePeriodFilters,
+} from '../period'
 import { Icon, icons } from '../ui'
 import { buildCsv, csvFileName, downloadCsv } from './csv'
 import { surveyPath } from './data'
-import { availableYears, periodError, periodLabel, periodPhrase, periodRange } from './period'
-import PeriodFilters from './PeriodFilters'
 import QuestionResultCard from './QuestionResultCard'
 import { formatAverage, formatCount, formatPercent, kpis, questionResult } from './results'
 import SurveyNotFound, { BackLink } from './SurveyNotFound'
 import type { SurveyDetail } from './types'
-import { usePeriodFilters } from './usePeriodFilters'
 import { useSurveyDetail, useSurveyStats } from './useSurveyData'
 
 const downloadIcon = [

@@ -122,6 +122,29 @@ Rol juzgado: solo su juzgado (`profiles.court`). Oficina y director: los dos.
 - Eliminar el aviso elimina la audiencia si es eliminable; si no, queda con "Aviso de remate
   eliminado".
 
+## Estadísticas (`/dashboard/audiencias/estadisticas`)
+
+Botón **Ver estadísticas** en Audiencias. Permiso: el mismo `audiencias.ver`, con su alcance por
+juzgado (no hay permiso propio).
+
+| Qué | Regla | Dónde |
+|---|---|---|
+| Fecha que cuenta | `scheduled_at` en hora de Colombia, días del periodo ambos inclusive | `hearing_stats()` |
+| Periodo | Mes, rango de hasta 24 meses o año; por defecto el mes actual; en la URL | `src/dashboard/period/` (compartido con Encuestas) |
+| Programadas | Las que siguen en estado Programada; los tres estados suman el total | `hearing_stats()` · `estadisticas/stats.ts` |
+| Por cerrar | De las Programadas, las que ya llegaron a su hora (`scheduled_at <= now()`, servidor) | `hearing_stats()` |
+| Porcentajes | Del total del filtro, sin decimales; con total 0 se ve "—" | `estadisticas/stats.ts` |
+| Modalidad | Del tipo: `requires_link` = Virtual (Microsoft Teams), si no Presencial; Tipos de audiencia la muestra así y avisa del efecto en su formulario. No se guarda por audiencia: cambiar la marca de un tipo cambia sus audiencias pasadas, en el sitio público y en estadísticas | `components/audiencias/modality.ts` (regla y nombres) · `hearing_stats(p_virtual)` (la repite en SQL) |
+| Filtros | Juzgado (fijo para alcance `court`), modalidad, tipo (incluye inactivos; la lista sigue la modalidad), periodo; todos en la URL (`juzgado`, `modalidad`, `tipo`, `periodo`…) | `estadisticas/filters.ts` |
+| Gráfico | Por tipo, barras horizontales apiladas (Realizadas, Canceladas, Próximas, Por cerrar), de más a menos audiencias, con "Ver como tabla" | `src/dashboard/charts/StackedBarChart.tsx` |
+
+`hearing_stats(p_from, p_to, p_court, p_type, p_virtual)` es `security invoker`: cuenta con el RLS
+de `hearings`, así un usuario de juzgado no suma el otro aunque lo pida. Sin `audiencias.ver` da
+`forbidden`; periodo al revés, `invalid_period`. Devuelve `{ rows: [{ type_id, description,
+requires_link, total, realizadas, canceladas, programadas, por_cerrar }], first_year, last_year }`
+(años de la primera y la última audiencia visible, para la lista de años). Prueba pgTAP:
+`supabase/tests/09_audiencias_estadisticas.sql`.
+
 ## Archivos y migraciones
 
 - Público: `src/pages/Audiencias.tsx`, `src/components/audiencias/`.
@@ -129,7 +152,7 @@ Rol juzgado: solo su juzgado (`profiles.court`). Oficina y director: los dos.
 - Migraciones: `20261008150000_hearings`, `20261008170000_public_hearings`,
   `20261009120000_hearings_auction_notices`, `20261009150000_hearings_emails`,
   `20261013120000_hearing_format`, `20261014120000_hearings_filed`,
-  `20261014150000_public_hearings_cutoff`.
+  `20261014150000_public_hearings_cutoff`, `20261105120000_hearing_stats`.
 
 ## Preguntas frecuentes (desarrollo)
 
@@ -145,4 +168,5 @@ Rol juzgado: solo su juzgado (`profiles.court`). Oficina y director: los dos.
 [plan-audiencias](../plan-audiencias.md) ·
 [plan-audiencias-formato](../plan-audiencias-formato.md) ·
 [plan-audiencias-expediente](../plan-audiencias-expediente.md) ·
-[plan-audiencias-publica-tiempos](../plan-audiencias-publica-tiempos.md)
+[plan-audiencias-publica-tiempos](../plan-audiencias-publica-tiempos.md) ·
+[plan-audiencias-estadisticas](../plan-audiencias-estadisticas.md)

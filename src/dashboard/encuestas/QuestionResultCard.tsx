@@ -1,7 +1,6 @@
 import { useId, useState } from 'react'
 import { cn } from '../../lib/cn'
-import BarChart from './charts/BarChart'
-import PieChart from './charts/PieChart'
+import { BarChart, PieChart } from '../charts'
 import { questionTypeLabel } from './data'
 import { formatAverage, formatCount, formatPercent, type QuestionResult } from './results'
 

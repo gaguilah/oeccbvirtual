@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { modalityShort } from '../../components/audiencias/modality'
 import { COURTS, formatDate, formatTime } from '../../components/remates'
 import { Alert, Button, Modal, Switch } from '../../components/ui'
 import { useAccess } from '../access'
@@ -157,7 +158,7 @@ export default function HearingDetailModal({ hearing, types, now, onClose, onAct
           {hearing.connection_url ? (
             <ExternalLink href={hearing.connection_url}>Conectarse</ExternalLink>
           ) : type && !type.requires_link ? (
-            'Presencial'
+            modalityShort(type)
           ) : (
             '—'
           )}
