@@ -2,8 +2,8 @@
 
 > **Histórico.** El comportamiento actual está en [modulos/audiencias.md](modulos/audiencias.md) (sección Estadísticas). Si este plan y el módulo no coinciden, vale el módulo.
 
-Estado: **construido** (5 de noviembre de 2026), en la rama `audiencias-estadisticas`. Falta correr la
-migración `20261105120000_hearing_stats.sql` en producción (SQL Editor) y registrarla.
+Estado: **construido** (5 de noviembre de 2026), en la rama `audiencias-estadisticas`. La migración
+`20261105120000_hearing_stats.sql` se aplicó en producción (SQL Editor) y se registró el 5 de noviembre de 2026.
 
 ## Objetivo
 
