@@ -1,4 +1,6 @@
+import { ANSWER_MAX, QUESTION_MAX } from '../../components/faq/data'
 import { CASE_NUMBER_LENGTH, REALIZADO_DESPUES_DE_MIN } from '../../components/remates/constants'
+import { CONTACT_EMAIL } from '../../lib/contact'
 import { PASSWORD_MAX, PASSWORD_MIN } from '../../lib/password'
 import { CLOSE_AFTER_MINUTES, FIRST_HOUR, LAST_HOUR, timeLabel } from '../audiencias/data'
 import { MAX_RANGE_MONTHS } from '../period/period'
@@ -765,6 +767,123 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
       {
         q: 'Los resultados del mes no coinciden con lo que esperaba.',
         a: 'Revise el periodo elegido. Las fechas se cuentan en hora de Colombia.',
+      },
+    ],
+  },
+
+  'preguntas-frecuentes': {
+    summary: 'Preguntas y respuestas que se muestran en la página pública "Preguntas frecuentes".',
+    sections: [
+      {
+        id: 'para-que',
+        title: '¿Para qué sirve?',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Aquí se escriben las respuestas a las consultas más comunes de los ciudadanos (títulos, oficios, procesos, consignaciones…). La página pública se abre desde el pie de página del sitio y desde Contacto.',
+          },
+          {
+            type: 'paragraph',
+            text: 'Las preguntas se agrupan en **secciones**. En la página pública solo aparecen las preguntas **publicadas**, y una sección sin preguntas publicadas no se muestra.',
+          },
+        ],
+      },
+      {
+        id: 'quien',
+        title: 'Quién puede hacer qué',
+        blocks: [{ type: 'paragraph', text: rolesIntro }, { type: 'roles' }],
+      },
+      {
+        id: 'crear',
+        title: 'Crear o editar una pregunta',
+        blocks: [
+          {
+            type: 'steps',
+            items: [
+              'Pulse **Crear pregunta**.',
+              'Elija la sección y escriba la pregunta y la respuesta. Debajo verá la **vista previa**, igual a como la verá el ciudadano.',
+              'Pulse **Crear pregunta**. La pregunta queda **oculta**.',
+              'Cuando esté revisada, ábrala en su menú (⋮) y elija **Publicar**.',
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: `La pregunta puede tener hasta ${number(QUESTION_MAX)} caracteres y la respuesta hasta ${number(ANSWER_MAX)}.`,
+          },
+          {
+            type: 'note',
+            tone: 'warning',
+            title: 'Antes de publicar',
+            text: 'Revise con cuidado los números de cuenta, los convenios y los correos: se publican tal cual se escriben. Un número equivocado puede hacer que un ciudadano consigne en otra cuenta.',
+          },
+        ],
+      },
+      {
+        id: 'formato',
+        title: 'Dar formato a la respuesta',
+        blocks: [
+          { type: 'paragraph', text: 'La respuesta es texto sencillo con tres marcas:' },
+          {
+            type: 'table',
+            headers: ['Para', 'Escriba', 'Se ve'],
+            rows: [
+              [
+                'Negrita',
+                'dos asteriscos seguidos antes y después del texto, sin espacios',
+                'Banco Agrario en **negrita**',
+              ],
+              [
+                'Lista',
+                'cada elemento en su propia línea, empezando con un guion y un espacio: - el radicado',
+                'Una lista con viñetas',
+              ],
+              ['Párrafo nuevo', 'una línea en blanco entre los dos párrafos', 'Dos párrafos separados'],
+            ],
+          },
+          {
+            type: 'paragraph',
+            text: `No se admiten enlaces, imágenes ni otros formatos. Escriba los correos completos, por ejemplo ${CONTACT_EMAIL}.`,
+          },
+        ],
+      },
+      {
+        id: 'ordenar',
+        title: 'Ordenar, ocultar y eliminar',
+        blocks: [
+          {
+            type: 'list',
+            items: [
+              '**Subir / Bajar** (menú ⋮): cambia el orden de la pregunta dentro de su sección. Es el mismo orden de la página pública.',
+              '**Ocultar:** la quita de la página pública sin borrarla. Se puede volver a publicar.',
+              '**Eliminar:** la borra definitivamente.',
+              '**Cambiar de sección:** edite la pregunta y elija otra sección; queda al final de la nueva.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'secciones',
+        title: 'Secciones',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Con el botón **Secciones** se crean, renombran y ordenan. El orden de las secciones es el de la página pública. Una sección solo se puede eliminar si no tiene preguntas: muévalas a otra sección o elimínelas antes.',
+          },
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Publiqué una pregunta y no aparece en la página pública.',
+        a: 'Recargue la página pública. Si sigue sin aparecer, revise en el dashboard que diga **Publicada**.',
+      },
+      {
+        q: '¿Puedo enviar a un ciudadano el enlace de una sola pregunta?',
+        a: 'Sí. En el menú (⋮) de una pregunta publicada, elija **Vista previa** y luego **Ver en el sitio**: se abre la página con esa pregunta desplegada. Copie esa dirección.',
+      },
+      {
+        q: 'Renombré una sección. ¿Se dañan los enlaces que ya había enviado?',
+        a: 'No. El enlace de cada sección se crea con su primer nombre y no cambia.',
       },
     ],
   },

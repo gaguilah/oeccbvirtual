@@ -1,6 +1,7 @@
 // Contenido de la Ayuda (docs/plan-ayuda.md). Los textos aceptan **negrita** y nada más.
 
-export type GuideSlug = 'mi-perfil' | 'audiencias' | 'avisos-remates' | 'pqrs' | 'encuestas' | 'administracion'
+export type GuideSlug =
+  'mi-perfil' | 'audiencias' | 'avisos-remates' | 'pqrs' | 'encuestas' | 'preguntas-frecuentes' | 'administracion'
 
 export type GuideBlock =
   | { type: 'paragraph'; text: string }

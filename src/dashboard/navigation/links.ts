@@ -83,6 +83,15 @@ export const dashboardLinks: DashboardLink[] = [
     ready: true,
   },
   {
+    to: `${DASHBOARD_HOME}/preguntas-frecuentes`,
+    permission: 'preguntas.ver',
+    label: 'Preguntas frecuentes',
+    description: 'Preguntas y respuestas de la página pública, por secciones.',
+    icon: icons.chat,
+    group: 'main',
+    ready: true,
+  },
+  {
     to: `${DASHBOARD_HOME}/usuarios`,
     permission: 'usuarios.ver',
     label: 'Usuarios',

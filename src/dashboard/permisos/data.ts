@@ -11,6 +11,7 @@ export const MODULE_LABELS: Record<string, string> = {
   pqrs: 'PQRS',
   encuestas: 'Encuestas',
   calendario: 'Calendario',
+  preguntas: 'Preguntas frecuentes',
 }
 
 export function moduleLabel(module: string): string {
