@@ -14,6 +14,10 @@ export type FaqQuestion = {
   question: string
   answer: string
   position: number
+  // Imagen de apoyo opcional (fase 2): nombre del archivo en el bucket faq-images y su texto
+  // alternativo. Las dos o ninguna (faq_questions_image_pair_chk).
+  image_path: string | null
+  image_alt: string | null
 }
 
 export type FaqGroup<Q extends FaqQuestion = FaqQuestion> = {

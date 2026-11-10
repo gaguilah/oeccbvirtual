@@ -103,6 +103,9 @@ describe('Content-Security-Policy', () => {
 
   it('permite Supabase, Turnstile y Google Fonts', () => {
     expect(directive('connect-src').some((source) => /^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(source))).toBe(true)
+    // Imágenes de Preguntas frecuentes (Storage): el mismo proyecto de Supabase, nada más.
+    const supabase = directive('connect-src').find((source) => source.endsWith('.supabase.co'))
+    expect(directive('img-src')).toEqual(["'self'", 'data:', 'blob:', supabase])
     for (const name of ['script-src', 'connect-src', 'frame-src'])
       expect(directive(name)).toContain('https://challenges.cloudflare.com')
     expect(directive('style-src')).toContain('https://fonts.googleapis.com')

@@ -37,6 +37,7 @@ Asignación vigente (migración, 2026-11-10): `preguntas.ver` y `preguntas.gesti
 | `question` | 10 a 200 caracteres, sin espacios en los extremos |
 | `answer` | 10 a 4.000 caracteres. Formato abajo |
 | `position` | Orden dentro de la sección. Al crear o cambiar de sección, queda al final |
+| `image_path`, `image_alt` | Imagen de apoyo opcional: nombre del archivo en el bucket `faq-images` (UUID + `.png`/`.jpg`/`.webp`) y texto alternativo (5 a 200). Las dos o ninguna (`faq_questions_image_pair_chk`) |
 | `is_published` | `false` al crear: el navegador siempre crea ocultas y se publica desde el menú |
 | `created_at`, `updated_at`, `created_by`, `updated_by` | Los pone el trigger `faq_questions_before_write`. Reordenar no cambia `updated_at` |
 
@@ -59,7 +60,7 @@ una línea en blanco seguida).
 
 | Quién | Lee | Escribe |
 |---|---|---|
-| `anon` | Secciones; preguntas publicadas, columnas `id, section_id, question, answer, position, is_published` | Nada |
+| `anon` | Secciones; preguntas publicadas, columnas `id, section_id, question, answer, position, is_published, image_path, image_alt` | Nada |
 | `authenticated` sin permiso | Lo mismo que el público | Nada |
 | `preguntas.ver` | Todas las preguntas, también las ocultas (más `is_published`, `created_at`, `updated_at`) | Nada |
 | `preguntas.gestionar` | Igual | Secciones (`slug`, `title` al crear; `title`, `position` al editar) y preguntas (`section_id`, `question`, `answer`, `is_published`, `position`), y borrar |
@@ -68,6 +69,22 @@ La página pública **filtra** `is_published = true` (`useFaq`): usa la sesión 
 p_up)` y `move_faq_section(p_id, p_up)` (`security invoker`, piden `preguntas.gestionar`, renumeran 1..n y
 cambian la posición con la vecina en una transacción). Ninguna Edge Function usa estas tablas, así que
 `service_role` no tiene grants.
+
+## Imágenes de apoyo (fase 2)
+
+Migración `20261110140000_faq_images`. Bucket **público** `faq-images` de Supabase Storage: hasta 2 MB,
+solo PNG, JPG y WebP (límites del bucket, repetidos en `components/faq/data.ts`). La página las lee
+por la URL pública (`faqImageUrl`: `<VITE_SUPABASE_URL>/storage/v1/object/public/faq-images/<archivo>`),
+que no pasa por RLS. En `storage.objects` hay políticas `faq_images_select|insert|delete` solo para
+`preguntas.gestionar`. El público no tiene SELECT, así que no puede listar el bucket. No hay UPDATE: cada
+archivo nuevo lleva un UUID nuevo (nunca el nombre original, que puede tener datos personales).
+
+- **Al guardar:** primero se sube el archivo y después se guarda la pregunta. Si la pregunta no se
+  guarda, se borra el archivo recién subido.
+- **Al reemplazar, quitar o eliminar:** se borra el archivo anterior después de guardar. Es un borrado
+  de "mejor esfuerzo": si falla, queda un archivo huérfano que nadie enlaza.
+- **En la página pública:** la imagen va debajo de la respuesta, con zoom (`TutorialImage`).
+- **CSP de Netlify:** `img-src` incluye el dominio de Supabase (`src/lib/netlify.test.ts`).
 
 ## Pantallas
 
@@ -94,7 +111,8 @@ publicar, la oficina confirma los números de cuenta y de convenio, el banco de 
 
 - `src/components/faq/` (formato, datos, `FaqAnswer`, `useFaq`), `src/pages/PreguntasFrecuentes.tsx`.
 - `src/dashboard/preguntas/` (`FaqAdminPage`, `QuestionFormModal`, `SectionsPage`, `api.ts`, `schema.ts`).
-- Migraciones `20261110120000_faq` y `20261110130000_faq_public_filter`. Pruebas pgTAP en `supabase/tests/10_preguntas.sql`.
+- Migraciones `20261110120000_faq`, `20261110130000_faq_public_filter` y `20261110140000_faq_images`.
+  Pruebas pgTAP en `supabase/tests/11_preguntas_imagenes.sql` (imágenes). Pruebas pgTAP en `supabase/tests/10_preguntas.sql`.
 - Guía para el personal: Ayuda → Preguntas frecuentes (`src/dashboard/ayuda/data.ts`).
 
 ## Preguntas frecuentes (desarrollo)
@@ -105,7 +123,10 @@ publicar, la oficina confirma los números de cuenta y de convenio, el banco de 
   en la consulta: la RLS del dashboard se suma a la pública cuando hay sesión.
 - **Una pregunta publicada no aparece.** Su sección también debe existir; recargar la página. Revisar
   `is_published` en el dashboard.
-- **Imágenes.** Todavía no: es la fase 2 del plan (Supabase Storage y CSP).
+- **La imagen no se ve en producción.** Revisar la consola: si dice Content-Security-Policy, falta el
+  dominio de Supabase en `img-src` (`netlify.toml`).
+- **"No se pudo subir la imagen".** Tipo o tamaño fuera de los límites del bucket, o el usuario no tiene
+  `preguntas.gestionar`.
 
 ## Historial
 

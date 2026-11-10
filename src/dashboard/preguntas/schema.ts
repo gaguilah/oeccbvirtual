@@ -2,6 +2,8 @@ import { z } from 'zod'
 import {
   ANSWER_MAX,
   ANSWER_MIN,
+  IMAGE_ALT_MAX,
+  IMAGE_ALT_MIN,
   QUESTION_MAX,
   QUESTION_MIN,
   SECTION_TITLE_MAX,
@@ -60,5 +62,16 @@ export const questionSchema = z.object({
     ),
 })
 
+// Texto alternativo de la imagen de apoyo: obligatorio cuando hay imagen.
+export const imageAltSchema = z
+  .string()
+  .transform(singleLine)
+  .pipe(
+    z
+      .string()
+      .min(IMAGE_ALT_MIN, 'Describa lo que muestra la imagen (al menos 5 caracteres)')
+      .max(IMAGE_ALT_MAX, `La descripción puede tener hasta ${IMAGE_ALT_MAX} caracteres`),
+  )
+
 export type QuestionInput = z.output<typeof questionSchema>
-export type QuestionField = keyof QuestionInput
+export type QuestionField = keyof QuestionInput | 'imageAlt' | 'image'

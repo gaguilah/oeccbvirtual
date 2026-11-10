@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { ANSWER_MAX, QUESTION_MAX, QUESTION_MIN, SECTION_TITLE_MAX } from '../../components/faq/data'
+import { ANSWER_MAX, IMAGE_ALT_MAX, QUESTION_MAX, QUESTION_MIN, SECTION_TITLE_MAX } from '../../components/faq/data'
 import { faqErrorMessage } from './data'
-import { normalizeAnswer, questionSchema, sectionSchema } from './schema'
+import { imageAltSchema, normalizeAnswer, questionSchema, sectionSchema } from './schema'
 
 const valid = { sectionId: '3', question: '¿Cómo cobro un título?', answer: 'Acuda al Banco Agrario.' }
 
@@ -58,5 +58,14 @@ describe('faqErrorMessage', () => {
     expect(faqErrorMessage({ code: 'P0001', message: 'preguntas_gestionar_required' }, 'x')).toMatch(/No tiene permiso/)
     expect(faqErrorMessage({ code: 'P0002', message: 'faq_not_found' }, 'x')).toMatch(/ya no existe/)
     expect(faqErrorMessage(null, 'Mensaje por defecto.')).toBe('Mensaje por defecto.')
+  })
+})
+
+describe('imageAltSchema', () => {
+  it('una línea, de 5 a 200 caracteres (faq_questions_image_alt_chk)', () => {
+    expect(imageAltSchema.parse('  Captura  de la\nconsulta ')).toBe('Captura de la consulta')
+    expect(imageAltSchema.safeParse('  abc ').success).toBe(false)
+    expect(imageAltSchema.safeParse('x'.repeat(IMAGE_ALT_MAX)).success).toBe(true)
+    expect(imageAltSchema.safeParse('x'.repeat(IMAGE_ALT_MAX + 1)).success).toBe(false)
   })
 })

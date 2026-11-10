@@ -842,7 +842,31 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
           },
           {
             type: 'paragraph',
-            text: `No se admiten enlaces, imágenes ni otros formatos. Escriba los correos completos, por ejemplo ${CONTACT_EMAIL}.`,
+            text: `No se admiten enlaces ni otros formatos (la imagen va aparte: ver Imagen de apoyo). Escriba los correos completos, por ejemplo ${CONTACT_EMAIL}.`,
+          },
+        ],
+      },
+      {
+        id: 'imagen',
+        title: 'Imagen de apoyo',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'Cada pregunta puede llevar **una imagen** opcional, por ejemplo una captura de la Consulta de Procesos con la actuación resaltada. Se muestra debajo de la respuesta y el ciudadano puede tocarla para verla ampliada.',
+          },
+          {
+            type: 'steps',
+            items: [
+              'En el formulario de la pregunta, pulse **Elegir imagen** (PNG, JPG o WebP, hasta 2 MB).',
+              'Escriba la **descripción de la imagen**: qué muestra, para quien no puede verla. Es obligatoria.',
+              'Guarde. Con **Cambiar imagen** o **Quitar imagen** la reemplaza o la retira.',
+            ],
+          },
+          {
+            type: 'note',
+            tone: 'warning',
+            title: 'Datos personales',
+            text: 'Antes de subir una captura, oculte (pixele o tape) los nombres de las partes y del beneficiario, los números de documento y los radicados reales. La imagen se publica en un sitio abierto a todos.',
           },
         ],
       },

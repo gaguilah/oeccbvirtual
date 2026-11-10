@@ -5,7 +5,11 @@
 Estado: **fase 1 construida** (10 de noviembre de 2026), en la rama `preguntas-frecuentes`. La migración
 `20261110120000_faq.sql`, la carga `supabase/data/faq_initial.sql` y `20261110130000_faq_public_filter.sql` (la
 página pública mostraba las ocultas a los funcionarios con sesión) ya corrieron en producción y están registradas.
-Antes de publicar el contenido faltan los datos por confirmar con la oficina (al final). Fase 2 (imágenes) pendiente.
+Antes de publicar el contenido faltan los datos por confirmar con la oficina (al final).
+
+Fase 2 (imágenes) **construida** el 10 de noviembre de 2026 en la misma rama. Falta correr
+`20261110140000_faq_images.sql` en producción y revisar la CSP nueva (`img-src` con Supabase) en un Deploy
+Preview antes de mezclar.
 
 ## Objetivo
 

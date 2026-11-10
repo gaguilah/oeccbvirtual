@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-import { FaqAnswer, questionAnchor, questionIdFromHash, useFaq, type FaqGroup } from '../components/faq'
+import { FaqAnswer, faqImageSrc, questionAnchor, questionIdFromHash, useFaq, type FaqGroup } from '../components/faq'
 import { Container, PageHeader } from '../components/layout'
+import TutorialImage from '../components/tutorials/TutorialImage'
 import { Alert, EmptyState, Spinner } from '../components/ui'
 import { CONTACT_EMAIL } from '../lib/contact'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
@@ -116,7 +117,17 @@ export default function PreguntasFrecuentes() {
                         <span>{item.question}</span>
                         <Chevron />
                       </summary>
-                      <FaqAnswer text={item.answer} className="px-4 pb-4" />
+                      <div className="space-y-4 px-4 pb-4">
+                        <FaqAnswer text={item.answer} />
+                        {/* Imagen de apoyo: al tocarla se abre ampliada (mismo componente que Tutoriales). */}
+                        {item.image_path && item.image_alt && (
+                          <TutorialImage
+                            src={faqImageSrc(item.image_path)}
+                            alt={item.image_alt}
+                            className="bg-surface-container"
+                          />
+                        )}
+                      </div>
                     </details>
                   ))}
                 </div>

@@ -1,5 +1,6 @@
 export { default as FaqAnswer } from './FaqAnswer'
 export * from './data'
 export * from './format'
+export { faqImageSrc } from './images'
 export type { FaqGroup, FaqQuestion, FaqSection } from './types'
 export { useFaq } from './useFaq'

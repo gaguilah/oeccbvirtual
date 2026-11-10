@@ -23,7 +23,7 @@ export function useFaq(): UseFaqResult {
         // las ocultas.
         supabase
           .from('faq_questions')
-          .select('id, section_id, question, answer, position')
+          .select('id, section_id, question, answer, position, image_path, image_alt')
           .eq('is_published', true)
           .order('position'),
       ])

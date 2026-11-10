@@ -1,9 +1,11 @@
+import { FAQ_IMAGE_BUCKET, imageFileName } from '../../components/faq/data'
 import type { FaqSection } from '../../components/faq/types'
 import { supabase } from '../../lib/supabase'
 import { faqErrorMessage } from './data'
 import type { AdminFaqQuestion } from './types'
 
-const QUESTION_COLUMNS = 'id, section_id, question, answer, position, is_published, created_at, updated_at'
+const QUESTION_COLUMNS =
+  'id, section_id, question, answer, position, image_path, image_alt, is_published, created_at, updated_at'
 
 const fail = (error: { message?: string; code?: string } | null, fallback: string) =>
   new Error(faqErrorMessage(error, fallback))
@@ -18,7 +20,13 @@ export async function fetchFaqAdmin(): Promise<{ sections: FaqSection[]; questio
   return { sections: sections.data as FaqSection[], questions: questions.data as AdminFaqQuestion[] }
 }
 
-type QuestionWrite = { section_id: number; question: string; answer: string }
+type QuestionWrite = {
+  section_id: number
+  question: string
+  answer: string
+  image_path: string | null
+  image_alt: string | null
+}
 
 // Nace oculta: se publica desde el menú de la pregunta.
 export async function createQuestion(input: QuestionWrite): Promise<number> {
@@ -44,6 +52,29 @@ export async function deleteQuestion(id: number): Promise<void> {
   const { data, error } = await supabase.from('faq_questions').delete().eq('id', id).select('id')
   if (error) throw fail(error, 'No se pudo eliminar la pregunta.')
   if (!data.length) throw new Error('La pregunta ya no existe o no tiene permiso para eliminarla.')
+}
+
+// Imagen de apoyo: se sube antes de guardar la pregunta, con un nombre nuevo (UUID). Devuelve el
+// nombre del archivo en el bucket.
+export async function uploadFaqImage(file: File): Promise<string> {
+  const path = imageFileName(crypto.randomUUID(), file.type)
+  const { error } = await supabase.storage
+    .from(FAQ_IMAGE_BUCKET)
+    .upload(path, file, { contentType: file.type, cacheControl: '31536000', upsert: false })
+  if (error) throw new Error('No se pudo subir la imagen. Revise que sea PNG, JPG o WebP de hasta 2 MB.')
+  return path
+}
+
+// Borra archivos que ya no usa ninguna pregunta (imagen reemplazada o quitada, pregunta eliminada,
+// o pregunta que no se pudo guardar). Si falla, el archivo queda huérfano en el bucket pero nadie lo
+// enlaza: no se muestra un error por eso.
+export async function removeFaqImages(paths: (string | null | undefined)[]): Promise<void> {
+  const list = paths.filter((path): path is string => Boolean(path))
+  if (!list.length) return
+  await supabase.storage
+    .from(FAQ_IMAGE_BUCKET)
+    .remove(list)
+    .catch(() => undefined)
 }
 
 export async function moveQuestion(id: number, up: boolean): Promise<void> {

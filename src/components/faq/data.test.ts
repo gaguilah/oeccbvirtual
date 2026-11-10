@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import faqSql from '../../../supabase/migrations/20261110120000_faq.sql?raw'
+import faqImagesSql from '../../../supabase/migrations/20261110140000_faq_images.sql?raw'
 import initialSql from '../../../supabase/data/faq_initial.sql?raw'
 import publicFilterSql from '../../../supabase/migrations/20261110130000_faq_public_filter.sql?raw'
 import { CONTACT_EMAIL } from '../../lib/contact'
 import {
   ANSWER_MAX,
   ANSWER_MIN,
+  FAQ_IMAGE_BUCKET,
+  FAQ_IMAGE_MAX_BYTES,
+  FAQ_IMAGE_TYPES,
+  faqImageUrl,
   groupFaq,
+  IMAGE_ALT_MAX,
+  IMAGE_ALT_MIN,
+  imageFileName,
+  imageFileProblem,
   QUESTION_MAX,
   QUESTION_MIN,
   questionAnchor,
@@ -27,6 +36,8 @@ const question = (id: number, section_id: number, position: number): FaqQuestion
   question: `¿Pregunta ${id}?`,
   answer: 'Respuesta de prueba.',
   position,
+  image_path: null,
+  image_alt: null,
 })
 
 describe('límites, iguales a la migración', () => {
@@ -156,5 +167,44 @@ describe('consulta de la página pública', () => {
 
   it('anon puede leer is_published para filtrar', () => {
     expect(publicFilterSql).toMatch(/grant select \(is_published\) on table public\.faq_questions to anon;/)
+  })
+})
+
+describe('imagen de apoyo', () => {
+  it('bucket, límite, tipos y texto alternativo iguales a la migración', () => {
+    const sizeMatch = faqImagesSql.match(/values \('faq-images', 'faq-images', true, (\d+), array\[([^\]]+)\]\)/)
+    expect(sizeMatch, 'insert del bucket').not.toBeNull()
+    expect(FAQ_IMAGE_BUCKET).toBe('faq-images')
+    expect(Number(sizeMatch![1])).toBe(FAQ_IMAGE_MAX_BYTES)
+    expect(sizeMatch![2].split(',').map((t) => t.trim().replace(/'/g, ''))).toEqual(Object.keys(FAQ_IMAGE_TYPES))
+    expect(faqImagesSql).toContain(`char_length(image_alt) between ${IMAGE_ALT_MIN} and ${IMAGE_ALT_MAX}`)
+    expect(faqImagesSql).toContain(`\\.(${Object.values(FAQ_IMAGE_TYPES).join('|')})$`)
+  })
+
+  it('imageFileProblem: tipo, tamaño y archivo vacío', () => {
+    expect(imageFileProblem({ type: 'image/png', size: 1000 })).toBeNull()
+    expect(imageFileProblem({ type: 'image/webp', size: FAQ_IMAGE_MAX_BYTES })).toBeNull()
+    expect(imageFileProblem({ type: 'image/jpeg', size: FAQ_IMAGE_MAX_BYTES + 1 })).toMatch(/2 MB/)
+    expect(imageFileProblem({ type: 'image/gif', size: 1000 })).toMatch(/PNG, JPG o WebP/)
+    expect(imageFileProblem({ type: 'image/svg+xml', size: 1000 })).toMatch(/PNG, JPG o WebP/)
+    expect(imageFileProblem({ type: 'constructor', size: 1000 })).toMatch(/PNG, JPG o WebP/)
+    expect(imageFileProblem({ type: 'image/png', size: 0 })).toMatch(/vacío/)
+  })
+
+  it('imageFileName: UUID con la extensión del tipo (faq_questions_image_path_chk)', () => {
+    const uuid = '0b6a5f3e-1c2d-4e5f-8a9b-0c1d2e3f4a5b'
+    const check = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$/
+    expect(imageFileName(uuid, 'image/jpeg')).toBe(`${uuid}.jpg`)
+    for (const type of Object.keys(FAQ_IMAGE_TYPES)) expect(imageFileName(uuid, type)).toMatch(check)
+  })
+
+  it('faqImageUrl: URL pública del bucket', () => {
+    expect(faqImageUrl('https://abc.supabase.co/', 'x.png')).toBe(
+      'https://abc.supabase.co/storage/v1/object/public/faq-images/x.png',
+    )
+  })
+
+  it('la página pública pide la imagen y su texto alternativo', () => {
+    expect(useFaqSource).toMatch(/image_path, image_alt/)
   })
 })

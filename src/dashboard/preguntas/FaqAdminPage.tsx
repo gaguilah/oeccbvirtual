@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { FAQ_PATH, FaqAnswer, groupFaq, plainAnswer, questionAnchor } from '../../components/faq'
+import { FAQ_PATH, FaqAnswer, faqImageSrc, groupFaq, plainAnswer, questionAnchor } from '../../components/faq'
 import { Alert, Badge, Button, ButtonAnchor, ButtonLink, EmptyState, Modal, Select, Spinner } from '../../components/ui'
 import { cn } from '../../lib/cn'
 import { useDocumentMeta } from '../../lib/useDocumentMeta'
 import { useAccess } from '../access'
 import { ActionMenu, ConfirmDialog, Icon, icons, type ActionMenuItem } from '../ui'
-import { deleteQuestion, moveQuestion, updateQuestion } from './api'
+import { deleteQuestion, moveQuestion, removeFaqImages, updateQuestion } from './api'
 import { FAQ_SECTIONS_PATH } from './data'
 import QuestionFormModal from './QuestionFormModal'
 import type { AdminFaqQuestion } from './types'
@@ -210,6 +210,7 @@ export default function FaqAdminPage() {
                       <p className="line-clamp-2 text-sm text-on-surface-variant">{plainAnswer(question.answer)}</p>
                       <div className="flex flex-wrap items-center gap-2">
                         <PublishedBadge published={question.is_published} />
+                        {question.image_path && <Badge variant="primary">Con imagen</Badge>}
                         <span className="text-xs text-on-surface-variant">
                           Actualizada el {dateFormat.format(new Date(question.updated_at))}
                         </span>
@@ -259,7 +260,16 @@ export default function FaqAdminPage() {
             <PublishedBadge published={dialog.question.is_published} />
             <div className="rounded-lg bg-surface-container-low">
               <p className="px-4 pt-3 font-medium text-on-surface">{dialog.question.question}</p>
-              <FaqAnswer text={dialog.question.answer} className="px-4 pt-2 pb-4" />
+              <div className="space-y-4 px-4 pt-2 pb-4">
+                <FaqAnswer text={dialog.question.answer} />
+                {dialog.question.image_path && dialog.question.image_alt && (
+                  <img
+                    src={faqImageSrc(dialog.question.image_path)}
+                    alt={dialog.question.image_alt}
+                    className="h-auto max-h-96 w-full rounded-md bg-surface-container object-contain py-3"
+                  />
+                )}
+              </div>
             </div>
           </div>
         </Modal>
@@ -297,6 +307,7 @@ export default function FaqAdminPage() {
           onClose={() => setDialog(null)}
           onConfirm={async () => {
             await deleteQuestion(dialog.question.id)
+            void removeFaqImages([dialog.question.image_path])
             done('Pregunta eliminada.', null)
           }}
         >

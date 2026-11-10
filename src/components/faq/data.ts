@@ -11,6 +11,37 @@ export const ANSWER_MIN = 10
 export const ANSWER_MAX = 4000
 export const SLUG_MAX = 80
 
+// Imagen de apoyo (fase 2). Mismos valores que el bucket faq-images y las restricciones de
+// faq_questions en 20261110140000_faq_images.sql: cambiar ambos juntos.
+export const FAQ_IMAGE_BUCKET = 'faq-images'
+export const FAQ_IMAGE_MAX_BYTES = 2 * 1024 * 1024
+export const FAQ_IMAGE_TYPES: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+}
+export const IMAGE_ALT_MIN = 5
+export const IMAGE_ALT_MAX = 200
+
+// Motivo por el que un archivo no sirve como imagen, o null si sirve.
+export function imageFileProblem(file: { type: string; size: number }): string | null {
+  if (!Object.hasOwn(FAQ_IMAGE_TYPES, file.type)) return 'La imagen debe ser PNG, JPG o WebP.'
+  if (file.size > FAQ_IMAGE_MAX_BYTES) return 'La imagen pesa más de 2 MB. Redúzcala o guárdela como JPG o WebP.'
+  if (file.size === 0) return 'El archivo está vacío.'
+  return null
+}
+
+// Nombre del archivo en el bucket: un UUID nuevo con la extensión de su tipo
+// (faq_questions_image_path_chk). Nunca el nombre original, que puede tener datos personales.
+export function imageFileName(uuid: string, type: string): string {
+  return `${uuid}.${FAQ_IMAGE_TYPES[type]}`
+}
+
+// URL pública de la imagen (el bucket es público). baseUrl es VITE_SUPABASE_URL.
+export function faqImageUrl(baseUrl: string, path: string): string {
+  return `${baseUrl.replace(/\/+$/, '')}/storage/v1/object/public/${FAQ_IMAGE_BUCKET}/${encodeURIComponent(path)}`
+}
+
 // Ancla de una pregunta (/preguntas-frecuentes#pregunta-12): al abrir el enlace, queda desplegada.
 export const QUESTION_ANCHOR_PREFIX = 'pregunta-'
 export const questionAnchor = (id: number) => `${QUESTION_ANCHOR_PREFIX}${id}`
