@@ -2,8 +2,9 @@
 
 > **Histórico.** El comportamiento actual está en [modulos/preguntas-frecuentes.md](modulos/preguntas-frecuentes.md). Si este plan y el módulo no coinciden, vale el módulo.
 
-Estado: **fase 1 construida** (10 de noviembre de 2026), en la rama `preguntas-frecuentes`. Falta correr la
-migración `20261110120000_faq.sql` en producción y luego la carga `supabase/data/faq_initial.sql` (SQL Editor).
+Estado: **fase 1 construida** (10 de noviembre de 2026), en la rama `preguntas-frecuentes`. La migración
+`20261110120000_faq.sql` y la carga `supabase/data/faq_initial.sql` ya corrieron en producción; falta
+`20261110130000_faq_public_filter.sql` (la página pública mostraba las ocultas a los funcionarios con sesión).
 Antes de publicar el contenido faltan los datos por confirmar con la oficina (al final). Fase 2 (imágenes) pendiente.
 
 ## Objetivo

@@ -59,12 +59,12 @@ una línea en blanco seguida).
 
 | Quién | Lee | Escribe |
 |---|---|---|
-| `anon` | Secciones; preguntas publicadas, columnas `id, section_id, question, answer, position` | Nada |
+| `anon` | Secciones; preguntas publicadas, columnas `id, section_id, question, answer, position, is_published` | Nada |
 | `authenticated` sin permiso | Lo mismo que el público | Nada |
 | `preguntas.ver` | Todas las preguntas, también las ocultas (más `is_published`, `created_at`, `updated_at`) | Nada |
 | `preguntas.gestionar` | Igual | Secciones (`slug`, `title` al crear; `title`, `position` al editar) y preguntas (`section_id`, `question`, `answer`, `is_published`, `position`), y borrar |
 
-`created_by` / `updated_by` no los lee nadie desde el navegador. Reordenar: `move_faq_question(p_id,
+La página pública **filtra** `is_published = true` (`useFaq`): usa la sesión del navegador, y con la de un funcionario con `preguntas.ver` la RLS también deja ver las ocultas. Por eso `anon` puede leer `is_published` (migración `20261110130000_faq_public_filter`). `created_by` / `updated_by` no los lee nadie desde el navegador. Reordenar: `move_faq_question(p_id,
 p_up)` y `move_faq_section(p_id, p_up)` (`security invoker`, piden `preguntas.gestionar`, renumeran 1..n y
 cambian la posición con la vecina en una transacción). Ninguna Edge Function usa estas tablas, así que
 `service_role` no tiene grants.
@@ -94,13 +94,15 @@ publicar, la oficina confirma los números de cuenta y de convenio, el banco de 
 
 - `src/components/faq/` (formato, datos, `FaqAnswer`, `useFaq`), `src/pages/PreguntasFrecuentes.tsx`.
 - `src/dashboard/preguntas/` (`FaqAdminPage`, `QuestionFormModal`, `SectionsPage`, `api.ts`, `schema.ts`).
-- Migración `20261110120000_faq`. Pruebas pgTAP en `supabase/tests/10_preguntas.sql`.
+- Migraciones `20261110120000_faq` y `20261110130000_faq_public_filter`. Pruebas pgTAP en `supabase/tests/10_preguntas.sql`.
 - Guía para el personal: Ayuda → Preguntas frecuentes (`src/dashboard/ayuda/data.ts`).
 
 ## Preguntas frecuentes (desarrollo)
 
 - **"permission denied" al leer en la página pública.** La consulta pide una columna sin grant para
-  `anon` (por ejemplo `is_published` o `*`): pedir solo las columnas de la tabla de arriba.
+  `anon` (por ejemplo `updated_at` o `*`): pedir solo las columnas de la tabla de arriba.
+- **Un funcionario ve preguntas ocultas en la página pública.** Falta el filtro `is_published = true`
+  en la consulta: la RLS del dashboard se suma a la pública cuando hay sesión.
 - **Una pregunta publicada no aparece.** Su sección también debe existir; recargar la página. Revisar
   `is_published` en el dashboard.
 - **Imágenes.** Todavía no: es la fase 2 del plan (Supabase Storage y CSP).

@@ -19,7 +19,13 @@ export function useFaq(): UseFaqResult {
     async function load() {
       const [sections, questions] = await Promise.all([
         supabase.from('faq_sections').select('id, slug, title, position').order('position'),
-        supabase.from('faq_questions').select('id, section_id, question, answer, position').order('position'),
+        // El filtro hace falta: con la sesión de un funcionario con preguntas.ver, RLS también deja ver
+        // las ocultas.
+        supabase
+          .from('faq_questions')
+          .select('id, section_id, question, answer, position')
+          .eq('is_published', true)
+          .order('position'),
       ])
       if (cancelled) return
       if (sections.error || questions.error) {

@@ -104,7 +104,7 @@ select set_eq(
     values
       ('auction_notices authenticated INSERT case_number,court,is_published,pdf_url,scheduled_at'),
       ('auction_notices authenticated UPDATE case_number,court,is_published,pdf_url,scheduled_at'),
-      ('faq_questions anon SELECT answer,id,position,question,section_id'),
+      ('faq_questions anon SELECT answer,id,is_published,position,question,section_id'),
       ('faq_questions authenticated INSERT answer,is_published,question,section_id'),
       ('faq_questions authenticated SELECT answer,created_at,id,is_published,position,question,section_id,updated_at'),
       ('faq_questions authenticated UPDATE answer,is_published,position,question,section_id'),

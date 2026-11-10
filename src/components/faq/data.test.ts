@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import faqSql from '../../../supabase/migrations/20261110120000_faq.sql?raw'
 import initialSql from '../../../supabase/data/faq_initial.sql?raw'
+import publicFilterSql from '../../../supabase/migrations/20261110130000_faq_public_filter.sql?raw'
 import { CONTACT_EMAIL } from '../../lib/contact'
 import {
   ANSWER_MAX,
@@ -17,6 +18,7 @@ import {
 } from './data'
 import { parseAnswer } from './format'
 import type { FaqQuestion, FaqSection } from './types'
+import useFaqSource from './useFaq.ts?raw'
 
 const section = (id: number, position: number, slug = `s${id}`): FaqSection => ({ id, slug, title: slug, position })
 const question = (id: number, section_id: number, position: number): FaqQuestion => ({
@@ -142,5 +144,17 @@ describe('carga inicial', () => {
   it('el correo es el de la oficina y nada queda publicado', () => {
     for (const email of initialSql.match(/[\w.-]+@[\w.-]+\.\w+/g) ?? []) expect(email).toBe(CONTACT_EMAIL)
     expect(initialSql).not.toMatch(/is_published/)
+  })
+})
+
+// La página pública usa la sesión del navegador: con la de un funcionario con preguntas.ver, RLS
+// también deja ver las ocultas. Por eso la consulta filtra, y anon puede leer is_published.
+describe('consulta de la página pública', () => {
+  it('pide solo las publicadas', () => {
+    expect(useFaqSource).toMatch(/\.from\('faq_questions'\)[\s\S]*?\.eq\('is_published', true\)/)
+  })
+
+  it('anon puede leer is_published para filtrar', () => {
+    expect(publicFilterSql).toMatch(/grant select \(is_published\) on table public\.faq_questions to anon;/)
   })
 })

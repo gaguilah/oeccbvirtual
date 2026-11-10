@@ -1,7 +1,7 @@
 -- Preguntas frecuentes (docs/plan-preguntas-frecuentes.md, migración 20261110120000_faq.sql).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(20);
+select plan(21);
 
 select tests.create_role('prueba_preguntas_ver', 'all', array['preguntas.ver']);
 select tests.create_role('prueba_preguntas_gestion', 'all', array['preguntas.ver', 'preguntas.gestionar']);
@@ -47,9 +47,9 @@ select throws_ok(
   'el público no lee el autor'
 );
 select throws_ok(
-  $$ select is_published from public.faq_questions $$,
+  $$ select updated_at from public.faq_questions $$,
   '42501', null,
-  'el público solo lee las columnas que muestra la página'
+  'el público solo lee las columnas que muestra la página (y is_published, para filtrar)'
 );
 select throws_ok(
   $$ insert into public.faq_sections (slug, title) values ('otra', 'Otra sección') $$,
@@ -60,6 +60,11 @@ select throws_ok(
 -- Solo ver.
 select tests.login_as('lector@prueba.test');
 select is((select count(*)::int from public.faq_questions), 2, 'con preguntas.ver ve también las ocultas');
+select is(
+  (select count(*)::int from public.faq_questions where is_published),
+  1,
+  'la consulta de la página pública (is_published = true) solo trae las publicadas, también con sesión'
+);
 select throws_ok(
   $$ insert into public.faq_questions (section_id, question, answer)
      select id, '¿Pregunta del lector?', 'Respuesta de prueba.' from public.faq_sections limit 1 $$,
