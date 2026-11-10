@@ -60,6 +60,9 @@ grant insert (section_id, question, answer, is_published) on table public.faq_qu
 grant update (section_id, question, answer, is_published, position) on table public.faq_questions to authenticated;
 grant delete on table public.faq_questions to authenticated;
 
+-- Las secuencias de los id (identity) reciben permisos por defecto: el navegador no las usa.
+revoke all on sequence public.faq_sections_id_seq, public.faq_questions_id_seq from anon, authenticated;
+
 -- ---------------------------------------------------------------------------------------------
 -- Triggers: orden al crear, fechas y autor.
 -- ---------------------------------------------------------------------------------------------
