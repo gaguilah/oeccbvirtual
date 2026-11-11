@@ -12,6 +12,7 @@ import Encuesta from './pages/Encuesta'
 import Tutoriales from './pages/Tutoriales'
 import Tutorial from './pages/Tutorial'
 import Contacto from './pages/Contacto'
+import PreguntasFrecuentes from './pages/PreguntasFrecuentes'
 import NotFound from './pages/NotFound'
 import RecuperarContrasena from './pages/RecuperarContrasena'
 import RestablecerContrasena from './pages/RestablecerContrasena'
@@ -33,6 +34,7 @@ function AppRoutes() {
         <Route path="/encuesta" element={<Encuesta />} />
         <Route path="/tutoriales" element={<Tutoriales />} />
         <Route path="/tutoriales/:slug" element={<Tutorial />} />
+        <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
         <Route path="/contacto" element={<Contacto />} />
         {/* Cualquier otra dirección: página 404 (Netlify entrega la app para toda ruta: public/_redirects). */}
         <Route path="*" element={<NotFound />} />

@@ -10,6 +10,7 @@ import {
   OFFICE_NAME,
 } from '../../lib/contact'
 import { COURTS, courtPublicationsUrl } from '../../lib/courts'
+import { FAQ_PATH } from '../faq/data'
 import { INTEREST_LINKS } from '../../lib/externalLinks'
 import { ExternalLinkIcon } from '../ui'
 import Container from './Container'
@@ -21,6 +22,7 @@ const services = [
   { to: '/pqrs', label: 'PQRS' },
   { to: '/encuesta', label: 'Encuesta' },
   { to: '/tutoriales', label: 'Tutoriales' },
+  { to: FAQ_PATH, label: 'Preguntas frecuentes' },
 ]
 
 function ColumnTitle({ children, id }: { children: string; id?: string }) {

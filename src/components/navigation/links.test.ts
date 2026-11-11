@@ -4,6 +4,7 @@ import appSource from '../../App.tsx?raw'
 import passwordResetSource from '../../../supabase/functions/password-reset/index.ts?raw'
 import { LOGIN_PATH, RECOVER_PATH, RESET_PATH } from '../account/paths'
 import { AUDIENCIAS_PATH } from '../audiencias/constants'
+import { FAQ_PATH } from '../faq/data'
 import { AVISOS_REMATES_PATH } from '../remates/constants'
 import { services } from '../services/data'
 import { TUTORIALS_PATH } from '../tutorials/data'
@@ -26,6 +27,10 @@ describe('navegación pública', () => {
   it('cada servicio del inicio apunta a una ruta del menú', () => {
     const paths = mainLinks.map((link) => link.to)
     for (const service of services) expect(paths, service.to).toContain(service.to)
+  })
+
+  it('las preguntas frecuentes tienen su ruta (se enlazan desde el pie de página y Contacto)', () => {
+    expect(routes).toContain(FAQ_PATH)
   })
 
   it('las rutas de la cuenta existen', () => {

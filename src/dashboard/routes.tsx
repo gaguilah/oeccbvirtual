@@ -11,6 +11,7 @@ import { ProfileProvider } from './profile'
 import { CalendarPage } from './calendario'
 import { SurveyEditorPage, SurveyQuestionsPage, SurveyResultsPage, SurveysPage } from './encuestas'
 import { PqrsAdminPage, RequestDetailPage } from './pqrs'
+import { FaqAdminPage, SectionsPage as FaqSectionsPage } from './preguntas'
 import { FoldersPage, RematesAdminPage } from './remates'
 import { RoleEditorPage, RolesPage } from './roles'
 import { UsersPage } from './usuarios'
@@ -131,6 +132,22 @@ export default function DashboardRoutes() {
           element={
             <RequirePermission permission="encuestas.gestionar">
               <SurveyEditorPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="preguntas-frecuentes"
+          element={
+            <RequirePermission permission="preguntas.ver">
+              <FaqAdminPage />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="preguntas-frecuentes/secciones"
+          element={
+            <RequirePermission permission="preguntas.gestionar">
+              <FaqSectionsPage />
             </RequirePermission>
           }
         />

@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { ContactIllustration, ContactSummary } from '../components/contacto'
+import { FAQ_PATH } from '../components/faq/data'
 import { Container, PageHeader } from '../components/layout'
 import { ServiceCard, services } from '../components/services'
 import { useDocumentMeta } from '../lib/useDocumentMeta'
@@ -37,7 +39,11 @@ export default function Contacto() {
               Canales en línea
             </h2>
             <p className="text-sm text-on-surface-variant">
-              Muchos trámites se pueden hacer sin escribir ni ir a la oficina.
+              Muchos trámites se pueden hacer sin escribir ni ir a la oficina. Antes de escribir, revise las{' '}
+              <Link to={FAQ_PATH} className="font-medium text-primary hover:underline">
+                preguntas frecuentes
+              </Link>
+              : muchas consultas se resuelven allí.
             </p>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">

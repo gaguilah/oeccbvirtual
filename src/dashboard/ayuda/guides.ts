@@ -19,6 +19,12 @@ export const GUIDES: GuideMeta[] = [
   { slug: 'pqrs', title: 'PQRS', modules: ['pqrs'], paths: [`${DASHBOARD_HOME}/pqrs`] },
   { slug: 'encuestas', title: 'Encuestas', modules: ['encuestas'], paths: [`${DASHBOARD_HOME}/encuestas`] },
   {
+    slug: 'preguntas-frecuentes',
+    title: 'Preguntas frecuentes',
+    modules: ['preguntas'],
+    paths: [`${DASHBOARD_HOME}/preguntas-frecuentes`],
+  },
+  {
     slug: 'administracion',
     title: 'Administración',
     modules: ['usuarios', 'roles', 'permisos', 'calendario'],
