@@ -92,6 +92,15 @@ archivo nuevo lleva un UUID nuevo (nunca el nombre original, que puede tener dat
   cada pregunta es un `<details>` cerrado. Anclas: la sección (`#<slug>`) y cada pregunta
   (`#pregunta-<id>`, que llega desplegada). Las secciones sin preguntas publicadas no se muestran. Una
   línea de introducción con el correo (`CONTACT_EMAIL`) y el radicado de 23 dígitos.
+  - **Una pregunta abierta a la vez** en toda la página (`<details name>` comparten nombre: el
+    navegador cierra la anterior).
+  - **Al abrir una**, la página la deja en la mitad del espacio visible bajo el encabezado; si es más
+    alta que ese espacio (p. ej. con imagen), arriba, bajo el encabezado (`faq/scroll.ts`,
+    `questionScrollTop`). Las últimas de la página quedan lo más arriba que se pueda.
+  - **Al cerrar la última abierta**, sube al título de su sección, como el índice.
+  - La dirección cambia a `#pregunta-<id>` o `#<slug>` con `history.replaceState` (sin entradas
+    nuevas: Atrás no recorre las preguntas). Con movimiento reducido el desplazamiento es instantáneo.
+    Funciona igual con clic, toque o teclado (reacciona al evento `toggle`).
 - **Dashboard:** lista por sección (filtro `?seccion=`), tarjetas con la pregunta, el resumen de la
   respuesta, Publicada / Oculta y la fecha de actualización. Menú ⋮: Vista previa (con "Ver en el
   sitio" si está publicada), y con `preguntas.gestionar` Editar, Subir, Bajar, Publicar / Ocultar

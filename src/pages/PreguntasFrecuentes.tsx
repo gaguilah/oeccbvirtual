@@ -1,6 +1,14 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef, type SyntheticEvent } from 'react'
 import { useLocation } from 'react-router-dom'
-import { FaqAnswer, faqImageSrc, questionAnchor, questionIdFromHash, useFaq, type FaqGroup } from '../components/faq'
+import {
+  FaqAnswer,
+  faqImageSrc,
+  questionAnchor,
+  questionIdFromHash,
+  questionScrollTop,
+  useFaq,
+  type FaqGroup,
+} from '../components/faq'
 import { Container, PageHeader } from '../components/layout'
 import TutorialImage from '../components/tutorials/TutorialImage'
 import { Alert, EmptyState, Spinner } from '../components/ui'
@@ -39,22 +47,63 @@ function Chevron() {
   )
 }
 
+// Todas las preguntas comparten este nombre: el navegador deja una sola abierta a la vez.
+const ACCORDION = 'preguntas-frecuentes'
+
+const scrollBehavior = (): ScrollBehavior =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+
+// Cambia el ancla sin agregar una entrada al historial (Atrás no recorre las preguntas abiertas) y
+// conserva el estado que guarda React Router.
+const replaceHash = (anchor: string) => window.history.replaceState(window.history.state, '', `#${anchor}`)
+
+// Deja la pregunta centrada bajo el encabezado, o arriba si es más alta que la pantalla.
+function revealQuestion(details: HTMLElement, behavior: ScrollBehavior) {
+  const rect = details.getBoundingClientRect()
+  const top = questionScrollTop({
+    top: rect.top + window.scrollY,
+    height: rect.height,
+    viewport: window.innerHeight,
+    offset: parseFloat(getComputedStyle(details).scrollMarginTop) || 0,
+  })
+  window.scrollTo({ top, behavior })
+}
+
 // Preguntas frecuentes (docs/plan-preguntas-frecuentes.md): solo preguntas y respuestas, por
 // secciones, administradas en el dashboard. Índice a la izquierda desde lg y plegable arriba en
 // pantallas más chicas, como la Ayuda. Cada sección y cada pregunta tienen su ancla; al abrir el
-// enlace de una pregunta, aparece desplegada.
+// enlace de una pregunta, aparece desplegada. Una sola pregunta abierta a la vez: la que se abre
+// queda en la mitad de la pantalla y, al cerrarlas todas, la página sube al título de su sección.
 export default function PreguntasFrecuentes() {
   useDocumentMeta({ title: 'Preguntas frecuentes' })
   const { groups, error } = useFaq()
   const { hash } = useLocation()
   const openId = useMemo(() => questionIdFromHash(hash), [hash])
+  const listRef = useRef<HTMLDivElement>(null)
 
   // El contenido llega después de cargar la página: el navegador no alcanza a bajar al ancla solo.
   useEffect(() => {
     if (!groups || !hash) return
-    const id = decodeURIComponent(hash.slice(1))
-    document.getElementById(id)?.scrollIntoView({ block: 'start' })
+    const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+    if (!target) return
+    if (target instanceof HTMLDetailsElement) revealQuestion(target, 'auto')
+    else target.scrollIntoView({ block: 'start' })
   }, [groups, hash])
+
+  // Responde a que la pregunta se abra o se cierre (clic, toque o teclado). El evento llega después
+  // de que el navegador cerró la anterior, así que las medidas ya son las finales.
+  function onToggle(event: SyntheticEvent<HTMLDetailsElement>, questionId: number, sectionSlug: string) {
+    const details = event.currentTarget
+    if (details.open) {
+      replaceHash(questionAnchor(questionId))
+      revealQuestion(details, scrollBehavior())
+      return
+    }
+    // Se cerró porque se abrió otra: de esa se encarga su propio evento.
+    if (listRef.current?.querySelector('details[open]')) return
+    replaceHash(sectionSlug)
+    document.getElementById(sectionSlug)?.scrollIntoView({ block: 'start', behavior: scrollBehavior() })
+  }
 
   return (
     <Container className="space-y-8 py-12 sm:py-16">
@@ -82,7 +131,7 @@ export default function PreguntasFrecuentes() {
             </div>
           </nav>
 
-          <div className="max-w-3xl min-w-0 space-y-10">
+          <div ref={listRef} className="max-w-3xl min-w-0 space-y-10">
             <div className="space-y-4">
               <p className="text-on-surface-variant">
                 Las solicitudes se envían al correo{' '}
@@ -110,7 +159,9 @@ export default function PreguntasFrecuentes() {
                     <details
                       key={item.id}
                       id={questionAnchor(item.id)}
+                      name={ACCORDION}
                       open={item.id === openId || undefined}
+                      onToggle={(event) => onToggle(event, item.id, section.slug)}
                       className="group scroll-mt-24 rounded-lg bg-surface-container-low"
                     >
                       <summary className="flex cursor-pointer list-none items-start justify-between gap-3 rounded-lg px-4 py-3 font-medium text-on-surface focus-visible:outline-2 focus-visible:outline-primary [&::-webkit-details-marker]:hidden">
