@@ -76,7 +76,9 @@ export default function ActionMenu({ items, label, className }: ActionMenuProps)
             id={menuId}
             role="menu"
             aria-label={label}
-            className="w-max min-w-44 rounded-lg bg-surface-container-lowest p-1 shadow-ambient"
+            // Ancho máximo: en un teléfono el menú (alineado a la derecha del botón) no puede salirse
+            // por la izquierda; el motivo gris se ajusta en varias líneas.
+            className="w-max max-w-[min(18rem,calc(100vw-4rem))] min-w-44 rounded-lg bg-surface-container-lowest p-1 shadow-ambient"
           >
             {items.map((item) => (
               <button
@@ -103,7 +105,9 @@ export default function ActionMenu({ items, label, className }: ActionMenuProps)
                 <Icon paths={item.icon} className="mt-0.5 size-4" />
                 <span>
                   {item.label}
-                  {item.disabledReason && <span className="block text-xs font-normal">{item.disabledReason}</span>}
+                  {item.disabledReason && (
+                    <span className="block text-xs font-normal whitespace-normal">{item.disabledReason}</span>
+                  )}
                 </span>
               </button>
             ))}
