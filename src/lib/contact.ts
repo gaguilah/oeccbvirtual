@@ -7,6 +7,10 @@ export const OFFICE_NAME =
 // Nombre del sitio: título de la pestaña ("OECCB Virtual | Página", ver useDocumentMeta).
 export const SITE_NAME = 'OECCB Virtual'
 
+// Dirección pública del sitio, para enlaces que se publican fuera de él (publicación semanal de
+// audiencias de remate en el portal de la Rama Judicial).
+export const SITE_URL = 'https://oeccbvirtual.app'
+
 export const CONTACT_EMAIL = 'ofejccbuc@cendoj.ramajudicial.gov.co'
 
 // Remitente de los correos automáticos de PQRS (Resend). No es un buzón judicial: solo para el

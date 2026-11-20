@@ -324,6 +324,36 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
         ],
       },
       {
+        // docs/plan-audiencias-publicacion-semanal.md; reglas en audiencias/publicacion/data.ts.
+        id: 'publicacion-semanal',
+        title: 'Publicación semanal de remates',
+        blocks: [
+          {
+            type: 'paragraph',
+            text: 'El botón **Publicación semanal** arma el bloque con las audiencias de remate de un juzgado para la semana siguiente, listo para pegar en la sección del portal que acepta código. Lo ve todo el que puede ver audiencias, con su mismo alcance. No guarda nada: solo genera el código.',
+          },
+          {
+            type: 'steps',
+            items: [
+              'El viernes, antes de publicar, revise que todas las audiencias de remate de la semana siguiente tengan su **enlace de conexión**.',
+              'Abra **Publicación semanal**. Ya aparece la semana siguiente; elija el juzgado si atiende a los dos.',
+              'Revise la vista previa y pulse **Copiar HTML** (o **Descargar .html**).',
+              'Pegue el código en la sección del portal del juzgado y publíquelo.',
+            ],
+          },
+          {
+            type: 'list',
+            items: [
+              'Entran las audiencias de tipo **Audiencia de Remate** que siguen **Programadas**, de lunes a viernes de esa semana, ordenadas por día y hora. Las canceladas no aparecen.',
+              '**Una audiencia no se publica sin enlace.** Si alguna no lo tiene, la página la muestra en rojo y no deja copiar ni descargar hasta que se agregue.',
+              'Cada audiencia trae el botón **Ingresar a Teams** y **Ver aviso**, que abre Avisos de Remate filtrado por ese radicado.',
+              'El bloque dice "Publicado el" con la fecha del día en que se generó. Si algo cambia después del viernes, vuelva a generarlo y **publíquelo de nuevo** en lugar del anterior.',
+              'Con las flechas se puede ver otra semana; **Próxima semana** vuelve a la que se publica.',
+            ],
+          },
+        ],
+      },
+      {
         id: 'publico',
         title: 'Lo que ve el ciudadano en la página pública',
         blocks: [
@@ -400,6 +430,10 @@ export const GUIDE_CONTENT: Record<GuideSlug, GuideContent> = {
       {
         q: 'No llegó el correo de una audiencia.',
         a: 'Revise que tenga el enlace de conexión, si su tipo lo necesita: sin enlace no se comunica. Los avisos de cambio solo se envían para audiencias de la semana en curso y después de que salió el listado semanal.',
+      },
+      {
+        q: 'Una audiencia de remate no aparece en la publicación semanal.',
+        a: 'Revise que su tipo sea **Audiencia de Remate**, que siga Programada, que sea del juzgado elegido y que su fecha esté entre el lunes y el viernes de la semana que se ve.',
       },
       {
         q: 'En el formato aparece otra persona o un cargo anterior.',

@@ -145,6 +145,26 @@ requires_link, total, realizadas, canceladas, programadas, por_cerrar }], first_
 (años de la primera y la última audiencia visible, para la lista de años). Prueba pgTAP:
 `supabase/tests/09_audiencias_estadisticas.sql`.
 
+## Publicación semanal (`/dashboard/audiencias/publicacion`)
+
+Botón **Publicación semanal** en Audiencias. Permiso: el mismo `audiencias.ver`, con su alcance por
+juzgado. No escribe nada ni tiene migración: genera el bloque HTML que la oficina pega cada viernes en
+la sección del portal que acepta código (diseño "lista por día", opción A del plan).
+
+| Qué | Regla | Dónde |
+|---|---|---|
+| Semana | Lunes a viernes, hora de Colombia; por defecto la **siguiente** (se publica el viernes). En la URL: `juzgado`, `semana` (cualquier día, se lleva a su lunes) | `publicacion/filters.ts` · `defaultPublicationWeek()` |
+| Qué entra | Juzgado elegido, tipo de remate (descripción `audiencia de remate`, sin importar mayúsculas, activo o no), estado Programada, por fecha y hora | `selectWeeklyAuctionHearings()` · `AUCTION_HEARING_TYPE` (misma regla que `create_auction_notice_with_hearing()`; un test lo compara) |
+| Sin enlace | Bloquea "Copiar HTML" y "Descargar .html" y lista las audiencias que faltan | `missingLinks()` |
+| Aviso eliminado | Advertencia, no bloquea | `auction_notice_deleted` |
+| Contenido | Encabezado (juzgado, semana, "Publicado el DD/MM/AAAA" sin hora), un subtítulo por día, por audiencia hora, radicado, **Ingresar a Teams** y **Ver aviso** (`/avisos-remates?juzgado=n&q=<radicado>`), pie con Avisos de Remate y Audiencias filtrados; semana vacía: un mensaje | `weeklyPublicationHtml()` |
+| Formato | Un `<style>` + HTML, sin JavaScript ni fuentes externas; clases `oeccb-pa…`; CSS plano; tarjetas con `@container (max-width: 560px)`; todos los valores escapados; enlaces `rel="noopener noreferrer"` | `publicacion/data.ts` |
+| Vista previa | Componentes React que imitan el bloque (la CSP no permite mostrar su `<style>` en un iframe) | `PublicationPreview.tsx` |
+| Descarga | El mismo bloque en una página completa con `charset=utf-8` | `publicationDocument()` |
+
+Si una audiencia cambia después de publicar, se genera de nuevo y se vuelve a publicar. La dirección
+del sitio en los enlaces es `SITE_URL` (`src/lib/contact.ts`).
+
 ## Archivos y migraciones
 
 - Público: `src/pages/Audiencias.tsx`, `src/components/audiencias/`.
@@ -169,4 +189,5 @@ requires_link, total, realizadas, canceladas, programadas, por_cerrar }], first_
 [plan-audiencias-formato](../plan-audiencias-formato.md) ·
 [plan-audiencias-expediente](../plan-audiencias-expediente.md) ·
 [plan-audiencias-publica-tiempos](../plan-audiencias-publica-tiempos.md) ·
-[plan-audiencias-estadisticas](../plan-audiencias-estadisticas.md)
+[plan-audiencias-estadisticas](../plan-audiencias-estadisticas.md) ·
+[plan-audiencias-publicacion-semanal](../plan-audiencias-publicacion-semanal.md)

@@ -3,6 +3,7 @@ import type { Hearing, HearingStatus, HearingTab, HearingType, HearingView } fro
 export const HEARINGS_PATH = '/dashboard/audiencias'
 export const HEARING_TYPES_PATH = `${HEARINGS_PATH}/tipos`
 export const HEARING_STATS_PATH = `${HEARINGS_PATH}/estadisticas`
+export const HEARING_PUBLICATION_PATH = `${HEARINGS_PATH}/publicacion`
 
 export const PAGE_SIZE = 10
 
